@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#00e5a0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SismikNet">
+<title>SismikNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script>
+const mf={name:"SismikNet",short_name:"SismikNet",start_url:"./sismiknet.html",display:"standalone",background_color:"#060810",theme_color:"#00e5a0",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#060810"/><circle cx="256" cy="220" r="130" fill="none" stroke="#00e5a0" stroke-width="18"/><circle cx="256" cy="220" r="80" fill="none" stroke="#00e5a040" stroke-width="12"/><circle cx="256" cy="220" r="30" fill="#00e5a0"/><text x="256" y="420" font-family="Arial" font-weight="900" font-size="72" fill="#00e5a0" text-anchor="middle">SİSMİK</text></svg>'),sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
+const mb=new Blob([JSON.stringify(mf)],{type:"application/manifest+json"});
+const ml=document.createElement("link");ml.rel="manifest";ml.href=URL.createObjectURL(mb);
+document.currentScript.after(ml);
+if("serviceWorker"in navigator){const sw=`self.addEventListener("install",e=>self.skipWaiting());self.addEventListener("activate",e=>clients.claim());self.addEventListener("fetch",e=>e.respondWith(fetch(e.request).catch(()=>new Response(""))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:"application/javascript"}))).catch(()=>{});}
+</script>
+<style>
+:root{
+  --bg:#060810;--surface:#0b0e1a;--card:#0f1422;--card2:#121828;
+  --border:#1a2038;--border2:#242d48;
+  --green:#00e5a0;--yellow:#fbbf24;--orange:#f97316;
+  --red:#ef4444;--crimson:#dc143c;--blue:#60a5fa;
+  --cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;
+  --text:#d1daf0;--muted:#4a5580;--muted2:#2a3050;
+  --tab-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:var(--tab-h);}
+
+/* GRID BG */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:40px 40px;opacity:.3;pointer-events:none;z-index:0;
+}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:100;
+  background:#06081095;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:16px;letter-spacing:3px;color:var(--green);text-shadow:0 0 20px #00e5a055;}
+.logo em{color:var(--text);font-style:normal;font-weight:400;}
+.hright{display:flex;align-items:center;gap:8px;}
+.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a010;border:1px solid #00e5a030;padding:4px 10px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.2s ease infinite;}
+#timer{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);min-width:28px;text-align:right;}
+.rbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.rbtn:hover{border-color:var(--green);color:var(--green);}
+.rbtn.spin{animation:spin .6s linear infinite;}
+
+/* TAB BAR */
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:#08091aee;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  height:var(--tab-h);display:flex;align-items:center;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:8px 0;transition:all .2s;}
+.tab-icon{font-size:20px;transition:transform .2s;}
+.tab-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);transition:color .2s;}
+.tab.active .tab-label{color:var(--green);}
+.tab.active .tab-icon{transform:translateY(-2px);}
+
+/* PAGES */
+.page{display:none;position:relative;z-index:1;padding:14px 14px 20px;max-width:480px;margin:0 auto;flex-direction:column;gap:14px;}
+.page.active{display:flex;}
+
+/* ── GLOBAL PAGE ── */
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.stat-card.green::after{background:var(--green);}
+.stat-card.orange::after{background:var(--orange);}
+.stat-card.red::after{background:var(--red);}
+.stat-card.blue::after{background:var(--blue);}
+.stat-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;line-height:1;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
+
+/* Filter */
+.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:7px 14px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.fbtn.active{background:#00e5a018;border-color:var(--green);color:var(--green);}
+
+/* Featured */
+.featured{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;position:relative;overflow:hidden;cursor:pointer;}
+.featured::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;pointer-events:none;}
+.featured.c4::before{background:radial-gradient(circle,#ef444420 0%,transparent 70%);}
+.featured.c5::before{background:radial-gradient(circle,#dc143c30 0%,transparent 70%);}
+.featured.c3::before{background:radial-gradient(circle,#f9731620 0%,transparent 70%);}
+.featured.c2::before{background:radial-gradient(circle,#fbbf2420 0%,transparent 70%);}
+.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.feat-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-transform:uppercase;}
+.feat-badge.red{background:#ef444415;border:1px solid #ef444440;color:var(--red);}
+.feat-badge.orange{background:#f9731615;border:1px solid #f9731640;color:var(--orange);}
+.feat-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.feat-mag{font-family:'Orbitron',monospace;font-weight:900;line-height:1;margin-bottom:4px;}
+.feat-mag.c5{font-size:72px;color:#ff2255;text-shadow:0 0 40px #dc143c66;}
+.feat-mag.c4{font-size:68px;color:var(--red);text-shadow:0 0 30px #ef444455;}
+.feat-mag.c3{font-size:64px;color:var(--orange);}
+.feat-mag.c2{font-size:60px;color:var(--yellow);}
+.feat-mag.c1{font-size:56px;color:var(--cyan);}
+.feat-mag.c0{font-size:56px;color:var(--green);}
+.feat-type{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
+.feat-place{font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px;}
+.feat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;letter-spacing:.5px;}
+.pill.depth{background:#60a5fa15;border:1px solid #60a5fa30;color:var(--blue);}
+.pill.felt{background:#a78bfa15;border:1px solid #a78bfa30;color:var(--purple);}
+.pill.tsunami{background:#22d3ee15;border:1px solid #22d3ee30;color:var(--cyan);}
+.pill.cdi{background:#fbbf2415;border:1px solid #fbbf2430;color:var(--yellow);}
+.feat-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px;}
+.feat-bar-fill{height:100%;border-radius:99px;transition:width .8s ease;}
+
+/* Seismo */
+.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.card-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:#040608;}
+
+/* Mag dist */
+.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+.mag-bars{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:12px;}
+.mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+.mbar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height .8s ease;}
+.mbar-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:center;}
+.mbar-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);text-align:center;}
+
+/* EQ List */
+.eq-list{display:flex;flex-direction:column;gap:8px;}
+.eq-item{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:all .15s;position:relative;overflow:hidden;
+}
+.eq-item:hover,.eq-item:active{background:var(--card2);border-color:var(--border2);}
+.eq-item.new-item{animation:slideIn .4s ease both;}
+.eq-mag-box{
+  width:50px;height:50px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:'Orbitron',monospace;font-size:15px;font-weight:700;
+}
+.eq-mag-box.m0{background:#00e5a015;color:var(--green);border:1px solid #00e5a030;}
+.eq-mag-box.m1{background:#22d3ee15;color:var(--cyan);border:1px solid #22d3ee30;}
+.eq-mag-box.m2{background:#fbbf2415;color:var(--yellow);border:1px solid #fbbf2430;}
+.eq-mag-box.m3{background:#f9731615;color:var(--orange);border:1px solid #f9731630;}
+.eq-mag-box.m4{background:#ef444420;color:var(--red);border:1px solid #ef444450;}
+.eq-mag-box.m5{background:#dc143c25;color:#ff2255;border:1px solid #dc143c60;box-shadow:0 0 14px #dc143c25;}
+.eq-info{flex:1;min-width:0;}
+.eq-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;}
+.eq-chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 7px;border-radius:4px;}
+.chip.deep{color:var(--blue);border-color:#60a5fa30;}
+.eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.eq-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.alert-dot{width:8px;height:8px;border-radius:50%;}
+.ad-red{background:var(--red);box-shadow:0 0 6px var(--red);}
+.ad-orange{background:var(--orange);}
+.ad-yellow{background:var(--yellow);}
+.new-badge{position:absolute;top:8px;right:8px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);background:#00e5a015;border:1px solid #00e5a030;padding:1px 5px;border-radius:4px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
+
+/* ── TURKEY PAGE ── */
+.turkey-hero{
+  background:linear-gradient(135deg,#0f0d1e,#1a0f2e);
+  border:1px solid #2a1a45;border-radius:20px;padding:20px;
+}
+.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.th-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:2px;color:var(--purple);}
+.th-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:#2a1a4520;border:1px solid #2a1a45;padding:3px 9px;border-radius:6px;}
+.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.th-stat{background:#1a1030;border:1px solid #2a1a40;border-radius:10px;padding:10px;text-align:center;}
+.th-stat-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--purple);}
+.th-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
+.turkey-list{display:flex;flex-direction:column;gap:8px;}
+.tr-item{
+  background:#130e22;border:1px solid #2a1a40;border-radius:12px;
+  padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:border-color .15s;
+}
+.tr-item:hover{border-color:#3a2a55;}
+.tr-mag{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;min-width:40px;text-align:center;}
+.tr-info{flex:1;min-width:0;}
+.tr-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.tr-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.tr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;}
+
+/* ── STATS PAGE ── */
+.stats-page-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;}
+.big-stat{text-align:center;padding:20px 0;}
+.big-stat-num{font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--green);line-height:1;}
+.big-stat-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:2px;text-transform:uppercase;}
+.trend-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+.trend-up{color:var(--red);font-size:13px;}
+.trend-down{color:var(--green);font-size:13px;}
+.trend-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.activity-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;}
+.ag-cell{aspect-ratio:1;border-radius:4px;background:var(--border);}
+.timeline{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.tl-item{display:flex;gap:12px;align-items:flex-start;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-content{flex:1;}
+.tl-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.tl-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.tl-line{width:1px;background:var(--border);height:20px;margin-left:4px;}
+.risk-bars{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.risk-item{display:flex;align-items:center;gap:10px;}
+.risk-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:70px;flex-shrink:0;}
+.risk-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.risk-bar-fill{height:100%;border-radius:99px;}
+.risk-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text);min-width:24px;text-align:right;}
+
+/* ── ALERT OVERLAY ── */
+#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#00000099;backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding-top:60px;}
+#alert-overlay.show{display:flex;}
+.alert-box{
+  width:calc(100% - 28px);max-width:440px;
+  background:linear-gradient(135deg,#1a0810,#200515);
+  border:2px solid var(--red);border-radius:20px;padding:22px;
+  animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;
+  box-shadow:0 0 80px #ef444430,0 24px 48px #00000070;
+}
+.al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:11px;color:var(--red);letter-spacing:2px;animation:flashText .6s infinite alternate;}
+.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
+.al-mag{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;color:var(--red);text-shadow:0 0 40px #ef444466;line-height:1;}
+.al-unit{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-left:6px;}
+.al-place{font-size:15px;font-weight:600;color:var(--text);margin:10px 0 4px;line-height:1.4;}
+.al-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
+.al-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.atag{padding:4px 10px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;}
+.atag.tsunami{background:#1e3a5f;border:1px solid #3b82f6;color:var(--blue);}
+.atag.pager-red{background:#3b0a0a;border:1px solid var(--red);color:var(--red);}
+.atag.felt{background:#1e1e3b;border:1px solid var(--purple);color:var(--purple);}
+
+/* ── DETAIL SHEET ── */
+#detail-sheet{display:none;position:fixed;inset:0;z-index:200;background:#00000099;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
+#detail-sheet.show{display:flex;}
+.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:16px 18px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:85vh;overflow-y:auto;}
+.sheet-handle{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 20px;}
+.sh-mag{font-family:'Orbitron',monospace;font-size:52px;font-weight:900;line-height:1;margin-bottom:6px;}
+.sh-place{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text);line-height:1.4;}
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sg-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.sg-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+.sg-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
+.sh-intensity{margin-bottom:14px;}
+.sh-int-bar{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--orange),var(--red));margin:8px 0;position:relative;}
+.sh-int-marker{position:absolute;top:-4px;width:18px;height:18px;border-radius:50%;background:white;border:3px solid var(--bg);transform:translateX(-50%);}
+.sh-usgs-link{display:block;text-align:center;padding:13px;background:#60a5fa12;border:1px solid #60a5fa30;border-radius:12px;color:var(--blue);font-family:'DM Mono',monospace;font-size:12px;text-decoration:none;letter-spacing:.5px;margin-bottom:8px;}
+.sh-close{width:100%;padding:13px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;}
+
+/* STATUS */
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;}
+.spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
+.status-msg{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+.retry-btn{margin-top:14px;padding:9px 20px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
+
+/* SOURCE */
+.source-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center;line-height:1.7;}
+.source-note a{color:var(--blue);text-decoration:none;}
+
+/* SECTION TITLE */
+.sec-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ANIMATIONS */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes alertPop{from{opacity:0;transform:scale(.92) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes flashText{from{opacity:1}to{opacity:.5}}
+@keyframes fadeNew{0%,60%{opacity:1}100%{opacity:0}}
+@keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SİSMİK<em>NET</em></div>
+  <div class="hright">
+    <span id="timer">—</span>
+    <button class="rbtn" id="rbtn" onclick="manualRefresh()">↻</button>
+    <div class="live-pill"><span class="live-dot"></span>CANLI</div>
+  </div>
+</header>
+
+<!-- ALERT -->
+<div id="alert-overlay">
+  <div class="alert-box">
+    <div class="al-header">
+      <div class="al-title">⚠ BÜYÜK DEPREM</div>
+      <button class="al-close" onclick="closeAlert()">KAPAT</button>
+    </div>
+    <div style="display:flex;align-items:baseline">
+      <div class="al-mag" id="al-mag">—</div>
+      <span class="al-unit">Mw</span>
+    </div>
+    <div class="al-place" id="al-place">—</div>
+    <div class="al-meta" id="al-meta">—</div>
+    <div class="al-tags" id="al-tags"></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="detail-sheet" onclick="closeSheetOut(event)">
+  <div class="sheet-inner">
+    <div class="sheet-handle"></div>
+    <div class="sh-mag" id="sh-mag">—</div>
+    <div class="sh-place" id="sh-place">—</div>
+    <div class="sh-grid" id="sh-grid"></div>
+    <a class="sh-usgs-link" id="sh-link" href="#" target="_blank" rel="noopener">🔗 USGS Olay Sayfası</a>
+    <button class="sh-close" onclick="closeSheet()">Kapat</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE: GLOBAL ═══ -->
+<div class="page active" id="page-global">
+
+  <div class="stats-row">
+    <div class="stat-card green"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">Son 24s</div></div>
+    <div class="stat-card blue"><div class="stat-val" id="wb-m4" style="color:var(--blue)">—</div><div class="stat-lbl">M4+</div></div>
+    <div class="stat-card orange"><div class="stat-val" id="wb-m5" style="color:var(--orange)">—</div><div class="stat-lbl">M5+</div></div>
+    <div class="stat-card red"><div class="stat-val" id="wb-max" style="color:var(--red)">—</div><div class="stat-lbl">Maks</div></div>
+  </div>
+
+  <div class="filter-row">
+    <button class="fbtn active" onclick="setFilter(this,0)">Tümü</button>
+    <button class="fbtn" onclick="setFilter(this,2.5)">M2.5+</button>
+    <button class="fbtn" onclick="setFilter(this,4)">M4+</button>
+    <button class="fbtn" onclick="setFilter(this,5)">M5+</button>
+    <button class="fbtn" onclick="setFilter(this,6)">M6+</button>
+    <button class="fbtn" onclick="setFilter(this,7)">M7+</button>
+  </div>
+
+  <div class="sec-title">En Büyük Olay</div>
+  <div id="featured-wrap">
+    <div class="status-card"><div class="spinner"></div><div class="status-msg">Yükleniyor…</div></div>
+  </div>
+
+  <div class="seismo-card">
+    <div class="card-header">
+      <div class="card-title">Zaman Serisi</div>
+      <div class="card-sub" id="seismo-count">—</div>
+    </div>
+    <canvas id="seismo"></canvas>
+  </div>
+
+  <div class="magdist-card">
+    <div class="card-header">
+      <div class="card-title">Büyüklük Dağılımı</div>
+    </div>
+    <div class="mag-bars" id="mag-bars"></div>
+  </div>
+
+  <div class="sec-title">Deprem Listesi</div>
+  <div id="eq-container">
+    <div class="status-card"><div class="spinner"></div><div class="status-msg">Bağlanılıyor…</div></div>
+  </div>
+
+  <div class="source-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS</a> · 60s güncelleme · M5.5+ uyarı</div>
+</div>
+
+<!-- ═══ PAGE: TURKEY ═══ -->
+<div class="page" id="page-turkey">
+  <div class="turkey-hero">
+    <div class="th-header">
+      <div class="th-title">🇹🇷 TÜRKİYE</div>
+      <div class="th-badge" id="tr-badge">yükleniyor</div>
+    </div>
+    <div class="th-stats">
+      <div class="th-stat"><div class="th-stat-val" id="tr-total">—</div><div class="th-stat-lbl">Son 24s</div></div>
+      <div class="th-stat"><div class="th-stat-val" id="tr-m3">—</div><div class="th-stat-lbl">M3+</div></div>
+      <div class="th-stat"><div class="th-stat-val" id="tr-max">—</div><div class="th-stat-lbl">Maks</div></div>
+    </div>
+  </div>
+  <div class="sec-title">Türkiye Depremleri</div>
+  <div class="turkey-list" id="turkey-list">
+    <div class="status-card"><div class="status-msg">Veriler alınıyor…</div></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: STATS ═══ -->
+<div class="page" id="page-stats">
+
+  <div class="stats-page-card">
+    <div class="card-header"><div class="card-title">Son 24 Saat Özeti</div></div>
+    <div class="big-stat">
+      <div class="big-stat-num" id="st-total">—</div>
+      <div class="big-stat-lbl">Toplam Deprem</div>
+      <div class="trend-row" id="st-trend"></div>
+    </div>
+  </div>
+
+  <div class="stats-page-card">
+    <div class="card-header"><div class="card-title">Bölgesel Dağılım</div></div>
+    <div class="risk-bars" id="region-bars"></div>
+  </div>
+
+  <div class="stats-page-card">
+    <div class="card-header"><div class="card-title">Son Büyük Depremler (M5+)</div></div>
+    <div class="timeline" id="big-timeline"></div>
+  </div>
+
+  <div class="stats-page-card">
+    <div class="card-header"><div class="card-title">Derinlik Analizi</div></div>
+    <div class="risk-bars" id="depth-bars"></div>
+  </div>
+
+</div>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab active" onclick="switchTab('global',this)">
+    <div class="tab-icon">🌍</div>
+    <div class="tab-label">KÜRESEL</div>
+  </div>
+  <div class="tab" onclick="switchTab('turkey',this)">
+    <div class="tab-icon">🇹🇷</div>
+    <div class="tab-label">TÜRKİYE</div>
+  </div>
+  <div class="tab" onclick="switchTab('stats',this)">
+    <div class="tab-icon">📊</div>
+    <div class="tab-label">İSTATİSTİK</div>
+  </div>
+</nav>
+
+<script>
+// ── CONFIG ──
+const REFRESH = 60;
+const ALERT_MAG = 5.5;
+const USGS = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+const TR_URL = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=START&endtime=END&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45&minmagnitude=1.5&orderby=time&limit=30';
+
+// ── STATE ──
+let allQ=[], trQ=[], filterMin=0, seenIds=new Set(), counter=REFRESH, timerInt=null, firstLoad=true, alertQ=[], alertBusy=false;
+
+// ── TABS ──
+function switchTab(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── HELPERS ──
+const mc = m => m<2?'m0':m<3?'m1':m<4?'m2':m<5?'m3':m<6?'m4':'m5';
+const fc = m => m<2?'c0':m<3?'c1':m<4?'c2':m<5?'c3':m<6?'c4':'c5';
+const col = m => m<2?'#00e5a0':m<3?'#22d3ee':m<4?'#fbbf24':m<5?'#f97316':m<6?'#ef4444':'#dc143c';
+const fmtM = m => m!=null?m.toFixed(1):'?';
+const fmtD = d => d!=null?`${d.toFixed(0)} km`:'?';
+function ago(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}dk`;
+  if(s<86400)return`${Math.floor(s/3600)}sa`;return`${Math.floor(s/86400)}g`;
+}
+function tags(p){
+  let h='';
+  if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ</span>`;
+  if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;
+  if(p.felt>100)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;
+  return h;
+}
+
+// ── FETCH ──
+async function fetchData(){
+  try{
+    const r=await fetch(USGS+'?_t='+Date.now());
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    process(j.features);
+    fetchTurkey();
+    startTimer();
+  }catch(e){showErr(e.message);}
+}
+
+async function fetchTurkey(){
+  // Önce global'dan filtrele
+  trQ=allQ.filter(f=>{
+    const c=f.geometry&&f.geometry.coordinates;
+    if(!c)return false;
+    return c[1]>=35&&c[1]<=43&&c[0]>=25&&c[0]<=45;
+  }).sort((a,b)=>b.properties.time-a.properties.time);
+
+  if(trQ.length<3){
+    try{
+      const now=new Date();
+      const s=new Date(now-7*86400000).toISOString().split('.')[0];
+      const e=now.toISOString().split('.')[0];
+      const r=await fetch(TR_URL.replace('START',s).replace('END',e)+'&_t='+Date.now());
+      if(r.ok){const j=await r.json();trQ=j.features;}
+    }catch(_){}
+  }
+  renderTurkey();
+}
+
+// ── PROCESS ──
+function process(features){
+  const newOnes=[];
+  const newIds=new Set();
+  features.forEach(f=>{
+    newIds.add(f.id);
+    if(!firstLoad&&!seenIds.has(f.id))newOnes.push(f);
+  });
+  allQ=features.sort((a,b)=>(b.properties.mag||0)-(a.properties.mag||0));
+  seenIds=newIds;
+  if(!firstLoad){
+    newOnes.filter(f=>(f.properties.mag||0)>=ALERT_MAG)
+      .sort((a,b)=>b.properties.mag-a.properties.mag)
+      .forEach(f=>alertQ.push(f));
+    if(!alertBusy&&alertQ.length)showAlert();
+  }
+  renderWorldBar();renderFeatured();renderSeismo();renderMagDist();renderList();renderStats();
+  firstLoad=false;
+}
+
+// ── WORLD BAR ──
+function renderWorldBar(){
+  const t=allQ.length,m4=allQ.filter(f=>(f.properties.mag||0)>=4).length;
+  const m5=allQ.filter(f=>(f.properties.mag||0)>=5).length;
+  const mx=allQ[0]?.properties.mag||0;
+  document.getElementById('wb-total').textContent=t;
+  document.getElementById('wb-m4').textContent=m4;
+  document.getElementById('wb-m5').textContent=m5;
+  document.getElementById('wb-max').textContent=fmtM(mx);
+}
+
+// ── FEATURED ──
+function renderFeatured(){
+  const w=document.getElementById('featured-wrap');
+  if(!allQ.length){w.innerHTML='<div class="status-card"><div class="status-msg">Veri yok</div></div>';return;}
+  const f=allQ[0],p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
+  const cls=fc(m);
+  w.innerHTML=`
+  <div class="featured ${cls}" onclick="openSheet(${JSON.stringify(f).replace(/"/g,'&quot;')})">
+    <div class="feat-top">
+      <span class="feat-badge ${m>=5?'red':'orange'}">⚡ EN BÜYÜK</span>
+      <span class="feat-time">${ago(p.time)} önce</span>
+    </div>
+    <div class="feat-mag ${cls}">${fmtM(m)}</div>
+    <div class="feat-type">${p.magType||'Mw'} · ${p.net||'us'}</div>
+    <div class="feat-place">${p.place||'Bilinmiyor'}</div>
+    <div class="feat-pills">
+      <span class="pill depth">⬇ ${fmtD(d)}</span>
+      ${p.felt?`<span class="pill felt">👁 ${p.felt}</span>`:''}
+      ${p.tsunami===1?`<span class="pill tsunami">🌊 TSUNAMİ</span>`:''}
+      ${p.cdi?`<span class="pill cdi">CDI ${p.cdi.toFixed(1)}</span>`:''}
+    </div>
+    <div class="feat-bar"><div class="feat-bar-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${col(m)}"></div></div>
+  </div>`;
+  // re-attach click
+  w.querySelector('.featured').onclick=()=>openSheet(f);
+}
+
+// ── SEISMO ──
+function renderSeismo(){
+  const cv=document.getElementById('seismo');
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  if(!allQ.length)return;
+  ctx.clearRect(0,0,W,H);
+  const now=Date.now(),dayAgo=now-86400000;
+  const sorted=[...allQ].sort((a,b)=>a.properties.time-b.properties.time);
+  const maxM=Math.max(...sorted.map(f=>f.properties.mag||0));
+  // grid
+  ctx.strokeStyle='#1a203820';ctx.lineWidth=.5;
+  for(let i=0;i<=4;i++){const y=(H/4)*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  sorted.forEach(f=>{
+    const t=f.properties.time,m=f.properties.mag||0;
+    const x=((t-dayAgo)/86400000)*W;
+    const bH=Math.max(2,((m/(maxM+.5))*(H-6)));
+    ctx.strokeStyle=col(m);ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;
+    ctx.globalAlpha=m>=4?1:.5;
+    ctx.beginPath();ctx.moveTo(x,H);ctx.lineTo(x,H-bH);ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+  document.getElementById('seismo-count').textContent=`${sorted.length} olay`;
+}
+
+// ── MAG DIST ──
+function renderMagDist(){
+  const bands=[
+    {l:'<2',min:0,max:2,c:'#00e5a0'},{l:'2-3',min:2,max:3,c:'#22d3ee'},
+    {l:'3-4',min:3,max:4,c:'#fbbf24'},{l:'4-5',min:4,max:5,c:'#f97316'},
+    {l:'5-6',min:5,max:6,c:'#ef4444'},{l:'6+',min:6,max:99,c:'#dc143c'},
+  ];
+  const counts=bands.map(b=>allQ.filter(f=>{const m=f.properties.mag||0;return m>=b.min&&m<b.max;}).length);
+  const mx=Math.max(...counts,1);
+  document.getElementById('mag-bars').innerHTML=bands.map((b,i)=>`
+    <div class="mbar-wrap">
+      <div class="mbar-cnt">${counts[i]}</div>
+      <div class="mbar" style="height:${(counts[i]/mx)*100}%;background:${b.c};opacity:.85"></div>
+      <div class="mbar-lbl">${b.l}</div>
+    </div>`).join('');
+}
+
+// ── EQ LIST ──
+function renderList(){
+  const box=document.getElementById('eq-container');
+  const filtered=allQ.filter(f=>(f.properties.mag||0)>=filterMin);
+  if(!filtered.length){box.innerHTML=`<div class="status-card"><div class="status-msg">M${filterMin}+ deprem bulunamadı</div></div>`;return;}
+  const show=filtered.slice(0,60);
+  box.innerHTML=`<div class="eq-list">${show.map((f,i)=>{
+    const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
+    const isNew=!firstLoad&&!seenIds.has(f.id);
+    return`<div class="eq-item${isNew?' new-item':''}" data-i="${i}">
+      ${isNew?'<span class="new-badge">YENİ</span>':''}
+      <div class="eq-mag-box ${mc(m)}">${fmtM(m)}</div>
+      <div class="eq-info">
+        <div class="eq-place">${p.place||'Bilinmiyor'}</div>
+        <div class="eq-chips">
+          <span class="chip deep">⬇${fmtD(d)}</span>
+          ${p.felt?`<span class="chip">👁${p.felt}</span>`:''}
+          ${p.tsunami===1?`<span class="chip">🌊</span>`:''}
+          <span class="chip">${p.magType||'Mw'}</span>
+        </div>
+      </div>
+      <div class="eq-right">
+        <span class="eq-time">${ago(p.time)}</span>
+        ${p.alert==='red'?`<div class="alert-dot ad-red"></div>`:p.alert==='orange'?`<div class="alert-dot ad-orange"></div>`:''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  show.forEach((f,i)=>{box.querySelector(`[data-i="${i}"]`).onclick=()=>openSheet(f);});
+}
+
+// ── TURKEY ──
+function renderTurkey(){
+  const now=Date.now(),day=86400000;
+  const today=trQ.filter(f=>now-f.properties.time<day);
+  const m3=today.filter(f=>(f.properties.mag||0)>=3).length;
+  const mx=trQ[0]?.properties.mag||0;
+  document.getElementById('tr-total').textContent=today.length;
+  document.getElementById('tr-m3').textContent=m3;
+  document.getElementById('tr-max').textContent=fmtM(mx);
+  document.getElementById('tr-badge').textContent=`${trQ.length} olay / 7 gün`;
+  const list=document.getElementById('turkey-list');
+  if(!trQ.length){list.innerHTML='<div class="status-card"><div class="status-msg">Veri bulunamadı</div></div>';return;}
+  const show=trQ.slice(0,12);
+  list.innerHTML=show.map((f,i)=>{
+    const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
+    return`<div class="tr-item" data-ti="${i}">
+      <div class="tr-mag" style="color:${col(m)}">${fmtM(m)}</div>
+      <div class="tr-info">
+        <div class="tr-place">${p.place||'Bilinmiyor'}</div>
+        <div class="tr-meta">⬇ ${fmtD(d)} · ${p.magType||'Mw'}</div>
+      </div>
+      <div class="tr-time">${ago(p.time)}</div>
+    </div>`;
+  }).join('');
+  show.forEach((f,i)=>{list.querySelector(`[data-ti="${i}"]`).onclick=()=>openSheet(f);});
+}
+
+// ── STATS PAGE ──
+function renderStats(){
+  if(!allQ.length)return;
+  document.getElementById('st-total').textContent=allQ.length;
+
+  // Regions
+  const regions=[
+    {n:'Pasifik',fn:f=>{const c=f.geometry?.coordinates;return c&&(c[0]<-100||c[0]>140)&&Math.abs(c[1])<60;}},
+    {n:'Asya',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=60&&c[0]<=150&&c[1]>=10&&c[1]<=60;}},
+    {n:'Amerika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-120&&c[0]<=-60;}},
+    {n:'Avrupa/TR',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=20&&c[0]<=50&&c[1]>=35&&c[1]<=50;}},
+    {n:'Afrika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-20&&c[0]<=55&&c[1]>=-35&&c[1]<=37;}},
+    {n:'Diğer',fn:f=>true},
+  ];
+  const rCounts=regions.map(r=>allQ.filter(r.fn).length);
+  const rMax=Math.max(...rCounts,1);
+  const rColors=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#4a5580'];
+  document.getElementById('region-bars').innerHTML=regions.map((r,i)=>`
+    <div class="risk-item">
+      <div class="risk-label">${r.n}</div>
+      <div class="risk-bar-wrap"><div class="risk-bar-fill" style="width:${(rCounts[i]/rMax)*100}%;background:${rColors[i]}"></div></div>
+      <div class="risk-count">${rCounts[i]}</div>
+    </div>`).join('');
+
+  // Big timeline M5+
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6);
+  document.getElementById('big-timeline').innerHTML=big.map((f,i)=>{
+    const p=f.properties,m=p.mag||0;
+    return`<div class="tl-item">
+      <div class="tl-dot" style="background:${col(m)}"></div>
+      <div class="tl-content">
+        <div class="tl-title">M${fmtM(m)} — ${(p.place||'').split(' of ').pop()}</div>
+        <div class="tl-meta">${ago(p.time)} önce · ${p.magType||'Mw'}</div>
+      </div>
+    </div>${i<big.length-1?'<div class="tl-line"></div>':''}`;
+  }).join('');
+
+  // Depth
+  const dBands=[{n:'Sığ (<70km)',min:0,max:70,c:'#ef4444'},{n:'Orta (70-300)',min:70,max:300,c:'#f97316'},{n:'Derin (>300)',min:300,max:9999,c:'#60a5fa'}];
+  const dCounts=dBands.map(b=>allQ.filter(f=>{const c=f.geometry?.coordinates,d=c?c[2]:0;return d>=b.min&&d<b.max;}).length);
+  const dMax=Math.max(...dCounts,1);
+  document.getElementById('depth-bars').innerHTML=dBands.map((b,i)=>`
+    <div class="risk-item">
+      <div class="risk-label" style="font-size:9px">${b.n}</div>
+      <div class="risk-bar-wrap"><div class="risk-bar-fill" style="width:${(dCounts[i]/dMax)*100}%;background:${b.c}"></div></div>
+      <div class="risk-count">${dCounts[i]}</div>
+    </div>`).join('');
+}
+
+// ── DETAIL SHEET ──
+function openSheet(f){
+  const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates;
+  const lon=c?c[0]:null,lat=c?c[1]:null,d=c?c[2]:null;
+  const sh=document.getElementById('sh-mag');
+  sh.textContent=fmtM(m);sh.style.color=col(m);
+  document.getElementById('sh-place').textContent=p.place||'Bilinmiyor';
+  document.getElementById('sh-grid').innerHTML=[
+    {l:'Büyüklük',v:`${fmtM(m)} ${p.magType||'Mw'}`},
+    {l:'Derinlik',v:fmtD(d)},
+    {l:'Enlem',v:lat!=null?lat.toFixed(4)+'°':'—'},
+    {l:'Boylam',v:lon!=null?lon.toFixed(4)+'°':'—'},
+    {l:'Zaman',v:p.time?new Date(p.time).toLocaleString('tr-TR'):'—'},
+    {l:'CDI',v:p.cdi?p.cdi.toFixed(2):'—'},
+    {l:'MMI',v:p.mmi?p.mmi.toFixed(2):'—'},
+    {l:'Hisseden',v:p.felt||'—'},
+    {l:'Tsunami',v:p.tsunami===1?'⚠ Evet':'Hayır'},
+    {l:'PAGER',v:p.alert?p.alert.toUpperCase():'—'},
+  ].map(i=>`<div class="sg-item"><div class="sg-label">${i.l}</div><div class="sg-val">${i.v}</div></div>`).join('');
+  document.getElementById('sh-link').href=p.url||'#';
+  document.getElementById('detail-sheet').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(){document.getElementById('detail-sheet').classList.remove('show');document.body.style.overflow='';}
+function closeSheetOut(e){if(e.target===document.getElementById('detail-sheet'))closeSheet();}
+
+// ── ALERT ──
+function showAlert(){
+  alertBusy=true;
+  const f=alertQ.shift(),p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;
+  document.getElementById('al-mag').textContent=fmtM(p.mag);
+  document.getElementById('al-place').textContent=p.place||'Bilinmiyor';
+  document.getElementById('al-meta').textContent=`Derinlik: ${fmtD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;
+  document.getElementById('al-tags').innerHTML=tags(p);
+  document.getElementById('alert-overlay').classList.add('show');
+  document.body.style.animation='none';
+  requestAnimationFrame(()=>{document.body.style.animation='screenShake .5s ease';});
+  if('vibrate'in navigator)navigator.vibrate([200,100,200,100,400]);
+}
+function closeAlert(){
+  document.getElementById('alert-overlay').classList.remove('show');
+  setTimeout(()=>{if(alertQ.length)showAlert();else alertBusy=false;},800);
+}
+
+// ── FILTER ──
+function setFilter(btn,min){
+  filterMin=min;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderList();
+}
+
+// ── TIMER ──
+function startTimer(){
+  if(timerInt)clearInterval(timerInt);
+  counter=REFRESH;updateTimer();
+  timerInt=setInterval(()=>{counter--;updateTimer();if(counter<=0){clearInterval(timerInt);timerInt=null;fetchData();}},1000);
+}
+function updateTimer(){document.getElementById('timer').textContent=counter+'s';}
+
+function manualRefresh(){
+  const b=document.getElementById('rbtn');b.classList.add('spin');
+  if(timerInt){clearInterval(timerInt);timerInt=null;}
+  fetchData().finally(()=>b.classList.remove('spin'));
+}
+
+function showErr(msg){
+  document.getElementById('featured-wrap').innerHTML=`<div class="status-card"><div class="status-msg">⚠ ${msg}</div><button class="retry-btn" onclick="manualRefresh()">Tekrar Dene</button></div>`;
+}
+
+window.addEventListener('resize',()=>{if(allQ.length)renderSeismo();});
+fetchData();
+</script>
+</body>
+</html>
