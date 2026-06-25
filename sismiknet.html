@@ -10,7 +10,7 @@
 <title>SismikNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script>
-const mf={name:"SismikNet",short_name:"SismikNet",start_url:"./sismiknet.html",display:"standalone",background_color:"#060810",theme_color:"#00e5a0",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#060810"/><circle cx="256" cy="220" r="130" fill="none" stroke="#00e5a0" stroke-width="18"/><circle cx="256" cy="220" r="80" fill="none" stroke="#00e5a040" stroke-width="12"/><circle cx="256" cy="220" r="30" fill="#00e5a0"/><text x="256" y="420" font-family="Arial" font-weight="900" font-size="72" fill="#00e5a0" text-anchor="middle">SİSMİK</text></svg>'),sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
+const mf={name:"SismikNet",short_name:"SismikNet",start_url:"./sismiknet.html",display:"standalone",background_color:"#040608",theme_color:"#00e5a0",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#040608"/><circle cx="256" cy="220" r="130" fill="none" stroke="#00e5a0" stroke-width="18"/><circle cx="256" cy="220" r="80" fill="none" stroke="#00e5a040" stroke-width="12"/><circle cx="256" cy="220" r="30" fill="#00e5a0"/><text x="256" y="420" font-family="Arial" font-weight="900" font-size="72" fill="#00e5a0" text-anchor="middle">SİSMİK</text></svg>'),sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
 const mb=new Blob([JSON.stringify(mf)],{type:"application/manifest+json"});
 const ml=document.createElement("link");ml.rel="manifest";ml.href=URL.createObjectURL(mb);
 document.currentScript.after(ml);
@@ -18,156 +18,158 @@ if("serviceWorker"in navigator){const sw=`self.addEventListener("install",e=>sel
 </script>
 <style>
 :root{
-  --bg:#040608;--surface:#080b14;--card:#0c1018;--card2:#0f1420;
-  --border:#151e30;--border2:#1e2840;
+  --bg:#040608;--surface:#080b14;--card:#0c1018;--card2:#0f1422;
+  --border:#141d30;--border2:#1c2840;
   --green:#00e5a0;--yellow:#fbbf24;--orange:#f97316;
   --red:#ef4444;--crimson:#dc143c;--blue:#60a5fa;
   --cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;
-  --text:#c8d4f0;--muted:#3a4a70;--muted2:#1e2840;
+  --text:#c8d4f0;--muted:#374060;--muted2:#1a2238;
   --tab-h:60px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:var(--tab-h);}
-
-/* ANIMATED GRID BG */
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:linear-gradient(#0d1a2a18 1px,transparent 1px),linear-gradient(90deg,#0d1a2a18 1px,transparent 1px);
-  background-size:32px 32px;pointer-events:none;z-index:0;
-}
-body::after{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at 50% 0%,#00e5a008 0%,transparent 60%);
-  pointer-events:none;z-index:0;
-}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(#0a1525 1px,transparent 1px),linear-gradient(90deg,#0a1525 1px,transparent 1px);background-size:36px 36px;opacity:.25;pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#00e5a006 0%,transparent 60%);pointer-events:none;z-index:0;}
 
 /* HEADER */
-header{
-  position:sticky;top:0;z-index:100;
-  background:#04060afa;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--border);
-  height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
-}
-.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:16px;letter-spacing:3px;color:var(--green);text-shadow:0 0 30px #00e5a040;}
-.logo em{color:#4a6090;font-style:normal;font-weight:400;}
-.hright{display:flex;align-items:center;gap:8px;}
-.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a008;border:1px solid #00e5a025;padding:4px 10px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s ease infinite;}
-#timer{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);min-width:28px;text-align:right;}
-.rbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;}
-.rbtn:hover,.rbtn:active{border-color:var(--green);color:var(--green);}
-.rbtn.spin{animation:spin .5s linear infinite;}
+header{position:sticky;top:0;z-index:100;background:#04060af5;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:15px;letter-spacing:3px;color:var(--green);text-shadow:0 0 24px #00e5a030;}
+.logo em{color:#3a5080;font-style:normal;font-weight:400;}
+.hright{display:flex;align-items:center;gap:6px;}
+.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a008;border:1px solid #00e5a020;padding:4px 9px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.4s ease infinite;}
+#timer{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);min-width:26px;text-align:right;}
+.hbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;flex-shrink:0;}
+.hbtn:active,.hbtn.on{border-color:var(--green);color:var(--green);}
+.hbtn.notif-on{border-color:#fbbf2440;color:var(--yellow);}
+.hbtn.spin{animation:spin .5s linear infinite;}
 
-/* NOTIFY BTN */
-.notif-btn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;}
-.notif-btn.on{border-color:#fbbf2440;color:var(--yellow);}
+/* SEARCH BAR */
+.search-bar{display:none;position:fixed;top:54px;left:0;right:0;z-index:99;background:#04060af8;border-bottom:1px solid var(--border);padding:10px 14px;}
+.search-bar.show{display:block;}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:9px 14px;font-family:'Sora',sans-serif;font-size:14px;outline:none;}
+.search-input:focus{border-color:var(--green);}
+.search-results{margin-top:8px;display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;}
+.sr-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.sr-mag{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;min-width:34px;}
+.sr-place{font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
 
 /* TAB BAR */
-.tab-bar{
-  position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:#04060af0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);
-  height:var(--tab-h);display:flex;align-items:center;
-}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 0;transition:all .2s;}
-.tab-icon{font-size:20px;transition:transform .2s;}
-.tab-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);transition:color .2s;text-transform:uppercase;}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#04060af8;backdrop-filter:blur(20px);border-top:1px solid var(--border);height:var(--tab-h);display:flex;align-items:center;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 0;transition:all .2s;position:relative;}
+.tab-icon{font-size:19px;transition:transform .2s;}
+.tab-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--muted);transition:color .2s;text-transform:uppercase;}
 .tab.active .tab-label{color:var(--green);}
 .tab.active .tab-icon{transform:translateY(-2px);}
-.tab-badge{position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1px solid var(--bg);font-size:0;}
+.tbadge{position:absolute;top:4px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);display:none;}
+.tbadge.show{display:block;}
 
 /* PAGES */
-.page{display:none;position:relative;z-index:1;padding:12px 12px 16px;max-width:480px;margin:0 auto;flex-direction:column;gap:12px;}
+.page{display:none;position:relative;z-index:1;padding:11px 11px 14px;max-width:480px;margin:0 auto;flex-direction:column;gap:11px;}
 .page.active{display:flex;}
+.page.search-open{padding-top:120px;}
 
-/* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
-.card-sm{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px;}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-.card-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.card-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.card-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
 /* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;}
-.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 14px 14px;}
-.stat-card.g::after{background:linear-gradient(90deg,transparent,var(--green),transparent);}
-.stat-card.b::after{background:linear-gradient(90deg,transparent,var(--blue),transparent);}
-.stat-card.o::after{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
-.stat-card.r::after{background:linear-gradient(90deg,transparent,var(--red),transparent);}
-.stat-val{font-family:'Orbitron',monospace;font-size:19px;font-weight:700;line-height:1;}
-.stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:10px 5px;text-align:center;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:99px;}
+.stat-card.g::after{background:var(--green);}
+.stat-card.b::after{background:var(--blue);}
+.stat-card.o::after{background:var(--orange);}
+.stat-card.r::after{background:var(--red);}
+.stat-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;line-height:1;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
 
-/* ACTIVITY SCORE */
-.activity-card{background:linear-gradient(135deg,var(--card),#0a1020);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;}
-.act-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;pointer-events:none;}
-.act-row{display:flex;align-items:center;gap:14px;}
-.act-gauge{position:relative;width:80px;height:80px;flex-shrink:0;}
-.act-gauge svg{width:80px;height:80px;}
+/* NEARBY */
+.nearby-card{background:linear-gradient(135deg,#0a1020,#0c1428);border:1px solid #1a2840;border-radius:15px;padding:13px;position:relative;overflow:hidden;}
+.nearby-glow{position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,#00e5a015,transparent 70%);pointer-events:none;}
+.nearby-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.nearby-content{display:flex;align-items:center;gap:12px;}
+.nearby-mag{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;line-height:1;}
+.nearby-info{flex:1;min-width:0;}
+.nearby-place{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nearby-dist{font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);}
+.nearby-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.nearby-empty{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:8px 0;}
+.gps-btn{background:#00e5a010;border:1px solid #00e5a030;color:var(--green);border-radius:8px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;}
+
+/* ACTIVITY */
+.activity-card{background:linear-gradient(135deg,var(--card),#080e18);border:1px solid var(--border);border-radius:15px;padding:13px;position:relative;overflow:hidden;}
+.act-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;pointer-events:none;transition:background .5s;}
+.act-row{display:flex;align-items:center;gap:13px;}
+.act-gauge{position:relative;width:76px;height:76px;flex-shrink:0;}
+.act-gauge svg{width:76px;height:76px;}
 .act-gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.act-num{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;line-height:1;}
-.act-lbl2{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;}
+.act-num{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;line-height:1;}
+.act-lbl2{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;}
 .act-info{flex:1;}
-.act-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;margin-bottom:6px;}
-.act-desc{font-size:12px;color:var(--muted);line-height:1.5;}
-.act-bars{display:flex;gap:3px;margin-top:8px;align-items:flex-end;height:28px;}
-.act-bar{flex:1;border-radius:2px;min-height:2px;transition:height .4s ease;}
+.act-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;margin-bottom:5px;}
+.act-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.act-bars{display:flex;gap:2px;margin-top:7px;align-items:flex-end;height:24px;}
+.act-bar{flex:1;border-radius:2px;min-height:2px;}
 
 /* FILTER */
-.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:1px 0;}
+.filter-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;}
 .filter-row::-webkit-scrollbar{display:none;}
-.fbtn{flex-shrink:0;padding:6px 13px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;}
-.fbtn.active{background:#00e5a012;border-color:#00e5a050;color:var(--green);}
+.fbtn{flex-shrink:0;padding:6px 12px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.fbtn.active{background:#00e5a010;border-color:#00e5a040;color:var(--green);}
 
 /* FEATURED */
-.featured{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
-.featured:active{border-color:var(--border2);}
-.feat-glow{position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;pointer-events:none;transition:background .5s;}
-.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.feat-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-transform:uppercase;}
-.feat-badge.red{background:#ef444412;border:1px solid #ef444435;color:var(--red);}
-.feat-badge.orange{background:#f9731612;border:1px solid #f9731635;color:var(--orange);}
-.feat-badge.yellow{background:#fbbf2412;border:1px solid #fbbf2435;color:var(--yellow);}
+.featured{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:16px;position:relative;overflow:hidden;cursor:pointer;}
+.feat-glow{position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;pointer-events:none;}
+.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.feat-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 9px;border-radius:5px;text-transform:uppercase;}
+.feat-badge.r{background:#ef444410;border:1px solid #ef444430;color:var(--red);}
+.feat-badge.o{background:#f9731610;border:1px solid #f9731630;color:var(--orange);}
+.feat-badge.y{background:#fbbf2410;border:1px solid #fbbf2430;color:var(--yellow);}
 .feat-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.feat-mag{font-family:'Orbitron',monospace;font-weight:900;line-height:1;margin-bottom:4px;transition:color .5s,text-shadow .5s;}
-.feat-type{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;}
-.feat-place{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px;}
-.feat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;letter-spacing:.5px;}
-.pill.d{background:#60a5fa10;border:1px solid #60a5fa25;color:var(--blue);}
-.pill.f{background:#a78bfa10;border:1px solid #a78bfa25;color:var(--purple);}
-.pill.t{background:#22d3ee10;border:1px solid #22d3ee25;color:var(--cyan);}
-.pill.c{background:#fbbf2410;border:1px solid #fbbf2425;color:var(--yellow);}
-.feat-progress{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
-.feat-progress-fill{height:100%;border-radius:99px;transition:width 1s ease,background .5s;}
+.feat-place{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:11px;}
+.feat-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.pill{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;}
+.pill.d{background:#60a5fa10;border:1px solid #60a5fa20;color:var(--blue);}
+.pill.f{background:#a78bfa10;border:1px solid #a78bfa20;color:var(--purple);}
+.pill.t{background:#22d3ee10;border:1px solid #22d3ee20;color:var(--cyan);}
+.pill.c{background:#fbbf2410;border:1px solid #fbbf2420;color:var(--yellow);}
+.pill.p{background:#f4720010;border:1px solid #f4720030;color:#f47200;}
+.feat-prog{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+.feat-prog-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+
+/* SEISMO LIVE */
+.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 13px;}
+.seismo-live{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.seismo-live-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:blink .8s ease infinite;}
+canvas#seismo{width:100%;height:72px;display:block;border-radius:6px;background:#020406;}
+canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;background:#020406;margin-top:5px;}
 
 /* MAP */
-.map-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative;}
-.map-card svg{display:block;width:100%;height:auto;}
-.map-title{position:absolute;top:10px;left:12px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-.map-count{position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-.eq-dot{cursor:pointer;transition:r .2s;}
-.eq-dot:hover{opacity:.8;}
-.eq-dot.pulse{animation:dotPulse 2s ease infinite;}
-
-/* SEISMO */
-.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;}
-canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:#020406;}
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden;position:relative;}
+.map-overlay{position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;}
+.map-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.map-count{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);}
+#world-map{display:block;width:100%;background:#030608;}
 
 /* MAG DIST */
-.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;}
-.mag-bars{display:flex;align-items:flex-end;gap:5px;height:64px;margin-top:10px;}
+.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 13px;}
+.mag-bars{display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:9px;}
 .mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end;}
 .mbar{width:100%;border-radius:3px 3px 0 0;min-height:2px;transition:height .8s cubic-bezier(.34,1.56,.64,1);}
-.mbar-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;}
-.mbar-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);text-align:center;}
+.mbar-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);text-align:center;}
+.mbar-cnt{font-family:'DM Mono',monospace;font-size:8px;color:var(--text);text-align:center;}
 
 /* EQ LIST */
-.eq-list{display:flex;flex-direction:column;gap:7px;}
-.eq-item{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.eq-list{display:flex;flex-direction:column;gap:6px;}
+.eq-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
 .eq-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
-.eq-item.m5::before{background:var(--crimson);box-shadow:0 0 8px var(--crimson);}
+.eq-item.m5::before,.eq-item.m5{border-color:#dc143c30;}
+.eq-item.m5::before{background:var(--crimson);box-shadow:0 0 6px var(--crimson);}
 .eq-item.m4::before{background:var(--red);}
 .eq-item.m3::before{background:var(--orange);}
 .eq-item.m2::before{background:var(--yellow);}
@@ -175,152 +177,172 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
 .eq-item.m0::before{background:var(--green);}
 .eq-item:active{background:var(--card2);}
 .eq-item.new-item{animation:slideIn .4s ease both;}
-.eq-mag-box{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:14px;font-weight:700;}
-.eq-mag-box.m0{background:#00e5a010;color:var(--green);border:1px solid #00e5a025;}
-.eq-mag-box.m1{background:#22d3ee10;color:var(--cyan);border:1px solid #22d3ee25;}
-.eq-mag-box.m2{background:#fbbf2410;color:var(--yellow);border:1px solid #fbbf2425;}
-.eq-mag-box.m3{background:#f9731610;color:var(--orange);border:1px solid #f9731625;}
-.eq-mag-box.m4{background:#ef444415;color:var(--red);border:1px solid #ef444435;}
-.eq-mag-box.m5{background:#dc143c20;color:#ff2255;border:1px solid #dc143c50;box-shadow:0 0 12px #dc143c20;}
+.eq-mag-box{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;}
+.eq-mag-box.m0{background:#00e5a010;color:var(--green);border:1px solid #00e5a022;}
+.eq-mag-box.m1{background:#22d3ee10;color:var(--cyan);border:1px solid #22d3ee22;}
+.eq-mag-box.m2{background:#fbbf2410;color:var(--yellow);border:1px solid #fbbf2422;}
+.eq-mag-box.m3{background:#f9731610;color:var(--orange);border:1px solid #f9731622;}
+.eq-mag-box.m4{background:#ef444415;color:var(--red);border:1px solid #ef444430;}
+.eq-mag-box.m5{background:#dc143c18;color:#ff2255;border:1px solid #dc143c40;box-shadow:0 0 10px #dc143c18;}
 .eq-info{flex:1;min-width:0;}
-.eq-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
-.eq-chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
-.chip{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 6px;border-radius:4px;}
-.chip.d{color:var(--blue);border-color:#60a5fa20;}
+.eq-place{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.eq-chips{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:1px 5px;border-radius:3px;}
+.chip.d{color:var(--blue);border-color:#60a5fa18;}
 .chip.t{color:var(--cyan);}
-.eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
 .eq-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-.ad{width:7px;height:7px;border-radius:50%;}
-.ad-r{background:var(--red);box-shadow:0 0 5px var(--red);}
+.share-btn{font-size:11px;cursor:pointer;opacity:.5;}
+.share-btn:active{opacity:1;}
+.ad{width:6px;height:6px;border-radius:50%;}
+.ad-r{background:var(--red);box-shadow:0 0 4px var(--red);}
 .ad-o{background:var(--orange);}
-.new-badge{position:absolute;top:7px;right:7px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);background:#00e5a012;border:1px solid #00e5a030;padding:1px 5px;border-radius:4px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
+.new-badge{position:absolute;top:6px;right:6px;font-family:'DM Mono',monospace;font-size:7px;color:var(--green);background:#00e5a010;border:1px solid #00e5a028;padding:1px 4px;border-radius:3px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
 
-/* ── TURKEY PAGE ── */
-.turkey-hero{background:linear-gradient(135deg,#0c0a1e,#120d28);border:1px solid #1e1535;border-radius:18px;padding:16px;}
-.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.th-title{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;color:var(--purple);}
-.th-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:#1e153520;border:1px solid #1e1535;padding:3px 9px;border-radius:6px;}
-.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
-.th-stat{background:#16102a;border:1px solid #201540;border-radius:11px;padding:10px;text-align:center;}
-.th-stat-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--purple);}
-.th-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
-
-/* Turkey risk bar */
-.risk-strip{display:flex;height:6px;border-radius:99px;overflow:hidden;margin-top:10px;gap:2px;}
+/* TURKEY PAGE */
+.turkey-hero{background:linear-gradient(135deg,#0b0920,#100c28);border:1px solid #1a1238;border-radius:17px;padding:15px;}
+.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.th-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);}
+.th-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:#1a123820;border:1px solid #1a1238;padding:2px 8px;border-radius:5px;}
+.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
+.th-stat{background:#140f28;border:1px solid #1e1440;border-radius:10px;padding:9px;text-align:center;}
+.th-stat-val{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:var(--purple);}
+.th-stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
+.risk-strip{display:flex;height:5px;border-radius:99px;overflow:hidden;gap:1px;}
 .risk-seg{flex:1;border-radius:3px;}
 
-.turkey-list{display:flex;flex-direction:column;gap:7px;}
-.tr-item{background:#0e0a1e;border:1px solid #1a1035;border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden;}
-.tr-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
-.tr-item:active{background:#120d26;}
-.tr-mag{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;min-width:38px;text-align:center;}
+/* PAGER CARD */
+.pager-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;}
+.pager-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.pager-row{display:flex;gap:8px;}
+.pager-item{flex:1;border-radius:9px;padding:10px 8px;text-align:center;border:1px solid;}
+.pager-num{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;line-height:1;}
+.pager-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px;}
+.pager-item.green{background:#00e5a010;border-color:#00e5a030;}
+.pager-item.yellow{background:#fbbf2410;border-color:#fbbf2430;}
+.pager-item.orange{background:#f9731610;border-color:#f9731630;}
+.pager-item.red{background:#ef444415;border-color:#ef444435;}
+
+.turkey-list{display:flex;flex-direction:column;gap:6px;}
+.tr-item{background:#0b0920;border:1px solid #180f35;border-left:3px solid;border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;}
+.tr-item:active{background:#110d28;}
+.tr-mag{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;min-width:36px;text-align:center;}
 .tr-info{flex:1;min-width:0;}
 .tr-place{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
-.tr-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.tr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;}
+.tr-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.tr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.tr-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
-/* ── STATS PAGE ── */
-.report-card{background:linear-gradient(135deg,var(--card),#080e18);border:1px solid var(--border);border-radius:16px;padding:16px;}
-.report-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
-.report-text{font-size:13px;line-height:1.7;color:var(--text);}
+/* ALERT SETTINGS */
+.alert-settings{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;}
+.as-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.as-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.as-row:last-child{border:none;padding-bottom:0;}
+.as-label{font-size:12px;color:var(--text);}
+.as-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--border2);border:none;cursor:pointer;position:relative;transition:background .2s;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 3px #0006;}
+.toggle.on::after{left:21px;}
+.mag-slider{width:100%;accent-color:var(--green);margin-top:4px;}
+
+/* STATS PAGE */
+.report-card{background:linear-gradient(135deg,var(--card),#060e16);border:1px solid var(--border);border-radius:15px;padding:14px;}
+.report-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;}
+.report-text{font-size:12px;line-height:1.7;color:var(--text);}
 .report-text strong{color:var(--green);}
 .report-text .warn{color:var(--orange);}
 .report-text .danger{color:var(--red);}
 
-.big-num-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.big-num-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;}
-.big-num{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;line-height:1;}
-.big-num-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase;}
-.big-num-sub{font-family:'DM Mono',monospace;font-size:10px;margin-top:3px;}
+.big-num-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.big-num-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px;text-align:center;}
+.big-num{font-family:'Orbitron',monospace;font-size:34px;font-weight:900;line-height:1;}
+.big-num-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:4px;letter-spacing:1.5px;text-transform:uppercase;}
+.big-num-sub{font-family:'DM Mono',monospace;font-size:9px;margin-top:3px;}
 
-.region-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
-.region-bars{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-.rb-item{display:flex;align-items:center;gap:10px;}
-.rb-name{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:72px;flex-shrink:0;}
-.rb-wrap{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.region-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
+.rb-items{display:flex;flex-direction:column;gap:7px;margin-top:9px;}
+.rb-item{display:flex;align-items:center;gap:9px;}
+.rb-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:68px;flex-shrink:0;}
+.rb-wrap{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
 .rb-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
-.rb-cnt{font-family:'DM Mono',monospace;font-size:10px;color:var(--text);min-width:24px;text-align:right;}
+.rb-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);min-width:22px;text-align:right;}
 
-.timeline-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
-.tl{display:flex;flex-direction:column;gap:0;margin-top:10px;}
-.tl-item{display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;position:relative;}
+.tl-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
+.tl{display:flex;flex-direction:column;margin-top:9px;}
+.tl-item{display:flex;gap:10px;align-items:flex-start;padding-bottom:10px;position:relative;}
 .tl-item:last-child{padding-bottom:0;}
-.tl-item::before{content:'';position:absolute;left:4px;top:18px;bottom:0;width:1px;background:var(--border);}
+.tl-item::before{content:'';position:absolute;left:4px;top:16px;bottom:0;width:1px;background:var(--border);}
 .tl-item:last-child::before{display:none;}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--bg);}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--bg);}
 .tl-body{flex:1;}
-.tl-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
-.tl-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.tl-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.tl-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
-.depth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
-
-/* ALERT */
-#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#00000099;backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding-top:60px;}
+/* ALERT OVERLAY */
+#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#000000aa;backdrop-filter:blur(12px);align-items:flex-start;justify-content:center;padding-top:58px;}
 #alert-overlay.show{display:flex;}
-.alert-box{width:calc(100% - 24px);max-width:440px;background:linear-gradient(135deg,#1a0510,#220818);border:2px solid var(--red);border-radius:22px;padding:22px;animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;box-shadow:0 0 100px #ef444425,0 30px 60px #00000080;}
-.al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:11px;color:var(--red);letter-spacing:2px;animation:flashText .5s infinite alternate;}
-.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
-.al-mag-row{display:flex;align-items:baseline;gap:6px;margin-bottom:10px;}
-.al-mag{font-family:'Orbitron',monospace;font-size:68px;font-weight:900;color:var(--red);text-shadow:0 0 50px #ef444455;line-height:1;}
-.al-unit{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);}
-.al-place{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.4;}
-.al-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
-.al-tags{display:flex;gap:8px;flex-wrap:wrap;}
-.atag{padding:4px 10px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;}
+.alert-box{width:calc(100% - 22px);max-width:440px;background:linear-gradient(135deg,#180410,#200616);border:2px solid var(--red);border-radius:22px;padding:20px;animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;box-shadow:0 0 80px #ef444420,0 24px 50px #00000088;position:relative;overflow:hidden;}
+.al-rings{position:absolute;top:28px;right:28px;width:70px;height:70px;pointer-events:none;}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef444428;animation:ringExpand 2s ease infinite;}
+.ring:nth-child(2){animation-delay:.65s;}
+.ring:nth-child(3){animation-delay:1.3s;}
+.al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:10px;color:var(--red);letter-spacing:2px;animation:flashText .5s infinite alternate;}
+.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:4px 10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
+.al-mag-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+.al-mag{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;color:var(--red);text-shadow:0 0 40px #ef444450;line-height:1;}
+.al-unit{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+.al-place{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4;}
+.al-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:12px;}
+.al-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.atag{padding:3px 9px;border-radius:5px;font-family:'DM Mono',monospace;font-size:10px;}
 .atag.tsunami{background:#1e3a5f;border:1px solid #3b82f6;color:var(--blue);}
 .atag.pager-red{background:#3b0a0a;border:1px solid var(--red);color:var(--red);}
 .atag.felt{background:#1e1e3b;border:1px solid var(--purple);color:var(--purple);}
-/* Shockwave rings */
-.al-rings{position:absolute;top:32px;right:32px;width:80px;height:80px;pointer-events:none;}
-.ring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef444430;animation:ringExpand 2s ease infinite;}
-.ring:nth-child(2){animation-delay:.6s;}
-.ring:nth-child(3){animation-delay:1.2s;}
+.al-share-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:9px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;}
 
 /* DETAIL SHEET */
-#detail-sheet{display:none;position:fixed;inset:0;z-index:200;background:#00000099;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
+#detail-sheet{display:none;position:fixed;inset:0;z-index:200;background:#000000aa;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
 #detail-sheet.show{display:flex;}
-.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:14px 16px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:86vh;overflow-y:auto;}
-.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 18px;}
-.sh-mag{font-family:'Orbitron',monospace;font-size:50px;font-weight:900;line-height:1;margin-bottom:5px;}
-.sh-place{font-size:16px;font-weight:600;margin-bottom:14px;color:var(--text);line-height:1.4;}
-.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
-.sg{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 11px;}
-.sg-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
-.sg-v{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text);}
-/* Cities distance */
-.sh-cities{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;}
-.sh-cities-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
-.city-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:22px 22px 0 0;padding:13px 15px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:88vh;overflow-y:auto;}
+.sheet-handle{width:34px;height:3px;background:var(--border2);border-radius:99px;margin:0 auto 16px;}
+.sh-mag{font-family:'Orbitron',monospace;font-size:48px;font-weight:900;line-height:1;margin-bottom:4px;}
+.sh-place{font-size:15px;font-weight:600;margin-bottom:13px;color:var(--text);line-height:1.4;}
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px;}
+.sg{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 10px;}
+.sg-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.sg-v{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text);}
+.sh-cities{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:10px;}
+.sh-cities-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:7px;}
+.city-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
 .city-row:last-child{border:none;}
-.city-name{font-size:12px;color:var(--text);}
-.city-dist{font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);}
-.sh-link{display:block;text-align:center;padding:12px;background:#60a5fa10;border:1px solid #60a5fa25;border-radius:11px;color:var(--blue);font-family:'DM Mono',monospace;font-size:12px;text-decoration:none;letter-spacing:.5px;margin-bottom:8px;}
-.sh-close{width:100%;padding:13px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:11px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;}
+.city-name{font-size:11px;color:var(--text);}
+.city-dist{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);}
+.sh-share-btn{width:100%;padding:11px;background:#00e5a010;border:1px solid #00e5a030;color:var(--green);border-radius:10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;margin-bottom:7px;}
+.sh-link{display:block;text-align:center;padding:11px;background:#60a5fa10;border:1px solid #60a5fa22;border-radius:10px;color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;text-decoration:none;letter-spacing:.5px;margin-bottom:7px;}
+.sh-close{width:100%;padding:11px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;}
 
 /* STATUS */
-.status-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;}
-.spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:26px;text-align:center;}
+.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 11px;}
 .status-msg{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.retry-btn{margin-top:12px;padding:8px 18px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
-
-.sec-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.retry-btn{margin-top:10px;padding:7px 16px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:7px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
+.sec-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px;}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
-.source-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center;line-height:1.7;}
-.source-note a{color:#2a4070;text-decoration:none;}
+.src-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);text-align:center;line-height:1.7;}
+.src-note a{color:#243560;text-decoration:none;}
 
 /* ANIMATIONS */
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes alertPop{from{opacity:0;transform:scale(.9) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes alertPop{from{opacity:0;transform:scale(.88) translateY(-14px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
-@keyframes flashText{from{opacity:1}to{opacity:.4}}
+@keyframes flashText{from{opacity:1}to{opacity:.3}}
 @keyframes fadeNew{0%,60%{opacity:1}100%{opacity:0}}
 @keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@keyframes dotPulse{0%,100%{opacity:1;r:attr(r)}50%{opacity:.5}}
-@keyframes ringExpand{0%{transform:scale(.3);opacity:.8}100%{transform:scale(2.5);opacity:0}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ringExpand{0%{transform:scale(.2);opacity:.9}100%{transform:scale(3);opacity:0}}
 </style>
 </head>
 <body>
@@ -329,27 +351,32 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
   <div class="logo">SİSMİK<em>NET</em></div>
   <div class="hright">
     <span id="timer">—</span>
-    <button class="notif-btn" id="notif-btn" onclick="toggleNotif()" title="Bildirimler">🔔</button>
-    <button class="rbtn" id="rbtn" onclick="manualRefresh()">↻</button>
+    <button class="hbtn" id="search-btn" onclick="toggleSearch()" title="Ara">🔍</button>
+    <button class="hbtn" id="notif-btn" onclick="toggleNotif()" title="Bildirim">🔔</button>
+    <button class="hbtn" id="rbtn" onclick="manualRefresh()">↻</button>
     <div class="live-pill"><span class="live-dot"></span>CANLI</div>
   </div>
 </header>
 
+<!-- SEARCH -->
+<div class="search-bar" id="search-bar">
+  <input class="search-input" id="search-input" placeholder="Yer adı ara… (örn: Turkey, Japan, İzmir)" oninput="doSearch(this.value)">
+  <div class="search-results" id="search-results"></div>
+</div>
+
 <!-- ALERT -->
 <div id="alert-overlay">
-  <div class="alert-box" style="position:relative">
+  <div class="alert-box">
     <div class="al-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
     <div class="al-header">
-      <div class="al-title">⚠ BÜYÜK DEPREM</div>
+      <div class="al-title">⚠ BÜYÜK DEPREM TESPİT EDİLDİ</div>
       <button class="al-close" onclick="closeAlert()">KAPAT</button>
     </div>
-    <div class="al-mag-row">
-      <div class="al-mag" id="al-mag">—</div>
-      <span class="al-unit">Mw</span>
-    </div>
+    <div class="al-mag-row"><div class="al-mag" id="al-mag">—</div><span class="al-unit">Mw</span></div>
     <div class="al-place" id="al-place">—</div>
     <div class="al-meta" id="al-meta">—</div>
     <div class="al-tags" id="al-tags"></div>
+    <button class="al-share-btn" id="al-share" onclick="shareAlert()">📤 Paylaş</button>
   </div>
 </div>
 
@@ -361,9 +388,10 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
     <div class="sh-place" id="sh-place">—</div>
     <div class="sh-grid" id="sh-grid"></div>
     <div class="sh-cities" id="sh-cities" style="display:none">
-      <div class="sh-cities-title">Türk Şehirlerine Mesafe</div>
+      <div class="sh-cities-title">🇹🇷 Türk Şehirlerine Mesafe</div>
       <div id="sh-cities-list"></div>
     </div>
+    <button class="sh-share-btn" onclick="shareCurrentQuake()">📤 Depremi Paylaş</button>
     <a class="sh-link" id="sh-link" href="#" target="_blank" rel="noopener">🔗 USGS Olay Sayfası</a>
     <button class="sh-close" onclick="closeSheet()">Kapat</button>
   </div>
@@ -371,12 +399,23 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
 
 <!-- PAGE: GLOBAL -->
 <div class="page active" id="page-global">
-
   <div class="stats-row">
-    <div class="stat-card g"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">24s</div></div>
+    <div class="stat-card g"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">24 Saat</div></div>
     <div class="stat-card b"><div class="stat-val" id="wb-m4" style="color:var(--blue)">—</div><div class="stat-lbl">M4+</div></div>
     <div class="stat-card o"><div class="stat-val" id="wb-m5" style="color:var(--orange)">—</div><div class="stat-lbl">M5+</div></div>
     <div class="stat-card r"><div class="stat-val" id="wb-max" style="color:var(--red)">—</div><div class="stat-lbl">Maks</div></div>
+  </div>
+
+  <!-- NEARBY -->
+  <div class="nearby-card" id="nearby-card">
+    <div class="nearby-glow"></div>
+    <div class="nearby-label">📍 KONUMUNUZA EN YAKIN DEPREM</div>
+    <div id="nearby-content">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="nearby-empty">Konum izni gerekiyor</div>
+        <button class="gps-btn" onclick="requestLocation()">📡 Konumu Al</button>
+      </div>
+    </div>
   </div>
 
   <!-- ACTIVITY SCORE -->
@@ -384,11 +423,9 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
     <div class="act-glow" id="act-glow"></div>
     <div class="act-row">
       <div class="act-gauge">
-        <svg viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="32" fill="none" stroke="#1a2035" stroke-width="6"/>
-          <circle cx="40" cy="40" r="32" fill="none" stroke-width="6" stroke-linecap="round"
-            stroke-dasharray="201" stroke-dashoffset="201"
-            id="gauge-circle" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease,stroke .5s;"/>
+        <svg viewBox="0 0 76 76">
+          <circle cx="38" cy="38" r="30" fill="none" stroke="#141d30" stroke-width="6"/>
+          <circle cx="38" cy="38" r="30" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="188" id="gauge-circle" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease,stroke .5s;"/>
         </svg>
         <div class="act-gauge-val">
           <div class="act-num" id="act-score">—</div>
@@ -397,7 +434,7 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
       </div>
       <div class="act-info">
         <div class="act-title" id="act-level" style="color:var(--green)">YÜKLENİYOR</div>
-        <div class="act-desc" id="act-desc">Sismik aktivite analiz ediliyor…</div>
+        <div class="act-desc" id="act-desc">Analiz ediliyor…</div>
         <div class="act-bars" id="act-bars"></div>
       </div>
     </div>
@@ -413,15 +450,14 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
   </div>
 
   <div class="sec-title">En Büyük Olay</div>
-  <div id="featured-wrap">
-    <div class="status-card"><div class="spinner"></div><div class="status-msg">Yükleniyor…</div></div>
-  </div>
+  <div id="featured-wrap"><div class="status-card"><div class="spinner"></div><div class="status-msg">Yükleniyor…</div></div></div>
 
-  <!-- WORLD MAP -->
-  <div class="map-card" id="map-card">
-    <div class="map-title">KÜRESEL AKTİVİTE HARİTASI</div>
-    <div class="map-count" id="map-count">—</div>
-    <svg id="world-map" viewBox="0 0 800 400" style="background:#040810;"></svg>
+  <div class="map-card">
+    <div class="map-overlay">
+      <div class="map-title">KÜRESEL AKTİVİTE HARİTASI</div>
+      <div class="map-count" id="map-count">—</div>
+    </div>
+    <svg id="world-map" viewBox="0 0 800 400"></svg>
   </div>
 
   <div class="seismo-card">
@@ -430,6 +466,11 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
       <div class="card-sub" id="seismo-count">—</div>
     </div>
     <canvas id="seismo"></canvas>
+    <div class="seismo-live" style="margin-top:8px">
+      <div class="seismo-live-dot"></div>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px">CANLI SİSMOGRAF</span>
+    </div>
+    <canvas id="seismo-live"></canvas>
   </div>
 
   <div class="magdist-card">
@@ -438,11 +479,8 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
   </div>
 
   <div class="sec-title">Deprem Listesi</div>
-  <div id="eq-container">
-    <div class="status-card"><div class="spinner"></div><div class="status-msg">Bağlanılıyor…</div></div>
-  </div>
-
-  <div class="source-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS Earthquake Hazards Program</a> · 60s güncelleme</div>
+  <div id="eq-container"><div class="status-card"><div class="spinner"></div><div class="status-msg">Bağlanılıyor…</div></div></div>
+  <div class="src-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS Earthquake Hazards Program</a> · 60s güncelleme · M5.5+ otomatik uyarı</div>
 </div>
 
 <!-- PAGE: TURKEY -->
@@ -459,83 +497,83 @@ canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:
     </div>
     <div class="risk-strip" id="tr-risk-strip"></div>
   </div>
-  <div class="sec-title">Türkiye Depremleri</div>
-  <div class="turkey-list" id="turkey-list">
-    <div class="status-card"><div class="status-msg">Veriler alınıyor…</div></div>
+
+  <div class="pager-card" id="pager-card" style="display:none">
+    <div class="pager-title">📊 PAGER Kayıp Tahmini (Son Büyük Olay)</div>
+    <div class="pager-row">
+      <div class="pager-item green"><div class="pager-num" id="pager-g" style="color:var(--green)">—</div><div class="pager-lbl">Yeşil</div></div>
+      <div class="pager-item yellow"><div class="pager-num" id="pager-y" style="color:var(--yellow)">—</div><div class="pager-lbl">Sarı</div></div>
+      <div class="pager-item orange"><div class="pager-num" id="pager-o" style="color:var(--orange)">—</div><div class="pager-lbl">Turuncu</div></div>
+      <div class="pager-item red"><div class="pager-num" id="pager-r" style="color:var(--red)">—</div><div class="pager-lbl">Kırmızı</div></div>
+    </div>
   </div>
+
+  <div class="alert-settings">
+    <div class="as-title">⚙️ Uyarı Ayarları</div>
+    <div class="as-row">
+      <div><div class="as-label">Bildirim Al</div><div class="as-sub">Deprem uyarılarını bildir</div></div>
+      <button class="toggle" id="notif-toggle" onclick="toggleNotifFromSettings()"></button>
+    </div>
+    <div class="as-row">
+      <div><div class="as-label">Sadece Türkiye</div><div class="as-sub">Yalnızca TR bölgesi uyarıları</div></div>
+      <button class="toggle" id="tr-only-toggle" onclick="toggleTrOnly()"></button>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-label">Min. Büyüklük: <span id="mag-thresh-val" style="color:var(--green)">M5.5</span></div>
+        <div class="as-sub">Bu değer ve üzeri uyarı gönder</div>
+      </div>
+    </div>
+    <input type="range" class="mag-slider" min="2" max="8" step="0.5" value="5.5" oninput="updateMagThresh(this.value)">
+  </div>
+
+  <div class="sec-title">Türkiye Depremleri</div>
+  <div class="turkey-list" id="turkey-list"><div class="status-card"><div class="status-msg">Veriler alınıyor…</div></div></div>
 </div>
 
 <!-- PAGE: STATS -->
 <div class="page" id="page-stats">
-
   <div class="report-card">
     <div class="report-title">📊 Otomatik Analiz Raporu</div>
     <div class="report-text" id="report-text">Veriler analiz ediliyor…</div>
   </div>
-
   <div class="big-num-row">
-    <div class="big-num-card">
-      <div class="big-num" id="st-total" style="color:var(--green)">—</div>
-      <div class="big-num-lbl">Toplam 24s</div>
-      <div class="big-num-sub" id="st-rate" style="color:var(--muted)">—</div>
-    </div>
-    <div class="big-num-card">
-      <div class="big-num" id="st-max" style="color:var(--red)">—</div>
-      <div class="big-num-lbl">Maks Büyüklük</div>
-      <div class="big-num-sub" id="st-max-loc" style="color:var(--muted)">—</div>
-    </div>
+    <div class="big-num-card"><div class="big-num" id="st-total" style="color:var(--green)">—</div><div class="big-num-lbl">Toplam 24s</div><div class="big-num-sub" id="st-rate" style="color:var(--muted)">—</div></div>
+    <div class="big-num-card"><div class="big-num" id="st-max" style="color:var(--red)">—</div><div class="big-num-lbl">Maks Büyüklük</div><div class="big-num-sub" id="st-max-loc" style="color:var(--muted)">—</div></div>
   </div>
-
   <div class="region-card">
     <div class="card-header"><div class="card-title">Bölgesel Dağılım</div></div>
-    <div class="region-bars" id="region-bars"></div>
+    <div class="rb-items" id="region-bars"></div>
   </div>
-
-  <div class="timeline-card">
+  <div class="tl-card">
     <div class="card-header"><div class="card-title">Son Büyük Depremler M5+</div></div>
     <div class="tl" id="big-tl"></div>
   </div>
-
-  <div class="depth-card">
+  <div class="region-card">
     <div class="card-header"><div class="card-title">Derinlik Dağılımı</div></div>
-    <div class="region-bars" id="depth-bars"></div>
+    <div class="rb-items" id="depth-bars"></div>
   </div>
-
 </div>
 
 <!-- TAB BAR -->
 <nav class="tab-bar">
-  <div class="tab active" onclick="switchTab('global',this)">
-    <div class="tab-icon">🌍</div>
-    <div class="tab-label">Küresel</div>
-  </div>
-  <div class="tab" onclick="switchTab('turkey',this)" id="tab-turkey">
-    <div class="tab-icon" style="position:relative">🇹🇷<span class="tab-badge" id="tr-badge-dot" style="display:none"></span></div>
-    <div class="tab-label">Türkiye</div>
-  </div>
-  <div class="tab" onclick="switchTab('stats',this)">
-    <div class="tab-icon">📊</div>
-    <div class="tab-label">İstatistik</div>
-  </div>
+  <div class="tab active" onclick="switchTab('global',this)"><div class="tab-icon">🌍</div><div class="tab-label">Küresel</div></div>
+  <div class="tab" onclick="switchTab('turkey',this)"><div class="tab-icon" style="position:relative">🇹🇷<span class="tbadge" id="tr-tbadge"></span></div><div class="tab-label">Türkiye</div></div>
+  <div class="tab" onclick="switchTab('stats',this)"><div class="tab-icon">📊</div><div class="tab-label">İstatistik</div></div>
 </nav>
 
 <script>
 // ── CONFIG ──
-const REFRESH=60, ALERT_MAG=5.5;
+const REFRESH=60;
+let ALERT_MAG=5.5, TR_ONLY=false, NOTIF_ON=false;
 const USGS='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
 const TR_API='https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=30&maxlatitude=46&minlongitude=20&maxlongitude=50&minmagnitude=1.5&orderby=time&limit=50';
-
-// Turkish cities for distance calc
-const TR_CITIES=[
-  {n:'İstanbul',lat:41.01,lon:28.97},
-  {n:'İzmir',lat:38.42,lon:27.14},
-  {n:'Ankara',lat:39.93,lon:32.86},
-  {n:'Antalya',lat:36.90,lon:30.70},
-  {n:'Bursa',lat:40.19,lon:29.06},
-];
+const TR_CITIES=[{n:'İstanbul',lat:41.01,lon:28.97},{n:'İzmir',lat:38.42,lon:27.14},{n:'Ankara',lat:39.93,lon:32.86},{n:'Antalya',lat:36.90,lon:30.70},{n:'Bursa',lat:40.19,lon:29.06},{n:'Adana',lat:37.00,lon:35.32},{n:'Gaziantep',lat:37.07,lon:37.38}];
 
 // ── STATE ──
-let allQ=[],trQ=[],filterMin=0,seenIds=new Set(),counter=REFRESH,timerInt=null,firstLoad=true,alertQ=[],alertBusy=false,notifOn=false;
+let allQ=[],trQ=[],filterMin=0,seenIds=new Set(),counter=REFRESH,timerInt=null,firstLoad=true,alertQ=[],alertBusy=false;
+let userLat=null,userLon=null,currentQuake=null,alertQuake=null;
+let livePhase=0,liveAnim=null;
 
 // ── TABS ──
 function switchTab(n,el){
@@ -544,31 +582,68 @@ function switchTab(n,el){
   document.getElementById('page-'+n).classList.add('active');
   el.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  if(n==='global')renderSeismo();
+  if(n==='global'){renderSeismo();startLiveSeismo();}
 }
 
 // ── HELPERS ──
 const mc=m=>m<2?'m0':m<3?'m1':m<4?'m2':m<5?'m3':m<6?'m4':'m5';
-const fc=m=>m<2?'c0':m<3?'c1':m<4?'c2':m<5?'c3':m<6?'c4':'c5';
 const col=m=>m<2?'#00e5a0':m<3?'#22d3ee':m<4?'#fbbf24':m<5?'#f97316':m<6?'#ef4444':'#dc143c';
 const fM=m=>m!=null?m.toFixed(1):'?';
 const fD=d=>d!=null?`${d.toFixed(0)} km`:'?';
-function ago(ts){
-  const s=Math.floor((Date.now()-ts)/1000);
-  if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}dk`;
-  if(s<86400)return`${Math.floor(s/3600)}sa`;return`${Math.floor(s/86400)}g`;
+function ago(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}dk`;if(s<86400)return`${Math.floor(s/3600)}sa`;return`${Math.floor(s/86400)}g`;}
+function dist(la1,lo1,la2,lo2){const R=6371,dL=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
+function buildTags(p){let h='';if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ UYARISI</span>`;if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;if(p.felt>50)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;return h;}
+function shareText(q){const p=q.properties,m=p.mag||0,c=q.geometry?.coordinates;return `🔴 M${fM(m)} DEPREM\n📍 ${p.place||'Bilinmiyor'}\n⬇ Derinlik: ${fD(c?c[2]:null)}\n🕐 ${new Date(p.time).toLocaleString('tr-TR')}\n📡 USGS: ${p.url||''}\n\nSismikNet ile izle`;}
+
+// ── SEARCH ──
+let searchOpen=false;
+function toggleSearch(){
+  searchOpen=!searchOpen;
+  document.getElementById('search-bar').classList.toggle('show',searchOpen);
+  document.getElementById('page-global').classList.toggle('search-open',searchOpen);
+  if(searchOpen)document.getElementById('search-input').focus();
+  else{document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='';}
 }
-function dist(lat1,lon1,lat2,lon2){
-  const R=6371,dL=(lat2-lat1)*Math.PI/180,dLo=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLo/2)**2;
-  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+function doSearch(q){
+  const box=document.getElementById('search-results');
+  if(!q||q.length<2){box.innerHTML='';return;}
+  const results=allQ.filter(f=>(f.properties.place||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  if(!results.length){box.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);padding:8px">Sonuç bulunamadı</div>`;return;}
+  box.innerHTML=results.map((f,i)=>`<div class="sr-item" data-si="${i}"><div class="sr-mag" style="color:${col(f.properties.mag||0)}">${fM(f.properties.mag)}</div><div class="sr-place">${f.properties.place||'—'}</div><div class="sr-time">${ago(f.properties.time)}</div></div>`).join('');
+  results.forEach((f,i)=>{box.querySelector(`[data-si="${i}"]`).onclick=()=>{toggleSearch();openSheet(f);}});
 }
-function buildTags(p){
-  let h='';
-  if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ</span>`;
-  if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;
-  if(p.felt>50)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;
-  return h;
+
+// ── LOCATION ──
+function requestLocation(){
+  if(!navigator.geolocation){document.getElementById('nearby-content').innerHTML='<div class="nearby-empty">Konum desteklenmiyor</div>';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLat=pos.coords.latitude;userLon=pos.coords.longitude;
+    renderNearby();
+  },err=>{document.getElementById('nearby-content').innerHTML='<div class="nearby-empty">Konum izni reddedildi</div>';});
+}
+function renderNearby(){
+  const box=document.getElementById('nearby-content');
+  if(userLat===null||!allQ.length){
+    box.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between"><div class="nearby-empty">Konum izni gerekiyor</div><button class="gps-btn" onclick="requestLocation()">📡 Konumu Al</button></div>`;
+    return;
+  }
+  const withDist=allQ.map(f=>{const c=f.geometry?.coordinates;if(!c)return null;return{f,d:dist(userLat,userLon,c[1],c[0])};}).filter(Boolean).sort((a,b)=>a.d-b.d);
+  if(!withDist.length){box.innerHTML='<div class="nearby-empty">Yakında deprem yok</div>';return;}
+  const {f,d}=withDist[0];const p=f.properties,m=p.mag||0;
+  box.innerHTML=`<div class="nearby-content" onclick="openSheet(window._nearbyQ)" style="cursor:pointer">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="nearby-mag" style="color:${col(m)}">${fM(m)}</div>
+      <div class="nearby-info">
+        <div class="nearby-place">${p.place||'Bilinmiyor'}</div>
+        <div class="nearby-dist">📍 ${d} km uzakta</div>
+        <div class="nearby-time">${ago(p.time)} önce</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+        <button class="gps-btn" onclick="event.stopPropagation();requestLocation()" style="font-size:9px;padding:3px 7px">↻</button>
+      </div>
+    </div>
+  </div>`;
+  window._nearbyQ=f;
 }
 
 // ── FETCH ──
@@ -582,15 +657,9 @@ async function fetchData(){
     startTimer();
   }catch(e){showErr(e.message);}
 }
-
 async function fetchTurkey(){
-  try{
-    const r=await fetch(TR_API);
-    if(r.ok){const j=await r.json();if(j.features&&j.features.length){trQ=j.features;}}
-  }catch(_){}
-  if(!trQ.length){
-    trQ=allQ.filter(f=>{const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;});
-  }
+  try{const r=await fetch(TR_API);if(r.ok){const j=await r.json();if(j.features?.length)trQ=j.features;}}catch(_){}
+  if(!trQ.length)trQ=allQ.filter(f=>{const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;});
   trQ.sort((a,b)=>b.properties.time-a.properties.time);
   renderTurkey();
 }
@@ -602,10 +671,17 @@ function process(features){
   allQ=features.sort((a,b)=>(b.properties.mag||0)-(a.properties.mag||0));
   seenIds=newIds;
   if(!firstLoad){
-    newOnes.filter(f=>(f.properties.mag||0)>=ALERT_MAG).sort((a,b)=>b.properties.mag-a.properties.mag).forEach(f=>alertQ.push(f));
+    const alerts=newOnes.filter(f=>{
+      const m=(f.properties.mag||0)>=ALERT_MAG;
+      if(!m)return false;
+      if(TR_ONLY){const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;}
+      return true;
+    }).sort((a,b)=>b.properties.mag-a.properties.mag);
+    alerts.forEach(f=>alertQ.push(f));
     if(!alertBusy&&alertQ.length)showAlert();
   }
   renderWorldBar();renderActivityScore();renderFeatured();renderMap();renderSeismo();renderMagDist();renderList();renderStats();
+  if(userLat!==null)renderNearby();
   firstLoad=false;
 }
 
@@ -622,34 +698,28 @@ function renderWorldBar(){
 // ── ACTIVITY SCORE ──
 function renderActivityScore(){
   const now=Date.now();
-  const last1h=allQ.filter(f=>now-f.properties.time<3600000);
-  const last6h=allQ.filter(f=>now-f.properties.time<21600000);
-  const bigOnes=allQ.filter(f=>(f.properties.mag||0)>=5).length;
-  let score=Math.min(100,Math.round(last1h.length*3+last6h.length*.5+bigOnes*10));
+  const l1=allQ.filter(f=>now-f.properties.time<3600000).length;
+  const l6=allQ.filter(f=>now-f.properties.time<21600000).length;
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5).length;
+  let score=Math.min(100,Math.round(l1*3+l6*.4+big*8));
   document.getElementById('act-score').textContent=score;
   const circle=document.getElementById('gauge-circle');
-  const offset=201-(201*score/100);
-  circle.style.strokeDashoffset=offset;
-  let level,desc,c;
-  if(score<20){level='SAKİN';desc='Sismik aktivite normal seviyede.';c='var(--green)';}
-  else if(score<40){level='DÜŞÜK';desc=`Son 1 saatte ${last1h.length} deprem kaydedildi.`;c='var(--cyan)';}
-  else if(score<60){level='ORTA';desc=`Dikkat: Son 6 saatte ${last6h.length} olay.`;c='var(--yellow)';}
-  else if(score<80){level='YÜKSEK';desc=`Uyarı: ${bigOnes} adet M5+ deprem mevcut!`;c='var(--orange)';}
-  else{level='KRİTİK';desc=`ACİL: Yoğun sismik aktivite tespit edildi!`;c='var(--red)';}
+  circle.style.strokeDashoffset=188-(188*score/100);
+  let lv,desc,c;
+  if(score<15){lv='SAKİN';desc=`Normal aktivite. Son 1s: ${l1} olay.`;c='var(--green)';}
+  else if(score<35){lv='DÜŞÜK';desc=`Son 1 saatte ${l1} deprem.`;c='var(--cyan)';}
+  else if(score<55){lv='ORTA';desc=`Dikkat: ${l6} olay son 6 saatte.`;c='var(--yellow)';}
+  else if(score<75){lv='YÜKSEK';desc=`Uyarı: ${big} adet M5+ deprem!`;c='var(--orange)';}
+  else{lv='KRİTİK';desc=`ACİL: Yoğun sismik aktivite!`;c='var(--red)';}
   circle.style.stroke=c;
   document.getElementById('act-score').style.color=c;
-  document.getElementById('act-level').textContent=level;
+  document.getElementById('act-level').textContent=lv;
   document.getElementById('act-level').style.color=c;
   document.getElementById('act-desc').textContent=desc;
-  document.getElementById('act-glow').style.background=`radial-gradient(circle,${c}15 0%,transparent 70%)`;
-  // Hourly bars (last 12 hours)
-  const bars=[];
-  for(let i=11;i>=0;i--){
-    const s=now-(i+1)*3600000,e=now-i*3600000;
-    bars.push(allQ.filter(f=>f.properties.time>=s&&f.properties.time<e).length);
-  }
+  document.getElementById('act-glow').style.background=`radial-gradient(circle,${c}12,transparent 70%)`;
+  const bars=[];for(let i=11;i>=0;i--){const s=now-(i+1)*3600000,e=now-i*3600000;bars.push(allQ.filter(f=>f.properties.time>=s&&f.properties.time<e).length);}
   const bmax=Math.max(...bars,1);
-  document.getElementById('act-bars').innerHTML=bars.map((b,i)=>`<div class="act-bar" style="height:${Math.max(4,(b/bmax)*100)}%;background:${i===11?c:col(b>5?6:b>2?5:b>0?3:0)};opacity:${i===11?1:.5}"></div>`).join('');
+  document.getElementById('act-bars').innerHTML=bars.map((b,i)=>`<div class="act-bar" style="height:${Math.max(4,(b/bmax)*100)}%;background:${i===11?c:col(b>5?6:b>2?5:b>0?3:0)};opacity:${i===11?1:.45}"></div>`).join('');
 }
 
 // ── FEATURED ──
@@ -657,109 +727,105 @@ function renderFeatured(){
   const w=document.getElementById('featured-wrap');
   if(!allQ.length){w.innerHTML='<div class="status-card"><div class="status-msg">Veri yok</div></div>';return;}
   const f=allQ[0],p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
-  const cls=fc(m);
-  const badgeCls=m>=6?'red':m>=5?'orange':'yellow';
   const glowCol=col(m);
-  let sz=m>=7?72:m>=6?64:m>=5?56:m>=4?48:42;
-  w.innerHTML=`
-  <div class="featured" id="feat-card">
-    <div class="feat-glow" style="background:radial-gradient(circle,${glowCol}18 0%,transparent 70%)"></div>
-    <div class="feat-top">
-      <span class="feat-badge ${badgeCls}">⚡ EN BÜYÜK</span>
-      <span class="feat-time">${ago(p.time)} önce</span>
-    </div>
-    <div class="feat-mag" style="font-size:${sz}px;color:${glowCol};${m>=6?'text-shadow:0 0 40px '+glowCol+'55':''}">${fM(m)}</div>
-    <div class="feat-type">${p.magType||'Mw'} · ${p.net||'us'}</div>
+  const sz=m>=7?70:m>=6?62:m>=5?54:m>=4?46:40;
+  const badgeCls=m>=6?'r':m>=5?'o':'y';
+  w.innerHTML=`<div class="featured" id="feat-card">
+    <div class="feat-glow" style="background:radial-gradient(circle,${glowCol}15,transparent 70%)"></div>
+    <div class="feat-top"><span class="feat-badge ${badgeCls}">⚡ EN BÜYÜK</span><span class="feat-time">${ago(p.time)} önce</span></div>
+    <div style="font-family:'Orbitron',monospace;font-size:${sz}px;font-weight:900;color:${glowCol};${m>=6?`text-shadow:0 0 36px ${glowCol}44`:''};margin-bottom:4px">${fM(m)}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px">${p.magType||'Mw'} · ${p.net||'us'}</div>
     <div class="feat-place">${p.place||'Bilinmiyor'}</div>
     <div class="feat-pills">
       <span class="pill d">⬇ ${fD(d)}</span>
       ${p.felt?`<span class="pill f">👁 ${p.felt}</span>`:''}
       ${p.tsunami===1?`<span class="pill t">🌊 TSUNAMİ</span>`:''}
       ${p.cdi?`<span class="pill c">CDI ${p.cdi.toFixed(1)}</span>`:''}
-      ${p.mmi?`<span class="pill c">MMI ${p.mmi.toFixed(1)}</span>`:''}
+      ${p.alert?`<span class="pill p">PAGER ${p.alert.toUpperCase()}</span>`:''}
     </div>
-    <div class="feat-progress"><div class="feat-progress-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${glowCol}"></div></div>
+    <div class="feat-prog"><div class="feat-prog-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${glowCol}"></div></div>
   </div>`;
   document.getElementById('feat-card').onclick=()=>openSheet(f);
 }
 
-// ── WORLD MAP (SVG) ──
+// ── WORLD MAP ──
 function renderMap(){
   const svg=document.getElementById('world-map');
   const W=800,H=400;
-  // Simple world outline paths (Mercator-like)
-  const continents=`<path d="M80,120 L160,100 L200,110 L220,140 L200,180 L160,200 L120,190 L80,160 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M220,80 L350,60 L420,80 L450,120 L440,160 L400,180 L350,170 L300,150 L250,130 L220,100 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M350,170 L420,160 L460,180 L470,220 L440,260 L400,270 L360,250 L340,210 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M450,100 L550,80 L620,100 L650,140 L640,180 L600,200 L550,190 L500,160 L460,130 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M550,190 L630,180 L680,200 L700,240 L680,290 L640,320 L580,310 L540,270 L530,230 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M100,220 L180,210 L220,240 L230,290 L200,340 L150,360 L100,340 L80,290 L90,250 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
-<path d="M620,200 L700,190 L750,220 L760,260 L740,290 L700,300 L660,280 L630,250 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>`;
-  
-  // Project lat/lon to SVG coords (simple equirectangular)
-  function proj(lat,lon){
-    const x=((lon+180)/360)*W;
-    const y=((90-lat)/180)*H;
-    return[x,y];
-  }
-
-  // Only show M2.5+ on map
-  const mapQ=allQ.filter(f=>(f.properties.mag||0)>=2.5).slice(0,200);
-  
+  const land=`<rect width="800" height="400" fill="#030608"/><path d="M30,100 Q80,85 130,95 Q160,88 185,105 Q200,120 195,145 Q180,170 155,180 Q120,188 90,175 Q60,165 40,145 Q20,125 30,100Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M195,130 Q240,115 290,108 Q340,100 390,105 Q430,108 460,120 Q480,135 478,158 Q472,180 450,195 Q420,210 380,215 Q340,218 300,210 Q260,200 230,185 Q205,170 198,150Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M290,215 Q320,208 360,212 Q395,215 420,230 Q440,248 435,272 Q425,295 400,308 Q370,318 340,312 Q310,305 290,285 Q272,265 278,242Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M460,95 Q520,75 580,82 Q630,88 660,105 Q680,122 675,148 Q665,175 640,188 Q610,200 575,195 Q540,188 510,170 Q480,152 465,128Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M540,188 Q590,180 640,192 Q680,205 700,235 Q715,262 705,290 Q690,318 660,330 Q625,340 590,328 Q555,315 535,288 Q515,260 522,232Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M65,195 Q115,185 160,200 Q195,215 208,245 Q215,272 200,298 Q180,325 148,338 Q112,348 78,335 Q48,320 35,292 Q22,262 32,232 Q45,208 65,195Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M680,175 Q728,168 760,188 Q778,205 775,232 Q768,258 748,272 Q722,284 695,275 Q668,265 655,242 Q642,218 652,198Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/>`;
+  function proj(lat,lon){return[((lon+180)/360)*W,((90-lat)/180)*H];}
+  const mapQ=allQ.filter(f=>(f.properties.mag||0)>=2.5).slice(0,300);
   const dots=mapQ.map((f,i)=>{
-    const c=f.geometry?.coordinates;
-    if(!c)return'';
+    const c=f.geometry?.coordinates;if(!c)return'';
     const[x,y]=proj(c[1],c[0]);
     const m=f.properties.mag||0;
-    const r=Math.max(2,m>=7?8:m>=6?6:m>=5?5:m>=4?4:3);
-    const color=col(m);
-    const pulse=m>=5?'class="eq-dot pulse"':'class="eq-dot"';
-    return`<circle ${pulse} cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${color}" fill-opacity="${m>=5?'.9':'.6'}" stroke="${color}" stroke-width="0.5" stroke-opacity=".3" data-i="${i}"/>`;
+    const r=m>=7?9:m>=6?7:m>=5?5:m>=4?4:3;
+    const clr=col(m);
+    return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${clr}" fill-opacity="${m>=5?.9:.55}" stroke="${clr}" stroke-width="0.5" stroke-opacity=".2" data-mi="${i}" style="cursor:pointer"/>`;
   }).join('');
-
-  svg.innerHTML=`${continents}${dots}
-<text x="400" y="395" font-family="monospace" font-size="9" fill="#1a2840" text-anchor="middle">USGS · ${mapQ.length} OLAY GÖSTERİLİYOR</text>`;
-  
+  // User location dot
+  const userDot=userLat?`<circle cx="${proj(userLat,userLon)[0].toFixed(1)}" cy="${proj(userLat,userLon)[1].toFixed(1)}" r="5" fill="none" stroke="#00e5a0" stroke-width="2"/><circle cx="${proj(userLat,userLon)[0].toFixed(1)}" cy="${proj(userLat,userLon)[1].toFixed(1)}" r="2" fill="#00e5a0"/>`:'' ;
+  svg.innerHTML=land+dots+userDot;
   document.getElementById('map-count').textContent=`${mapQ.length} nokta`;
-
-  // Click events on dots
-  svg.querySelectorAll('.eq-dot').forEach(dot=>{
-    const i=parseInt(dot.getAttribute('data-i'));
-    dot.onclick=()=>openSheet(mapQ[i]);
-  });
+  mapQ.forEach((f,i)=>{const el=svg.querySelector(`[data-mi="${i}"]`);if(el)el.onclick=()=>openSheet(f);});
 }
 
 // ── SEISMO ──
 function renderSeismo(){
   const cv=document.getElementById('seismo');
   const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
-  if(W===0)return;
-  cv.width=W*dpr;cv.height=H*dpr;
+  if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
-  if(!allQ.length)return;
-  ctx.clearRect(0,0,W,H);
+  if(!allQ.length)return;ctx.clearRect(0,0,W,H);
   const now=Date.now(),dayAgo=now-86400000;
   const sorted=[...allQ].sort((a,b)=>a.properties.time-b.properties.time);
   const maxM=Math.max(...sorted.map(f=>f.properties.mag||0));
-  // Hour markers
-  ctx.strokeStyle='#0d1a2a';ctx.lineWidth=1;
-  for(let i=0;i<=24;i+=4){
-    const x=(i/24)*W;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
-  }
+  for(let i=0;i<=24;i+=4){ctx.strokeStyle='#0a1525';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo((i/24)*W,0);ctx.lineTo((i/24)*W,H);ctx.stroke();}
   sorted.forEach(f=>{
     const t=f.properties.time,m=f.properties.mag||0;
     const x=((t-dayAgo)/86400000)*W;
-    const bH=Math.max(2,((m/(maxM+.5))*(H-4)));
-    const c=col(m);
-    ctx.strokeStyle=c;ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;
-    ctx.globalAlpha=m>=4?1:m>=2?.6:.3;
+    const bH=Math.max(2,((m/(maxM+.5))*(H-3)));
+    ctx.strokeStyle=col(m);ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;ctx.globalAlpha=m>=4?1:m>=2?.55:.25;
     ctx.beginPath();ctx.moveTo(x,H);ctx.lineTo(x,H-bH);ctx.stroke();
-    if(m>=6){
-      ctx.globalAlpha=.15;ctx.fillStyle=c;ctx.fillRect(x-3,H-bH,6,bH);
-    }
   });
   ctx.globalAlpha=1;
   document.getElementById('seismo-count').textContent=`${sorted.length} olay`;
+}
+
+// ── LIVE SEISMO ──
+let liveData=[];
+function startLiveSeismo(){
+  if(liveAnim)cancelAnimationFrame(liveAnim);
+  const cv=document.getElementById('seismo-live');
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  // Generate simulated live waveform based on recent activity
+  const now=Date.now();
+  const recent=allQ.filter(f=>now-f.properties.time<3600000);
+  const baseAmp=recent.length>0?Math.min(1,recent.length/20):0.1;
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#020406';ctx.fillRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle='#0a1525';ctx.lineWidth=.5;
+    ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+    // Waveform
+    ctx.strokeStyle='var(--green)';ctx.lineWidth=1.2;ctx.globalAlpha=.8;
+    ctx.beginPath();
+    for(let x=0;x<W;x++){
+      const phase=x*0.05+t;
+      const noise=(Math.random()-.5)*0.3;
+      const wave=Math.sin(phase)*baseAmp+Math.sin(phase*2.3)*baseAmp*.4+noise;
+      const y=H/2-wave*(H/2*.8);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.globalAlpha=1;
+    t+=0.08;
+    liveAnim=requestAnimationFrame(draw);
+  }
+  draw();
 }
 
 // ── MAG DIST ──
@@ -793,11 +859,17 @@ function renderList(){
       </div>
       <div class="eq-right">
         <span class="eq-time">${ago(p.time)}</span>
+        <span class="share-btn" data-si="${i}">📤</span>
         ${p.alert==='red'?`<div class="ad ad-r"></div>`:p.alert==='orange'?`<div class="ad ad-o"></div>`:''}
       </div>
     </div>`;
   }).join('')}</div>`;
-  show.forEach((f,i)=>{box.querySelector(`[data-i="${i}"]`).onclick=()=>openSheet(f);});
+  show.forEach((f,i)=>{
+    const el=box.querySelector(`[data-i="${i}"]`);
+    el.onclick=(e)=>{if(!e.target.classList.contains('share-btn'))openSheet(f);};
+    const sb=el.querySelector('.share-btn');
+    if(sb)sb.onclick=(e)=>{e.stopPropagation();navigator.share?navigator.share({title:`M${fM(f.properties.mag)} Deprem`,text:shareText(f)}):copyText(shareText(f));};
+  });
 }
 
 // ── TURKEY ──
@@ -810,153 +882,120 @@ function renderTurkey(){
   document.getElementById('tr-m3').textContent=m3;
   document.getElementById('tr-max').textContent=fM(mx);
   document.getElementById('tr-badge').textContent=`${trQ.length} olay`;
-  if(today.length>0)document.getElementById('tr-badge-dot').style.display='block';
-
-  // Risk strip
+  if(today.length>0)document.getElementById('tr-tbadge').classList.add('show');
   const strip=document.getElementById('tr-risk-strip');
   const cols=['#00e5a0','#22d3ee','#fbbf24','#f97316','#ef4444','#dc143c'];
   const bands=[0,2,3,4,5,6];
-  strip.innerHTML=bands.map((b,i)=>{
-    const cnt=trQ.filter(f=>(f.properties.mag||0)>=b&&(f.properties.mag||0)<(bands[i+1]||99)).length;
-    return`<div class="risk-seg" style="background:${cols[i]};flex:${Math.max(.5,cnt)}" title="${cnt} adet"></div>`;
-  }).join('');
+  strip.innerHTML=bands.map((b,i)=>{const cnt=trQ.filter(f=>{const m=f.properties.mag||0;return m>=b&&m<(bands[i+1]||99);}).length;return`<div class="risk-seg" style="background:${cols[i]};flex:${Math.max(.5,cnt)}"></div>`;}).join('');
+  
+  // PAGER data from biggest TR quake
+  const bigTR=trQ.find(f=>f.properties.alert);
+  if(bigTR){
+    document.getElementById('pager-card').style.display='block';
+    const a=bigTR.properties.alert;
+    document.getElementById('pager-g').textContent=a==='green'?'●':'○';
+    document.getElementById('pager-y').textContent=a==='yellow'?'●':'○';
+    document.getElementById('pager-o').textContent=a==='orange'?'●':'○';
+    document.getElementById('pager-r').textContent=a==='red'?'●':'○';
+  }
 
   const list=document.getElementById('turkey-list');
   if(!trQ.length){list.innerHTML='<div class="status-card"><div class="status-msg">Veri bulunamadı</div></div>';return;}
   const show=trQ.slice(0,15);
   list.innerHTML=show.map((f,i)=>{
     const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
-    return`<div class="tr-item ${mc(m)}" data-ti="${i}" style="--bc:${col(m)}">
+    return`<div class="tr-item" data-ti="${i}" style="border-left-color:${col(m)}">
       <div class="tr-mag" style="color:${col(m)}">${fM(m)}</div>
-      <div class="tr-info">
-        <div class="tr-place">${p.place||'Bilinmiyor'}</div>
-        <div class="tr-meta">⬇ ${fD(d)} · ${p.magType||'mb'}</div>
-      </div>
-      <div class="tr-time">${ago(p.time)}</div>
+      <div class="tr-info"><div class="tr-place">${p.place||'Bilinmiyor'}</div><div class="tr-meta">⬇ ${fD(d)} · ${p.magType||'mb'}</div></div>
+      <div class="tr-right"><div class="tr-time">${ago(p.time)}</div><span style="font-size:11px;cursor:pointer;opacity:.5" onclick="event.stopPropagation();shareEq(window._trQ[${i}])">📤</span></div>
     </div>`;
   }).join('');
-  show.forEach((f,i)=>{
-    const el=list.querySelector(`[data-ti="${i}"]`);
-    el.style.borderLeftColor=col(f.properties.mag||0);
-    el.querySelector('.tr-item')?.style||0;
-    el.onclick=()=>openSheet(f);
-  });
-  // Fix left border color via style
-  list.querySelectorAll('.tr-item').forEach((el,i)=>{
-    if(show[i])el.style.setProperty('--bc',col(show[i].properties.mag||0));
-  });
+  window._trQ=show;
+  show.forEach((f,i)=>{list.querySelector(`[data-ti="${i}"]`).onclick=()=>openSheet(f);});
 }
 
 // ── STATS ──
 function renderStats(){
   if(!allQ.length)return;
-  const now=Date.now();
-  const total=allQ.length;
-  const rate=(total/24).toFixed(1);
-  const mx=allQ[0]?.properties.mag||0;
-  const mxLoc=(allQ[0]?.properties.place||'').split(' of ').pop().substring(0,20);
-  document.getElementById('st-total').textContent=total;
-  document.getElementById('st-rate').textContent=`saatte ~${rate} olay`;
+  const now=Date.now(),t=allQ.length,mx=allQ[0]?.properties.mag||0;
+  const mxLoc=(allQ[0]?.properties.place||'').split(' of ').pop().substring(0,18);
+  document.getElementById('st-total').textContent=t;
+  document.getElementById('st-rate').textContent=`saatte ~${(t/24).toFixed(1)} olay`;
   document.getElementById('st-max').textContent=fM(mx);
   document.getElementById('st-max-loc').textContent=mxLoc;
-
-  // Auto report
-  const big=allQ.filter(f=>(f.properties.mag||0)>=5);
-  const vbig=allQ.filter(f=>(f.properties.mag||0)>=6);
-  const last1h=allQ.filter(f=>now-f.properties.time<3600000);
-  let rpt=`Son 24 saatte küresel olarak <strong>${total}</strong> deprem kaydedildi. `;
-  if(vbig.length>0)rpt+=`<span class="danger">⚠ ${vbig.length} adet M6+ büyük deprem meydana geldi!</span> `;
-  else if(big.length>0)rpt+=`<span class="warn">${big.length} adet M5+ deprem tespit edildi.</span> `;
-  else rpt+=`Büyük deprem (M5+) kaydedilmedi. `;
-  rpt+=`En büyük olay <strong>M${fM(mx)}</strong> büyüklüğünde, ${mxLoc} bölgesinde gerçekleşti. `;
-  rpt+=`Son 1 saatte <strong>${last1h.length}</strong> deprem oluştu.`;
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5),vbig=allQ.filter(f=>(f.properties.mag||0)>=6);
+  const l1=allQ.filter(f=>now-f.properties.time<3600000).length;
+  let rpt=`Son 24 saatte küresel olarak <strong>${t}</strong> deprem kaydedildi. `;
+  if(vbig.length)rpt+=`<span class="danger">⚠ ${vbig.length} adet M6+ büyük deprem!</span> `;
+  else if(big.length)rpt+=`<span class="warn">${big.length} adet M5+ deprem tespit edildi.</span> `;
+  else rpt+='Büyük deprem (M5+) yok. ';
+  rpt+=`En büyük olay <strong>M${fM(mx)}</strong>, ${mxLoc}. Son 1 saatte <strong>${l1}</strong> deprem.`;
   document.getElementById('report-text').innerHTML=rpt;
-
-  // Regions
   const regions=[
-    {n:'Pasifik Halkası',fn:f=>{const c=f.geometry?.coordinates;return c&&((c[0]>140||c[0]<-100)&&Math.abs(c[1])<70);}},
+    {n:'Pasifik',fn:f=>{const c=f.geometry?.coordinates;return c&&((c[0]>140||c[0]<-100)&&Math.abs(c[1])<70);}},
     {n:'Asya',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=60&&c[0]<=145&&c[1]>=10&&c[1]<=60;}},
     {n:'Amerika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-120&&c[0]<=-50&&Math.abs(c[1])<60;}},
     {n:'Avrupa/TR',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=20&&c[0]<=50&&c[1]>=35&&c[1]<=50;}},
-    {n:'Afrika/Ortadoğu',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-20&&c[0]<=60&&c[1]>=-35&&c[1]<=37;}},
-    {n:'Okyanus',fn:f=>true},
+    {n:'Afrika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-20&&c[0]<=55&&c[1]>=-35&&c[1]<=37;}},
+    {n:'Diğer',fn:()=>true},
   ];
-  const rc=regions.map(r=>allQ.filter(r.fn).length);
-  const rm=Math.max(...rc,1);
-  const rcols=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#4a5580'];
+  const rc=regions.map(r=>allQ.filter(r.fn).length),rm=Math.max(...rc,1);
+  const rcols=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#374060'];
   document.getElementById('region-bars').innerHTML=regions.map((r,i)=>`<div class="rb-item"><div class="rb-name">${r.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(rc[i]/rm)*100}%;background:${rcols[i]}"></div></div><div class="rb-cnt">${rc[i]}</div></div>`).join('');
-
-  // Big TL
-  const bigQ=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6);
-  document.getElementById('big-tl').innerHTML=bigQ.map((f,i)=>{
-    const p=f.properties,m=p.mag||0;
-    return`<div class="tl-item"><div class="tl-dot" style="background:${col(m)}"></div><div class="tl-body"><div class="tl-title">M${fM(m)} — ${(p.place||'').split(' of ').pop()}</div><div class="tl-meta">${ago(p.time)} önce · ${p.magType||'Mw'} · ${fD(f.geometry?.coordinates?.[2])}</div></div></div>`;
-  }).join('');
-
-  // Depth
-  const db=[{n:'Sığ <70km',mn:0,mx:70,c:'#ef4444'},{n:'Orta 70-300km',mn:70,mx:300,c:'#f97316'},{n:'Derin >300km',mn:300,mx:9999,c:'#60a5fa'}];
+  document.getElementById('big-tl').innerHTML=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6).map(f=>`<div class="tl-item"><div class="tl-dot" style="background:${col(f.properties.mag||0)}"></div><div class="tl-body"><div class="tl-title">M${fM(f.properties.mag)} — ${(f.properties.place||'').split(' of ').pop()}</div><div class="tl-meta">${ago(f.properties.time)} önce · ${f.properties.magType||'Mw'} · ${fD(f.geometry?.coordinates?.[2])}</div></div></div>`).join('');
+  const db=[{n:'Sığ <70km',mn:0,mx:70,c:'#ef4444'},{n:'Orta 70-300',mn:70,mx:300,c:'#f97316'},{n:'Derin >300',mn:300,mx:9999,c:'#60a5fa'}];
   const dc=db.map(b=>allQ.filter(f=>{const d=f.geometry?.coordinates?.[2]||0;return d>=b.mn&&d<b.mx;}).length);
   const dm=Math.max(...dc,1);
-  document.getElementById('depth-bars').innerHTML=db.map((b,i)=>`<div class="rb-item"><div class="rb-name" style="font-size:9px">${b.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(dc[i]/dm)*100}%;background:${b.c}"></div></div><div class="rb-cnt">${dc[i]}</div></div>`).join('');
+  document.getElementById('depth-bars').innerHTML=db.map((b,i)=>`<div class="rb-item"><div class="rb-name" style="font-size:8px">${b.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(dc[i]/dm)*100}%;background:${b.c}"></div></div><div class="rb-cnt">${dc[i]}</div></div>`).join('');
 }
 
 // ── DETAIL SHEET ──
 function openSheet(f){
+  currentQuake=f;
   const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates;
   const lon=c?c[0]:null,lat=c?c[1]:null,d=c?c[2]:null;
-  const sh=document.getElementById('sh-mag');
-  sh.textContent=fM(m);sh.style.color=col(m);
+  const sh=document.getElementById('sh-mag');sh.textContent=fM(m);sh.style.color=col(m);
   document.getElementById('sh-place').textContent=p.place||'Bilinmiyor';
   document.getElementById('sh-grid').innerHTML=[
-    {l:'Büyüklük',v:`${fM(m)} ${p.magType||'Mw'}`},
-    {l:'Derinlik',v:fD(d)},
-    {l:'Enlem',v:lat!=null?lat.toFixed(4)+'°':'—'},
-    {l:'Boylam',v:lon!=null?lon.toFixed(4)+'°':'—'},
-    {l:'Zaman',v:p.time?new Date(p.time).toLocaleString('tr-TR'):'—'},
-    {l:'CDI',v:p.cdi?p.cdi.toFixed(2):'—'},
-    {l:'MMI',v:p.mmi?p.mmi.toFixed(2):'—'},
-    {l:'Hisseden',v:p.felt||'—'},
-    {l:'Tsunami',v:p.tsunami===1?'⚠ Evet':'Hayır'},
-    {l:'PAGER',v:p.alert?p.alert.toUpperCase():'—'},
+    {l:'Büyüklük',v:`${fM(m)} ${p.magType||'Mw'}`},{l:'Derinlik',v:fD(d)},
+    {l:'Enlem',v:lat!=null?lat.toFixed(4)+'°':'—'},{l:'Boylam',v:lon!=null?lon.toFixed(4)+'°':'—'},
+    {l:'Zaman',v:p.time?new Date(p.time).toLocaleString('tr-TR'):'—'},{l:'CDI',v:p.cdi?p.cdi.toFixed(2):'—'},
+    {l:'MMI',v:p.mmi?p.mmi.toFixed(2):'—'},{l:'Hisseden',v:p.felt||'—'},
+    {l:'Tsunami',v:p.tsunami===1?'⚠ Evet':'Hayır'},{l:'PAGER',v:p.alert?p.alert.toUpperCase():'—'},
   ].map(i=>`<div class="sg"><div class="sg-l">${i.l}</div><div class="sg-v">${i.v}</div></div>`).join('');
-
-  // City distances (if near Turkey)
-  if(lat&&lon&&lat>=25&&lat<=50&&lon>=20&&lon<=55){
-    const cityList=TR_CITIES.map(city=>{
-      const km=dist(lat,lon,city.lat,city.lon);
-      return{n:city.n,km};
-    }).sort((a,b)=>a.km-b.km);
+  if(lat&&lon&&lat>=25&&lat<=55&&lon>=15&&lon<=60){
+    const cl=TR_CITIES.map(city=>({n:city.n,km:dist(lat,lon,city.lat,city.lon)})).sort((a,b)=>a.km-b.km);
     document.getElementById('sh-cities').style.display='block';
-    document.getElementById('sh-cities-list').innerHTML=cityList.map(c=>`<div class="city-row"><span class="city-name">${c.n}</span><span class="city-dist">${c.km} km</span></div>`).join('');
-  }else{
-    document.getElementById('sh-cities').style.display='none';
-  }
-
+    document.getElementById('sh-cities-list').innerHTML=cl.map(c=>`<div class="city-row"><span class="city-name">${c.n}</span><span class="city-dist">${c.km} km</span></div>`).join('');
+  }else{document.getElementById('sh-cities').style.display='none';}
   document.getElementById('sh-link').href=p.url||'#';
   document.getElementById('detail-sheet').classList.add('show');
   document.body.style.overflow='hidden';
 }
 function closeSheet(){document.getElementById('detail-sheet').classList.remove('show');document.body.style.overflow='';}
 function closeSheetOut(e){if(e.target===document.getElementById('detail-sheet'))closeSheet();}
+function shareCurrentQuake(){if(!currentQuake)return;shareEq(currentQuake);}
+function shareEq(f){if(!f)return;const txt=shareText(f);if(navigator.share){navigator.share({title:`M${fM(f.properties.mag)} Deprem`,text:txt});}else{copyText(txt);}}
+function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t);}else{const el=document.createElement('textarea');el.value=t;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);}}
 
 // ── NOTIFICATIONS ──
 function toggleNotif(){
-  if(notifOn){notifOn=false;document.getElementById('notif-btn').classList.remove('on');return;}
-  if('Notification'in window){
-    Notification.requestPermission().then(p=>{
-      if(p==='granted'){notifOn=true;document.getElementById('notif-btn').classList.add('on');}
-    });
-  }
+  if(NOTIF_ON){NOTIF_ON=false;document.getElementById('notif-btn').classList.remove('notif-on');document.getElementById('notif-toggle').classList.remove('on');}
+  else{Notification&&Notification.requestPermission().then(p=>{if(p==='granted'){NOTIF_ON=true;document.getElementById('notif-btn').classList.add('notif-on');document.getElementById('notif-toggle').classList.add('on');}});}
 }
+function toggleNotifFromSettings(){if(!NOTIF_ON)toggleNotif();else{NOTIF_ON=false;document.getElementById('notif-btn').classList.remove('notif-on');document.getElementById('notif-toggle').classList.remove('on');}}
+function toggleTrOnly(){TR_ONLY=!TR_ONLY;document.getElementById('tr-only-toggle').classList.toggle('on',TR_ONLY);}
+function updateMagThresh(v){ALERT_MAG=parseFloat(v);document.getElementById('mag-thresh-val').textContent=`M${parseFloat(v).toFixed(1)}`;}
 function sendNotif(f){
-  if(!notifOn||!('Notification'in window)||Notification.permission!=='granted')return;
+  if(!NOTIF_ON||Notification?.permission!=='granted')return;
   new Notification(`🚨 M${fM(f.properties.mag)} Deprem`,{body:f.properties.place||'Bilinmiyor',icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌍</text></svg>'});
 }
 
 // ── ALERT ──
 function showAlert(){
   alertBusy=true;
-  const f=alertQ.shift(),p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;
+  const f=alertQ.shift();alertQuake=f;
+  const p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;
   document.getElementById('al-mag').textContent=fM(p.mag);
   document.getElementById('al-place').textContent=p.place||'Bilinmiyor';
   document.getElementById('al-meta').textContent=`Derinlik: ${fD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;
@@ -967,36 +1006,21 @@ function showAlert(){
   if('vibrate'in navigator)navigator.vibrate([300,100,300,100,500]);
   sendNotif(f);
 }
-function closeAlert(){
-  document.getElementById('alert-overlay').classList.remove('show');
-  setTimeout(()=>{if(alertQ.length)showAlert();else alertBusy=false;},800);
-}
+function closeAlert(){document.getElementById('alert-overlay').classList.remove('show');setTimeout(()=>{if(alertQ.length)showAlert();else alertBusy=false;},800);}
+function shareAlert(){if(alertQuake)shareEq(alertQuake);closeAlert();}
 
 // ── FILTER ──
-function setFilter(btn,min){
-  filterMin=min;
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');renderList();
-}
+function setFilter(btn,min){filterMin=min;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderList();}
 
 // ── TIMER ──
-function startTimer(){
-  if(timerInt)clearInterval(timerInt);
-  counter=REFRESH;updateTimer();
-  timerInt=setInterval(()=>{counter--;updateTimer();if(counter<=0){clearInterval(timerInt);timerInt=null;fetchData();}},1000);
-}
+function startTimer(){if(timerInt)clearInterval(timerInt);counter=REFRESH;updateTimer();timerInt=setInterval(()=>{counter--;updateTimer();if(counter<=0){clearInterval(timerInt);timerInt=null;fetchData();}},1000);}
 function updateTimer(){document.getElementById('timer').textContent=counter+'s';}
-function manualRefresh(){
-  const b=document.getElementById('rbtn');b.classList.add('spin');
-  if(timerInt){clearInterval(timerInt);timerInt=null;}
-  fetchData().finally(()=>b.classList.remove('spin'));
-}
-function showErr(msg){
-  document.getElementById('featured-wrap').innerHTML=`<div class="status-card"><div class="status-msg">⚠ ${msg}</div><button class="retry-btn" onclick="manualRefresh()">Tekrar Dene</button></div>`;
-}
+function manualRefresh(){const b=document.getElementById('rbtn');b.classList.add('spin');if(timerInt){clearInterval(timerInt);timerInt=null;}fetchData().finally(()=>b.classList.remove('spin'));}
+function showErr(msg){document.getElementById('featured-wrap').innerHTML=`<div class="status-card"><div class="status-msg">⚠ ${msg}</div><button class="retry-btn" onclick="manualRefresh()">Tekrar Dene</button></div>`;}
 
 window.addEventListener('resize',()=>{if(allQ.length){renderSeismo();renderMap();}});
 fetchData();
+startLiveSeismo();
 </script>
 </body>
 </html>
