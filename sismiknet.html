@@ -7,360 +7,418 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SismikNet">
-<title>SismikNet</title>
+<title>SismikNet v6</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script>
+// PWA Manifest
 const mf={name:"SismikNet",short_name:"SismikNet",start_url:"./sismiknet.html",display:"standalone",background_color:"#040608",theme_color:"#00e5a0",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#040608"/><circle cx="256" cy="220" r="130" fill="none" stroke="#00e5a0" stroke-width="18"/><circle cx="256" cy="220" r="80" fill="none" stroke="#00e5a040" stroke-width="12"/><circle cx="256" cy="220" r="30" fill="#00e5a0"/><text x="256" y="420" font-family="Arial" font-weight="900" font-size="72" fill="#00e5a0" text-anchor="middle">SİSMİK</text></svg>'),sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
 const mb=new Blob([JSON.stringify(mf)],{type:"application/manifest+json"});
 const ml=document.createElement("link");ml.rel="manifest";ml.href=URL.createObjectURL(mb);
 document.currentScript.after(ml);
-if("serviceWorker"in navigator){const sw=`self.addEventListener("install",e=>self.skipWaiting());self.addEventListener("activate",e=>clients.claim());self.addEventListener("fetch",e=>e.respondWith(fetch(e.request).catch(()=>new Response(""))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:"application/javascript"}))).catch(()=>{});}
+// Service Worker with cache
+if("serviceWorker"in navigator){
+  const sw=`
+const CACHE='sismiknet-v6';
+const STATIC=['./sismiknet.html'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC)));self.skipWaiting();});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));clients.claim();});
+self.addEventListener('fetch',e=>{
+  if(e.request.url.includes('earthquake.usgs.gov')||e.request.url.includes('deprem.afad')){
+    e.respondWith(fetch(e.request).then(r=>{const rc=r.clone();caches.open(CACHE).then(c=>c.put(e.request,rc));return r;}).catch(()=>caches.match(e.request)));
+  }else{
+    e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+  }
+});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:"application/javascript"}))).catch(()=>{});
+}
 </script>
 <style>
 :root{
-  --bg:#040608;--surface:#080b14;--card:#0c1018;--card2:#0f1422;
-  --border:#141d30;--border2:#1c2840;
+  --bg:#040608;--surface:#07090f;--card:#0b0e18;--card2:#0e1220;
+  --border:#131c2c;--border2:#1a2438;
   --green:#00e5a0;--yellow:#fbbf24;--orange:#f97316;
   --red:#ef4444;--crimson:#dc143c;--blue:#60a5fa;
   --cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;
-  --text:#c8d4f0;--muted:#374060;--muted2:#1a2238;
-  --tab-h:60px;
+  --text:#c0cce8;--muted:#32415e;--muted2:#18243a;
+  --tab-h:58px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:var(--tab-h);}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(#0a1525 1px,transparent 1px),linear-gradient(90deg,#0a1525 1px,transparent 1px);background-size:36px 36px;opacity:.25;pointer-events:none;z-index:0;}
-body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#00e5a006 0%,transparent 60%);pointer-events:none;z-index:0;}
+body.low-power *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(#091420 1px,transparent 1px),linear-gradient(90deg,#091420 1px,transparent 1px);background-size:34px 34px;opacity:.2;pointer-events:none;z-index:0;}
 
 /* HEADER */
-header{position:sticky;top:0;z-index:100;background:#04060af5;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;}
-.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:15px;letter-spacing:3px;color:var(--green);text-shadow:0 0 24px #00e5a030;}
-.logo em{color:#3a5080;font-style:normal;font-weight:400;}
-.hright{display:flex;align-items:center;gap:6px;}
-.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a008;border:1px solid #00e5a020;padding:4px 9px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+header{position:sticky;top:0;z-index:100;background:#040608f8;backdrop-filter:blur(22px);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--green);}
+.logo em{color:#304060;font-style:normal;font-weight:400;}
+.hright{display:flex;align-items:center;gap:5px;}
+.live-pill{display:flex;align-items:center;gap:4px;background:#00e5a008;border:1px solid #00e5a020;padding:3px 8px;border-radius:99px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px;}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.4s ease infinite;}
-#timer{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);min-width:26px;text-align:right;}
-.hbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;flex-shrink:0;}
-.hbtn:active,.hbtn.on{border-color:var(--green);color:var(--green);}
+#timer{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);min-width:24px;text-align:right;}
+.hbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .2s;}
+.hbtn.on,.hbtn:active{border-color:var(--green);color:var(--green);}
 .hbtn.notif-on{border-color:#fbbf2440;color:var(--yellow);}
+.hbtn.low-on{border-color:#a78bfa40;color:var(--purple);}
 .hbtn.spin{animation:spin .5s linear infinite;}
+.offline-bar{display:none;background:#fbbf2415;border-bottom:1px solid #fbbf2430;padding:5px 12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--yellow);text-align:center;letter-spacing:.5px;}
+.offline-bar.show{display:block;}
 
-/* SEARCH BAR */
-.search-bar{display:none;position:fixed;top:54px;left:0;right:0;z-index:99;background:#04060af8;border-bottom:1px solid var(--border);padding:10px 14px;}
+/* SEARCH */
+.search-bar{display:none;position:fixed;top:52px;left:0;right:0;z-index:99;background:#040608f8;border-bottom:1px solid var(--border);padding:9px 12px;}
 .search-bar.show{display:block;}
-.search-input{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:9px 14px;font-family:'Sora',sans-serif;font-size:14px;outline:none;}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);border-radius:9px;padding:8px 13px;font-family:'Sora',sans-serif;font-size:13px;outline:none;}
 .search-input:focus{border-color:var(--green);}
-.search-results{margin-top:8px;display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;}
-.sr-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;}
-.sr-mag{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;min-width:34px;}
-.sr-place{font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.search-results{margin-top:7px;display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto;}
+.sr-item{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;}
+.sr-mag{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;min-width:32px;}
+.sr-place{font-size:11px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sr-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
 /* TAB BAR */
-.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#04060af8;backdrop-filter:blur(20px);border-top:1px solid var(--border);height:var(--tab-h);display:flex;align-items:center;}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 0;transition:all .2s;position:relative;}
-.tab-icon{font-size:19px;transition:transform .2s;}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#040608f8;backdrop-filter:blur(18px);border-top:1px solid var(--border);height:var(--tab-h);display:flex;align-items:center;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 0;transition:all .2s;position:relative;}
+.tab-icon{font-size:18px;transition:transform .2s;}
 .tab-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--muted);transition:color .2s;text-transform:uppercase;}
 .tab.active .tab-label{color:var(--green);}
 .tab.active .tab-icon{transform:translateY(-2px);}
-.tbadge{position:absolute;top:4px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);display:none;}
+.tbadge{position:absolute;top:3px;right:calc(50% - 13px);width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);display:none;}
 .tbadge.show{display:block;}
 
 /* PAGES */
-.page{display:none;position:relative;z-index:1;padding:11px 11px 14px;max-width:480px;margin:0 auto;flex-direction:column;gap:11px;}
+.page{display:none;position:relative;z-index:1;padding:10px 10px 12px;max-width:480px;margin:0 auto;flex-direction:column;gap:10px;}
 .page.active{display:flex;}
-.page.search-open{padding-top:120px;}
+.page.sp{padding-top:110px;}
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.card-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-.card-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.ct{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.cs{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
 /* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:10px 5px;text-align:center;position:relative;overflow:hidden;}
-.stat-card::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:99px;}
-.stat-card.g::after{background:var(--green);}
-.stat-card.b::after{background:var(--blue);}
-.stat-card.o::after{background:var(--orange);}
-.stat-card.r::after{background:var(--red);}
-.stat-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;line-height:1;}
-.stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:9px 4px;text-align:center;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;border-radius:99px;}
+.sc.g::after{background:var(--green);}
+.sc.b::after{background:var(--blue);}
+.sc.o::after{background:var(--orange);}
+.sc.r::after{background:var(--red);}
+.sv{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;line-height:1;}
+.sl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase;}
 
-/* NEARBY */
-.nearby-card{background:linear-gradient(135deg,#0a1020,#0c1428);border:1px solid #1a2840;border-radius:15px;padding:13px;position:relative;overflow:hidden;}
-.nearby-glow{position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,#00e5a015,transparent 70%);pointer-events:none;}
-.nearby-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
-.nearby-content{display:flex;align-items:center;gap:12px;}
-.nearby-mag{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;line-height:1;}
-.nearby-info{flex:1;min-width:0;}
-.nearby-place{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.nearby-dist{font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);}
-.nearby-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.nearby-empty{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:8px 0;}
-.gps-btn{background:#00e5a010;border:1px solid #00e5a030;color:var(--green);border-radius:8px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;}
+/* EARLY WARNING */
+.ew-card{background:linear-gradient(135deg,#0a0418,#120820);border:2px solid #2a1050;border-radius:15px;padding:13px;position:relative;overflow:hidden;}
+.ew-active{border-color:var(--red)!important;animation:borderPulse 1s ease infinite;}
+.ew-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ew-icon{font-size:20px;}
+.ew-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);}
+.ew-title.danger{color:var(--red);animation:flashText .5s infinite alternate;}
+.ew-body{display:flex;align-items:center;gap:12px;}
+.ew-gauge{position:relative;width:70px;height:70px;flex-shrink:0;}
+.ew-gauge svg{width:70px;height:70px;}
+.ew-gauge-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ew-num{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;line-height:1;}
+.ew-unit{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);}
+.ew-info{flex:1;}
+.ew-status{font-size:12px;color:var(--text);margin-bottom:5px;line-height:1.5;}
+.ew-bars{display:flex;gap:3px;align-items:flex-end;height:22px;margin-top:6px;}
+.ew-bar{flex:1;border-radius:2px;min-height:2px;}
+.ew-countdown{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--red);text-shadow:0 0 20px #ef444455;text-align:center;display:none;}
+.ew-countdown.show{display:block;}
 
-/* ACTIVITY */
-.activity-card{background:linear-gradient(135deg,var(--card),#080e18);border:1px solid var(--border);border-radius:15px;padding:13px;position:relative;overflow:hidden;}
-.act-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;pointer-events:none;transition:background .5s;}
-.act-row{display:flex;align-items:center;gap:13px;}
-.act-gauge{position:relative;width:76px;height:76px;flex-shrink:0;}
-.act-gauge svg{width:76px;height:76px;}
-.act-gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.act-num{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;line-height:1;}
-.act-lbl2{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;}
-.act-info{flex:1;}
-.act-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;margin-bottom:5px;}
-.act-desc{font-size:11px;color:var(--muted);line-height:1.5;}
-.act-bars{display:flex;gap:2px;margin-top:7px;align-items:flex-end;height:24px;}
-.act-bar{flex:1;border-radius:2px;min-height:2px;}
+/* AI ANALYSIS */
+.ai-card{background:linear-gradient(135deg,#040e18,#060c18);border:1px solid #0a1828;border-radius:14px;padding:12px;}
+.ai-header{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.ai-icon{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ai-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;}
+.ai-text{font-size:12px;line-height:1.7;color:var(--text);}
+.ai-text strong{color:var(--cyan);}
+.ai-text .warn{color:var(--orange);}
+.ai-text .danger{color:var(--red);}
+.ai-text .ok{color:var(--green);}
+.ai-loading{display:flex;align-items:center;gap:8px;padding:6px 0;}
+.ai-dots{display:flex;gap:4px;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:aiPulse 1.2s ease infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s;}
+.ai-dot:nth-child(3){animation-delay:.4s;}
+
+/* HEATMAP */
+.heatmap-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative;}
+.hm-overlay{position:absolute;top:7px;left:9px;right:9px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;z-index:2;}
+.hm-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.5);text-transform:uppercase;}
+.hm-legend{display:flex;align-items:center;gap:4px;}
+.hm-legend-bar{width:40px;height:5px;border-radius:99px;background:linear-gradient(90deg,#22d3ee,#fbbf24,#ef4444,#dc143c);}
+.hm-legend-labels{display:flex;justify-content:space-between;width:40px;}
+.hm-legend-l{font-family:'DM Mono',monospace;font-size:7px;color:rgba(255,255,255,.4);}
+canvas#heatmap{width:100%;display:block;}
+
+/* AFTERSHOCK */
+.aftershock-card{background:linear-gradient(135deg,#0a1008,#0c1410);border:1px solid #142010;border-radius:14px;padding:12px;}
+.as2-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.as2-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--green);}
+.as2-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:#142010;border:1px solid #1e3020;padding:2px 7px;border-radius:5px;}
+.omori-table{width:100%;border-collapse:collapse;}
+.omori-table th{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;padding:4px 6px;text-align:left;border-bottom:1px solid var(--border);}
+.omori-table td{font-family:'DM Mono',monospace;font-size:11px;padding:5px 6px;border-bottom:1px solid var(--border);}
+.omori-table tr:last-child td{border:none;}
+.omori-cnt{font-weight:700;}
+.omori-chart{display:flex;align-items:flex-end;gap:3px;height:40px;margin-top:9px;}
+.omori-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px;background:linear-gradient(180deg,var(--orange),#8B4513);}
+
+/* AFAD COMPARISON */
+.afad-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.afad-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.afad-tab{flex:1;padding:5px 8px;border-radius:7px;font-family:'DM Mono',monospace;font-size:9px;text-align:center;cursor:pointer;border:1px solid var(--border2);color:var(--muted);transition:all .15s;}
+.afad-tab.active{background:#00e5a010;border-color:#00e5a040;color:var(--green);}
+.afad-list{display:flex;flex-direction:column;gap:5px;}
+.afad-item{display:flex;align-items:center;gap:8px;padding:7px 9px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;}
+.afad-src{font-family:'DM Mono',monospace;font-size:8px;padding:2px 5px;border-radius:3px;}
+.afad-src.usgs{background:#60a5fa15;color:var(--blue);}
+.afad-src.afad{background:#ef444415;color:var(--red);}
+.afad-mag{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;min-width:32px;}
+.afad-place{font-size:11px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.afad-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.afad-empty{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;padding:12px;line-height:1.6;}
+
+/* PROVINCE RISK */
+.province-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.prov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:9px;}
+.prov-item{border-radius:8px;padding:7px 5px;text-align:center;cursor:pointer;transition:opacity .15s;border:1px solid transparent;}
+.prov-item:active{opacity:.7;}
+.prov-name{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.8);margin-bottom:3px;}
+.prov-risk{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;}
+.prov-level{font-family:'DM Mono',monospace;font-size:7px;margin-top:1px;opacity:.7;}
+.risk-legend{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.rl-item{display:flex;align-items:center;gap:4px;}
+.rl-dot{width:8px;height:8px;border-radius:50%;}
+.rl-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);}
 
 /* FILTER */
 .filter-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;}
 .filter-row::-webkit-scrollbar{display:none;}
-.fbtn{flex-shrink:0;padding:6px 12px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.fbtn{flex-shrink:0;padding:5px 11px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .fbtn.active{background:#00e5a010;border-color:#00e5a040;color:var(--green);}
 
 /* FEATURED */
-.featured{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:16px;position:relative;overflow:hidden;cursor:pointer;}
-.feat-glow{position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;pointer-events:none;}
-.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.feat-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 9px;border-radius:5px;text-transform:uppercase;}
+.featured{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;position:relative;overflow:hidden;cursor:pointer;}
+.feat-glow{position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;pointer-events:none;}
+.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+.feat-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 8px;border-radius:5px;text-transform:uppercase;}
 .feat-badge.r{background:#ef444410;border:1px solid #ef444430;color:var(--red);}
 .feat-badge.o{background:#f9731610;border:1px solid #f9731630;color:var(--orange);}
 .feat-badge.y{background:#fbbf2410;border:1px solid #fbbf2430;color:var(--yellow);}
-.feat-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.feat-place{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:11px;}
-.feat-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
-.pill{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;}
+.feat-place{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:10px;}
+.feat-pills{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:11px;}
+.pill{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;}
 .pill.d{background:#60a5fa10;border:1px solid #60a5fa20;color:var(--blue);}
 .pill.f{background:#a78bfa10;border:1px solid #a78bfa20;color:var(--purple);}
 .pill.t{background:#22d3ee10;border:1px solid #22d3ee20;color:var(--cyan);}
 .pill.c{background:#fbbf2410;border:1px solid #fbbf2420;color:var(--yellow);}
-.pill.p{background:#f4720010;border:1px solid #f4720030;color:#f47200;}
-.feat-prog{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+.feat-prog{height:2px;background:var(--border);border-radius:99px;overflow:hidden;}
 .feat-prog-fill{height:100%;border-radius:99px;transition:width 1s ease;}
 
-/* SEISMO LIVE */
-.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 13px;}
-.seismo-live{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
-.seismo-live-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:blink .8s ease infinite;}
-canvas#seismo{width:100%;height:72px;display:block;border-radius:6px;background:#020406;}
-canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;background:#020406;margin-top:5px;}
-
 /* MAP */
-.map-card{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden;position:relative;}
-.map-overlay{position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;}
-.map-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-.map-count{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);}
-#world-map{display:block;width:100%;background:#030608;}
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative;}
+.map-over{position:absolute;top:7px;left:9px;right:9px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;}
+.mt{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;color:rgba(200,210,230,.4);text-transform:uppercase;}
+#world-map{display:block;width:100%;background:#020508;}
+
+/* SEISMO */
+.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 12px;}
+canvas#seismo{width:100%;height:68px;display:block;border-radius:5px;background:#020406;}
+canvas#seismo-live{width:100%;height:36px;display:block;border-radius:5px;background:#020406;margin-top:5px;}
+.slive-label{display:flex;align-items:center;gap:5px;margin:6px 0 4px;}
+.slive-dot{width:4px;height:4px;border-radius:50%;background:var(--red);animation:blink .8s ease infinite;}
 
 /* MAG DIST */
-.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 13px;}
-.mag-bars{display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:9px;}
+.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 12px;}
+.mag-bars{display:flex;align-items:flex-end;gap:4px;height:56px;margin-top:8px;}
 .mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end;}
-.mbar{width:100%;border-radius:3px 3px 0 0;min-height:2px;transition:height .8s cubic-bezier(.34,1.56,.64,1);}
-.mbar-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);text-align:center;}
-.mbar-cnt{font-family:'DM Mono',monospace;font-size:8px;color:var(--text);text-align:center;}
+.mbar{width:100%;border-radius:2px 2px 0 0;min-height:2px;transition:height .8s cubic-bezier(.34,1.56,.64,1);}
+.mbar-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);}
+.mbar-cnt{font-family:'DM Mono',monospace;font-size:8px;color:var(--text);}
 
 /* EQ LIST */
-.eq-list{display:flex;flex-direction:column;gap:6px;}
-.eq-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
-.eq-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
-.eq-item.m5::before,.eq-item.m5{border-color:#dc143c30;}
-.eq-item.m5::before{background:var(--crimson);box-shadow:0 0 6px var(--crimson);}
-.eq-item.m4::before{background:var(--red);}
-.eq-item.m3::before{background:var(--orange);}
-.eq-item.m2::before{background:var(--yellow);}
-.eq-item.m1::before{background:var(--cyan);}
-.eq-item.m0::before{background:var(--green);}
-.eq-item:active{background:var(--card2);}
+.eq-list{display:flex;flex-direction:column;gap:5px;}
+.eq-item{background:var(--card);border:1px solid var(--border);border-left:3px solid;border-radius:11px;padding:10px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;position:relative;overflow:hidden;}
+.eq-item.m5{border-left-color:var(--crimson);}
+.eq-item.m4{border-left-color:var(--red);}
+.eq-item.m3{border-left-color:var(--orange);}
+.eq-item.m2{border-left-color:var(--yellow);}
+.eq-item.m1{border-left-color:var(--cyan);}
+.eq-item.m0{border-left-color:var(--green);}
+.eq-item:active{opacity:.8;}
 .eq-item.new-item{animation:slideIn .4s ease both;}
-.eq-mag-box{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;}
-.eq-mag-box.m0{background:#00e5a010;color:var(--green);border:1px solid #00e5a022;}
-.eq-mag-box.m1{background:#22d3ee10;color:var(--cyan);border:1px solid #22d3ee22;}
-.eq-mag-box.m2{background:#fbbf2410;color:var(--yellow);border:1px solid #fbbf2422;}
-.eq-mag-box.m3{background:#f9731610;color:var(--orange);border:1px solid #f9731622;}
-.eq-mag-box.m4{background:#ef444415;color:var(--red);border:1px solid #ef444430;}
-.eq-mag-box.m5{background:#dc143c18;color:#ff2255;border:1px solid #dc143c40;box-shadow:0 0 10px #dc143c18;}
+.eq-mb{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:12px;font-weight:700;}
+.eq-mb.m0{background:#00e5a010;color:var(--green);border:1px solid #00e5a020;}
+.eq-mb.m1{background:#22d3ee10;color:var(--cyan);border:1px solid #22d3ee20;}
+.eq-mb.m2{background:#fbbf2410;color:var(--yellow);border:1px solid #fbbf2420;}
+.eq-mb.m3{background:#f9731610;color:var(--orange);border:1px solid #f9731620;}
+.eq-mb.m4{background:#ef444415;color:var(--red);border:1px solid #ef444430;}
+.eq-mb.m5{background:#dc143c18;color:#ff2255;border:1px solid #dc143c40;}
 .eq-info{flex:1;min-width:0;}
 .eq-place{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
-.eq-chips{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+.eq-chips{display:flex;gap:3px;flex-wrap:wrap;}
 .chip{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:1px 5px;border-radius:3px;}
-.chip.d{color:var(--blue);border-color:#60a5fa18;}
-.chip.t{color:var(--cyan);}
+.chip.d{color:var(--blue);}
 .eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
-.eq-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-.share-btn{font-size:11px;cursor:pointer;opacity:.5;}
-.share-btn:active{opacity:1;}
-.ad{width:6px;height:6px;border-radius:50%;}
-.ad-r{background:var(--red);box-shadow:0 0 4px var(--red);}
-.ad-o{background:var(--orange);}
-.new-badge{position:absolute;top:6px;right:6px;font-family:'DM Mono',monospace;font-size:7px;color:var(--green);background:#00e5a010;border:1px solid #00e5a028;padding:1px 4px;border-radius:3px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
+.eq-time{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);}
+.sb{font-size:10px;cursor:pointer;opacity:.4;}
+.ad{width:5px;height:5px;border-radius:50%;}
+.ad-r{background:var(--red);}
+.new-badge{position:absolute;top:5px;right:5px;font-family:'DM Mono',monospace;font-size:7px;color:var(--green);background:#00e5a010;border:1px solid #00e5a025;padding:1px 4px;border-radius:3px;animation:fadeNew 5s ease forwards;}
 
 /* TURKEY PAGE */
-.turkey-hero{background:linear-gradient(135deg,#0b0920,#100c28);border:1px solid #1a1238;border-radius:17px;padding:15px;}
-.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.th-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);}
-.th-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:#1a123820;border:1px solid #1a1238;padding:2px 8px;border-radius:5px;}
-.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
-.th-stat{background:#140f28;border:1px solid #1e1440;border-radius:10px;padding:9px;text-align:center;}
-.th-stat-val{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:var(--purple);}
-.th-stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
-.risk-strip{display:flex;height:5px;border-radius:99px;overflow:hidden;gap:1px;}
-.risk-seg{flex:1;border-radius:3px;}
-
-/* PAGER CARD */
-.pager-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;}
-.pager-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
-.pager-row{display:flex;gap:8px;}
-.pager-item{flex:1;border-radius:9px;padding:10px 8px;text-align:center;border:1px solid;}
-.pager-num{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;line-height:1;}
-.pager-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px;}
-.pager-item.green{background:#00e5a010;border-color:#00e5a030;}
-.pager-item.yellow{background:#fbbf2410;border-color:#fbbf2430;}
-.pager-item.orange{background:#f9731610;border-color:#f9731630;}
-.pager-item.red{background:#ef444415;border-color:#ef444435;}
-
-.turkey-list{display:flex;flex-direction:column;gap:6px;}
-.tr-item{background:#0b0920;border:1px solid #180f35;border-left:3px solid;border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;}
-.tr-item:active{background:#110d28;}
-.tr-mag{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;min-width:36px;text-align:center;}
-.tr-info{flex:1;min-width:0;}
-.tr-place{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
-.tr-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-.tr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
-.tr-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.turkey-hero{background:linear-gradient(135deg,#090818,#0e0c22);border:1px solid #160f30;border-radius:16px;padding:14px;}
+.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+.th-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--purple);}
+.th-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:#160f3015;border:1px solid #160f30;padding:2px 7px;border-radius:5px;}
+.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px;}
+.th-stat{background:#120e26;border:1px solid #1c1238;border-radius:9px;padding:8px;text-align:center;}
+.th-stat-val{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--purple);}
+.th-stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+.risk-strip{display:flex;height:4px;border-radius:99px;overflow:hidden;gap:1px;}
+.risk-seg{flex:1;border-radius:2px;}
 
 /* ALERT SETTINGS */
-.alert-settings{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;}
-.as-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
-.as-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.alert-settings{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:11px;}
+.as-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;}
+.as-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);}
 .as-row:last-child{border:none;padding-bottom:0;}
-.as-label{font-size:12px;color:var(--text);}
-.as-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.toggle{width:40px;height:22px;border-radius:11px;background:var(--border2);border:none;cursor:pointer;position:relative;transition:background .2s;}
+.as-label{font-size:11px;color:var(--text);}
+.as-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.toggle{width:38px;height:20px;border-radius:10px;background:var(--border2);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
 .toggle.on{background:var(--green);}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 3px #0006;}
-.toggle.on::after{left:21px;}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;transition:left .2s;}
+.toggle.on::after{left:20px;}
 .mag-slider{width:100%;accent-color:var(--green);margin-top:4px;}
 
+/* TURKEY LIST */
+.turkey-list{display:flex;flex-direction:column;gap:5px;}
+.tr-item{background:#090818;border:1px solid #140e28;border-left:3px solid;border-radius:10px;padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;}
+.tr-item:active{opacity:.8;}
+.tr-mag{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;min-width:34px;text-align:center;}
+.tr-info{flex:1;min-width:0;}
+.tr-place{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.tr-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.tr-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);flex-shrink:0;}
+
 /* STATS PAGE */
-.report-card{background:linear-gradient(135deg,var(--card),#060e16);border:1px solid var(--border);border-radius:15px;padding:14px;}
-.report-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;}
-.report-text{font-size:12px;line-height:1.7;color:var(--text);}
+.report-card{background:linear-gradient(135deg,var(--card),#050d14);border:1px solid var(--border);border-radius:14px;padding:13px;}
+.report-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.report-text{font-size:11px;line-height:1.7;color:var(--text);}
 .report-text strong{color:var(--green);}
 .report-text .warn{color:var(--orange);}
 .report-text .danger{color:var(--red);}
-
-.big-num-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.big-num-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px;text-align:center;}
-.big-num{font-family:'Orbitron',monospace;font-size:34px;font-weight:900;line-height:1;}
-.big-num-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:4px;letter-spacing:1.5px;text-transform:uppercase;}
-.big-num-sub{font-family:'DM Mono',monospace;font-size:9px;margin-top:3px;}
-
-.region-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
-.rb-items{display:flex;flex-direction:column;gap:7px;margin-top:9px;}
-.rb-item{display:flex;align-items:center;gap:9px;}
-.rb-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:68px;flex-shrink:0;}
+.big-num-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.big-num-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.big-num{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;line-height:1;}
+.big-num-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase;}
+.big-num-sub{font-family:'DM Mono',monospace;font-size:9px;margin-top:2px;}
+.region-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.rb-items{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.rb-item{display:flex;align-items:center;gap:8px;}
+.rb-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:65px;flex-shrink:0;}
 .rb-wrap{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
 .rb-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
-.rb-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);min-width:22px;text-align:right;}
-
-.tl-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;}
-.tl{display:flex;flex-direction:column;margin-top:9px;}
-.tl-item{display:flex;gap:10px;align-items:flex-start;padding-bottom:10px;position:relative;}
+.rb-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);min-width:20px;text-align:right;}
+.tl-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.tl{display:flex;flex-direction:column;margin-top:8px;}
+.tl-item{display:flex;gap:9px;align-items:flex-start;padding-bottom:9px;position:relative;}
 .tl-item:last-child{padding-bottom:0;}
-.tl-item::before{content:'';position:absolute;left:4px;top:16px;bottom:0;width:1px;background:var(--border);}
+.tl-item::before{content:'';position:absolute;left:4px;top:14px;bottom:0;width:1px;background:var(--border);}
 .tl-item:last-child::before{display:none;}
-.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--bg);}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--bg);}
 .tl-body{flex:1;}
-.tl-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.tl-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .tl-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
 
 /* ALERT OVERLAY */
-#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#000000aa;backdrop-filter:blur(12px);align-items:flex-start;justify-content:center;padding-top:58px;}
+#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#000000bb;backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:56px;}
 #alert-overlay.show{display:flex;}
-.alert-box{width:calc(100% - 22px);max-width:440px;background:linear-gradient(135deg,#180410,#200616);border:2px solid var(--red);border-radius:22px;padding:20px;animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;box-shadow:0 0 80px #ef444420,0 24px 50px #00000088;position:relative;overflow:hidden;}
-.al-rings{position:absolute;top:28px;right:28px;width:70px;height:70px;pointer-events:none;}
-.ring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef444428;animation:ringExpand 2s ease infinite;}
+.alert-box{width:calc(100% - 20px);max-width:440px;background:linear-gradient(135deg,#160310,#1e0514);border:2px solid var(--red);border-radius:20px;padding:18px;animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;box-shadow:0 0 60px #ef444418,0 20px 40px #00000088;position:relative;overflow:hidden;}
+.al-rings{position:absolute;top:24px;right:24px;width:60px;height:60px;pointer-events:none;}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef444425;animation:ringExpand 2s ease infinite;}
 .ring:nth-child(2){animation-delay:.65s;}
 .ring:nth-child(3){animation-delay:1.3s;}
-.al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:10px;color:var(--red);letter-spacing:2px;animation:flashText .5s infinite alternate;}
-.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:4px 10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
-.al-mag-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
-.al-mag{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;color:var(--red);text-shadow:0 0 40px #ef444450;line-height:1;}
-.al-unit{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
-.al-place{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4;}
-.al-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:12px;}
-.al-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
-.atag{padding:3px 9px;border-radius:5px;font-family:'DM Mono',monospace;font-size:10px;}
+.al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:9px;color:var(--red);letter-spacing:2px;animation:flashText .5s infinite alternate;}
+.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;}
+.al-mag-row{display:flex;align-items:baseline;gap:5px;margin-bottom:7px;}
+.al-mag{font-family:'Orbitron',monospace;font-size:60px;font-weight:900;color:var(--red);text-shadow:0 0 30px #ef444445;line-height:1;}
+.al-unit{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.al-place{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.4;}
+.al-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;}
+.al-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.atag{padding:3px 8px;border-radius:5px;font-family:'DM Mono',monospace;font-size:9px;}
 .atag.tsunami{background:#1e3a5f;border:1px solid #3b82f6;color:var(--blue);}
 .atag.pager-red{background:#3b0a0a;border:1px solid var(--red);color:var(--red);}
 .atag.felt{background:#1e1e3b;border:1px solid var(--purple);color:var(--purple);}
-.al-share-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:9px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;}
+.al-share-btn{width:100%;padding:8px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
 
 /* DETAIL SHEET */
 #detail-sheet{display:none;position:fixed;inset:0;z-index:200;background:#000000aa;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
 #detail-sheet.show{display:flex;}
-.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:22px 22px 0 0;padding:13px 15px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:88vh;overflow-y:auto;}
-.sheet-handle{width:34px;height:3px;background:var(--border2);border-radius:99px;margin:0 auto 16px;}
-.sh-mag{font-family:'Orbitron',monospace;font-size:48px;font-weight:900;line-height:1;margin-bottom:4px;}
-.sh-place{font-size:15px;font-weight:600;margin-bottom:13px;color:var(--text);line-height:1.4;}
-.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px;}
-.sg{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 10px;}
-.sg-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:20px 20px 0 0;padding:12px 14px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:88vh;overflow-y:auto;}
+.sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:99px;margin:0 auto 15px;}
+.sh-mag{font-family:'Orbitron',monospace;font-size:46px;font-weight:900;line-height:1;margin-bottom:4px;}
+.sh-place{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);line-height:1.4;}
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
+.sg{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 9px;}
+.sg-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
 .sg-v{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text);}
-.sh-cities{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:10px;}
-.sh-cities-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:7px;}
-.city-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
+.sh-cities{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:9px;}
+.sh-ct{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.city-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);}
 .city-row:last-child{border:none;}
 .city-name{font-size:11px;color:var(--text);}
 .city-dist{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);}
-.sh-share-btn{width:100%;padding:11px;background:#00e5a010;border:1px solid #00e5a030;color:var(--green);border-radius:10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;margin-bottom:7px;}
-.sh-link{display:block;text-align:center;padding:11px;background:#60a5fa10;border:1px solid #60a5fa22;border-radius:10px;color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;text-decoration:none;letter-spacing:.5px;margin-bottom:7px;}
-.sh-close{width:100%;padding:11px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:10px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;}
+.sh-share-btn{width:100%;padding:10px;background:#00e5a010;border:1px solid #00e5a028;color:var(--green);border-radius:9px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:6px;}
+.sh-link{display:block;text-align:center;padding:10px;background:#60a5fa10;border:1px solid #60a5fa20;border-radius:9px;color:var(--blue);font-family:'DM Mono',monospace;font-size:10px;text-decoration:none;margin-bottom:6px;}
+.sh-close{width:100%;padding:10px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:9px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
 
 /* STATUS */
-.status-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:26px;text-align:center;}
-.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 11px;}
-.status-msg{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.retry-btn{margin-top:10px;padding:7px 16px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:7px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
-.sec-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;}
+.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
+.status-msg{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.retry-btn{margin-top:9px;padding:6px 14px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:6px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;}
+.sec-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
 .src-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);text-align:center;line-height:1.7;}
-.src-note a{color:#243560;text-decoration:none;}
 
-/* ANIMATIONS */
+/* ANIM */
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes alertPop{from{opacity:0;transform:scale(.88) translateY(-14px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 @keyframes flashText{from{opacity:1}to{opacity:.3}}
 @keyframes fadeNew{0%,60%{opacity:1}100%{opacity:0}}
 @keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 @keyframes ringExpand{0%{transform:scale(.2);opacity:.9}100%{transform:scale(3);opacity:0}}
+@keyframes aiPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+@keyframes borderPulse{0%,100%{box-shadow:0 0 0 0 #ef444430}50%{box-shadow:0 0 0 6px #ef444408}}
 </style>
 </head>
 <body>
+
+<div class="offline-bar" id="offline-bar">📡 OFFLİNE — Son kaydedilen veriler gösteriliyor</div>
 
 <header>
   <div class="logo">SİSMİK<em>NET</em></div>
   <div class="hright">
     <span id="timer">—</span>
-    <button class="hbtn" id="search-btn" onclick="toggleSearch()" title="Ara">🔍</button>
+    <button class="hbtn" onclick="toggleSearch()" title="Ara">🔍</button>
     <button class="hbtn" id="notif-btn" onclick="toggleNotif()" title="Bildirim">🔔</button>
+    <button class="hbtn" id="power-btn" onclick="toggleLowPower()" title="Pil tasarrufu">🔋</button>
     <button class="hbtn" id="rbtn" onclick="manualRefresh()">↻</button>
     <div class="live-pill"><span class="live-dot"></span>CANLI</div>
   </div>
 </header>
 
-<!-- SEARCH -->
 <div class="search-bar" id="search-bar">
-  <input class="search-input" id="search-input" placeholder="Yer adı ara… (örn: Turkey, Japan, İzmir)" oninput="doSearch(this.value)">
+  <input class="search-input" id="search-input" placeholder="Yer ara… (Turkey, İzmir, Japan…)" oninput="doSearch(this.value)">
   <div class="search-results" id="search-results"></div>
 </div>
 
@@ -369,14 +427,14 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
   <div class="alert-box">
     <div class="al-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
     <div class="al-header">
-      <div class="al-title">⚠ BÜYÜK DEPREM TESPİT EDİLDİ</div>
+      <div class="al-title">⚠ BÜYÜK DEPREM</div>
       <button class="al-close" onclick="closeAlert()">KAPAT</button>
     </div>
     <div class="al-mag-row"><div class="al-mag" id="al-mag">—</div><span class="al-unit">Mw</span></div>
     <div class="al-place" id="al-place">—</div>
     <div class="al-meta" id="al-meta">—</div>
     <div class="al-tags" id="al-tags"></div>
-    <button class="al-share-btn" id="al-share" onclick="shareAlert()">📤 Paylaş</button>
+    <button class="al-share-btn" onclick="shareAlert()">📤 Paylaş</button>
   </div>
 </div>
 
@@ -388,10 +446,10 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
     <div class="sh-place" id="sh-place">—</div>
     <div class="sh-grid" id="sh-grid"></div>
     <div class="sh-cities" id="sh-cities" style="display:none">
-      <div class="sh-cities-title">🇹🇷 Türk Şehirlerine Mesafe</div>
+      <div class="sh-ct">🇹🇷 Türk Şehirlerine Mesafe</div>
       <div id="sh-cities-list"></div>
     </div>
-    <button class="sh-share-btn" onclick="shareCurrentQuake()">📤 Depremi Paylaş</button>
+    <button class="sh-share-btn" onclick="shareCurrentQuake()">📤 Paylaş</button>
     <a class="sh-link" id="sh-link" href="#" target="_blank" rel="noopener">🔗 USGS Olay Sayfası</a>
     <button class="sh-close" onclick="closeSheet()">Kapat</button>
   </div>
@@ -399,44 +457,46 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
 
 <!-- PAGE: GLOBAL -->
 <div class="page active" id="page-global">
-  <div class="stats-row">
-    <div class="stat-card g"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">24 Saat</div></div>
-    <div class="stat-card b"><div class="stat-val" id="wb-m4" style="color:var(--blue)">—</div><div class="stat-lbl">M4+</div></div>
-    <div class="stat-card o"><div class="stat-val" id="wb-m5" style="color:var(--orange)">—</div><div class="stat-lbl">M5+</div></div>
-    <div class="stat-card r"><div class="stat-val" id="wb-max" style="color:var(--red)">—</div><div class="stat-lbl">Maks</div></div>
+  <div class="srow">
+    <div class="sc g"><div class="sv" id="wb-total" style="color:var(--green)">—</div><div class="sl">24s</div></div>
+    <div class="sc b"><div class="sv" id="wb-m4" style="color:var(--blue)">—</div><div class="sl">M4+</div></div>
+    <div class="sc o"><div class="sv" id="wb-m5" style="color:var(--orange)">—</div><div class="sl">M5+</div></div>
+    <div class="sc r"><div class="sv" id="wb-max" style="color:var(--red)">—</div><div class="sl">Maks</div></div>
   </div>
 
-  <!-- NEARBY -->
-  <div class="nearby-card" id="nearby-card">
-    <div class="nearby-glow"></div>
-    <div class="nearby-label">📍 KONUMUNUZA EN YAKIN DEPREM</div>
-    <div id="nearby-content">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="nearby-empty">Konum izni gerekiyor</div>
-        <button class="gps-btn" onclick="requestLocation()">📡 Konumu Al</button>
-      </div>
+  <!-- EARLY WARNING SYSTEM -->
+  <div class="ew-card" id="ew-card">
+    <div class="ew-header">
+      <div class="ew-icon">📡</div>
+      <div class="ew-title" id="ew-title">ERKEN UYARI SİSTEMİ</div>
     </div>
-  </div>
-
-  <!-- ACTIVITY SCORE -->
-  <div class="activity-card">
-    <div class="act-glow" id="act-glow"></div>
-    <div class="act-row">
-      <div class="act-gauge">
-        <svg viewBox="0 0 76 76">
-          <circle cx="38" cy="38" r="30" fill="none" stroke="#141d30" stroke-width="6"/>
-          <circle cx="38" cy="38" r="30" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="188" id="gauge-circle" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease,stroke .5s;"/>
+    <div class="ew-body">
+      <div class="ew-gauge">
+        <svg viewBox="0 0 70 70">
+          <circle cx="35" cy="35" r="28" fill="none" stroke="#131c2c" stroke-width="5"/>
+          <circle cx="35" cy="35" r="28" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176" id="ew-circle" style="transform:rotate(-90deg);transform-origin:center;transition:all .8s ease;"/>
         </svg>
-        <div class="act-gauge-val">
-          <div class="act-num" id="act-score">—</div>
-          <div class="act-lbl2">SKOR</div>
+        <div class="ew-gauge-inner">
+          <div class="ew-num" id="ew-score">0</div>
+          <div class="ew-unit">AKTİVİTE</div>
         </div>
       </div>
-      <div class="act-info">
-        <div class="act-title" id="act-level" style="color:var(--green)">YÜKLENİYOR</div>
-        <div class="act-desc" id="act-desc">Analiz ediliyor…</div>
-        <div class="act-bars" id="act-bars"></div>
+      <div class="ew-info">
+        <div class="ew-status" id="ew-status">P dalgası analizi bekleniyor…</div>
+        <div class="ew-bars" id="ew-bars"></div>
       </div>
+    </div>
+    <div class="ew-countdown" id="ew-countdown"></div>
+  </div>
+
+  <!-- AI ANALYSIS -->
+  <div class="ai-card">
+    <div class="ai-header">
+      <div class="ai-icon">🧠</div>
+      <div class="ai-title">Yapay Zeka Analizi</div>
+    </div>
+    <div class="ai-text" id="ai-text">
+      <div class="ai-loading"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span style="font-size:11px;color:var(--muted)">Veri analiz ediliyor…</span></div>
     </div>
   </div>
 
@@ -452,35 +512,44 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
   <div class="sec-title">En Büyük Olay</div>
   <div id="featured-wrap"><div class="status-card"><div class="spinner"></div><div class="status-msg">Yükleniyor…</div></div></div>
 
+  <!-- HEATMAP -->
+  <div class="heatmap-card">
+    <div class="hm-overlay">
+      <div class="hm-title">SICAKLIK HARİTASI</div>
+      <div class="hm-legend">
+        <div>
+          <div class="hm-legend-bar"></div>
+          <div class="hm-legend-labels"><span class="hm-legend-l">Düşük</span><span class="hm-legend-l">Yüksek</span></div>
+        </div>
+      </div>
+    </div>
+    <canvas id="heatmap" height="200"></canvas>
+  </div>
+
+  <!-- MAP -->
   <div class="map-card">
-    <div class="map-overlay">
-      <div class="map-title">KÜRESEL AKTİVİTE HARİTASI</div>
-      <div class="map-count" id="map-count">—</div>
+    <div class="map-over">
+      <div class="mt">KÜRESEL HARİTA</div>
+      <div class="mt" id="map-count">—</div>
     </div>
     <svg id="world-map" viewBox="0 0 800 400"></svg>
   </div>
 
   <div class="seismo-card">
-    <div class="card-header">
-      <div class="card-title">Büyüklük Zaman Serisi</div>
-      <div class="card-sub" id="seismo-count">—</div>
-    </div>
+    <div class="ch"><div class="ct">Zaman Serisi</div><div class="cs" id="seismo-count">—</div></div>
     <canvas id="seismo"></canvas>
-    <div class="seismo-live" style="margin-top:8px">
-      <div class="seismo-live-dot"></div>
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px">CANLI SİSMOGRAF</span>
-    </div>
+    <div class="slive-label"><div class="slive-dot"></div><span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px">CANLI SİSMOGRAF</span></div>
     <canvas id="seismo-live"></canvas>
   </div>
 
   <div class="magdist-card">
-    <div class="card-header"><div class="card-title">Büyüklük Dağılımı</div></div>
+    <div class="ch"><div class="ct">Büyüklük Dağılımı</div></div>
     <div class="mag-bars" id="mag-bars"></div>
   </div>
 
   <div class="sec-title">Deprem Listesi</div>
   <div id="eq-container"><div class="status-card"><div class="spinner"></div><div class="status-msg">Bağlanılıyor…</div></div></div>
-  <div class="src-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS Earthquake Hazards Program</a> · 60s güncelleme · M5.5+ otomatik uyarı</div>
+  <div class="src-note">USGS · 60s güncelleme · M5.5+ otomatik uyarı</div>
 </div>
 
 <!-- PAGE: TURKEY -->
@@ -498,59 +567,91 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
     <div class="risk-strip" id="tr-risk-strip"></div>
   </div>
 
-  <div class="pager-card" id="pager-card" style="display:none">
-    <div class="pager-title">📊 PAGER Kayıp Tahmini (Son Büyük Olay)</div>
-    <div class="pager-row">
-      <div class="pager-item green"><div class="pager-num" id="pager-g" style="color:var(--green)">—</div><div class="pager-lbl">Yeşil</div></div>
-      <div class="pager-item yellow"><div class="pager-num" id="pager-y" style="color:var(--yellow)">—</div><div class="pager-lbl">Sarı</div></div>
-      <div class="pager-item orange"><div class="pager-num" id="pager-o" style="color:var(--orange)">—</div><div class="pager-lbl">Turuncu</div></div>
-      <div class="pager-item red"><div class="pager-num" id="pager-r" style="color:var(--red)">—</div><div class="pager-lbl">Kırmızı</div></div>
+  <!-- AFTERSHOCK PREDICTION -->
+  <div class="aftershock-card" id="aftershock-card">
+    <div class="as2-header">
+      <div class="as2-title">📈 ARTÇI TAHMİNİ</div>
+      <div class="as2-badge" id="as-source">Omori Yasası</div>
+    </div>
+    <div id="as-main-info" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:8px">En büyük depreme göre hesaplanıyor…</div>
+    <table class="omori-table">
+      <tr><th>Süre</th><th>Tahmini Artçı</th><th>Maks Büyüklük</th></tr>
+      <tbody id="omori-rows"></tbody>
+    </table>
+    <div class="omori-chart" id="omori-chart"></div>
+  </div>
+
+  <!-- AFAD COMPARISON -->
+  <div class="afad-card">
+    <div class="ch"><div class="ct">AFAD & USGS Karşılaştırma</div></div>
+    <div class="afad-tabs">
+      <div class="afad-tab active" onclick="switchAfad('usgs',this)">USGS</div>
+      <div class="afad-tab" onclick="switchAfad('afad',this)">AFAD</div>
+      <div class="afad-tab" onclick="switchAfad('both',this)">İkisi</div>
+    </div>
+    <div class="afad-list" id="afad-list"><div class="status-card" style="padding:12px"><div class="status-msg">Yükleniyor…</div></div></div>
+  </div>
+
+  <!-- PROVINCE RISK -->
+  <div class="province-card">
+    <div class="ch"><div class="ct">🏙️ İl Bazlı Risk Skoru</div><div class="cs">Son 30 gün</div></div>
+    <div class="prov-grid" id="prov-grid"></div>
+    <div class="risk-legend">
+      <div class="rl-item"><div class="rl-dot" style="background:#ef4444"></div><div class="rl-label">Çok Yüksek</div></div>
+      <div class="rl-item"><div class="rl-dot" style="background:#f97316"></div><div class="rl-label">Yüksek</div></div>
+      <div class="rl-item"><div class="rl-dot" style="background:#fbbf24"></div><div class="rl-label">Orta</div></div>
+      <div class="rl-item"><div class="rl-dot" style="background:#22d3ee"></div><div class="rl-label">Düşük</div></div>
+      <div class="rl-item"><div class="rl-dot" style="background:#00e5a0"></div><div class="rl-label">Normal</div></div>
     </div>
   </div>
 
   <div class="alert-settings">
     <div class="as-title">⚙️ Uyarı Ayarları</div>
     <div class="as-row">
-      <div><div class="as-label">Bildirim Al</div><div class="as-sub">Deprem uyarılarını bildir</div></div>
-      <button class="toggle" id="notif-toggle" onclick="toggleNotifFromSettings()"></button>
+      <div><div class="as-label">Bildirim Al</div><div class="as-sub">Deprem push bildirimi</div></div>
+      <button class="toggle" id="notif-toggle" onclick="toggleNotifS()"></button>
     </div>
     <div class="as-row">
-      <div><div class="as-label">Sadece Türkiye</div><div class="as-sub">Yalnızca TR bölgesi uyarıları</div></div>
+      <div><div class="as-label">Sadece Türkiye</div><div class="as-sub">Yalnızca TR bölgesi</div></div>
       <button class="toggle" id="tr-only-toggle" onclick="toggleTrOnly()"></button>
+    </div>
+    <div class="as-row">
+      <div><div class="as-label">Pil Tasarrufu</div><div class="as-sub">Animasyonları devre dışı bırak</div></div>
+      <button class="toggle" id="power-toggle" onclick="toggleLowPower()"></button>
     </div>
     <div class="as-row">
       <div>
         <div class="as-label">Min. Büyüklük: <span id="mag-thresh-val" style="color:var(--green)">M5.5</span></div>
-        <div class="as-sub">Bu değer ve üzeri uyarı gönder</div>
+        <div class="as-sub">Bu değer üzeri uyarı</div>
       </div>
     </div>
     <input type="range" class="mag-slider" min="2" max="8" step="0.5" value="5.5" oninput="updateMagThresh(this.value)">
   </div>
 
   <div class="sec-title">Türkiye Depremleri</div>
-  <div class="turkey-list" id="turkey-list"><div class="status-card"><div class="status-msg">Veriler alınıyor…</div></div></div>
+  <div class="turkey-list" id="turkey-list"><div class="status-card"><div class="status-msg">Yükleniyor…</div></div></div>
 </div>
 
 <!-- PAGE: STATS -->
 <div class="page" id="page-stats">
   <div class="report-card">
     <div class="report-title">📊 Otomatik Analiz Raporu</div>
-    <div class="report-text" id="report-text">Veriler analiz ediliyor…</div>
+    <div class="report-text" id="report-text">Analiz ediliyor…</div>
   </div>
   <div class="big-num-row">
     <div class="big-num-card"><div class="big-num" id="st-total" style="color:var(--green)">—</div><div class="big-num-lbl">Toplam 24s</div><div class="big-num-sub" id="st-rate" style="color:var(--muted)">—</div></div>
-    <div class="big-num-card"><div class="big-num" id="st-max" style="color:var(--red)">—</div><div class="big-num-lbl">Maks Büyüklük</div><div class="big-num-sub" id="st-max-loc" style="color:var(--muted)">—</div></div>
+    <div class="big-num-card"><div class="big-num" id="st-max" style="color:var(--red)">—</div><div class="big-num-lbl">Maks</div><div class="big-num-sub" id="st-max-loc" style="color:var(--muted)">—</div></div>
   </div>
   <div class="region-card">
-    <div class="card-header"><div class="card-title">Bölgesel Dağılım</div></div>
+    <div class="ch"><div class="ct">Bölgesel Dağılım</div></div>
     <div class="rb-items" id="region-bars"></div>
   </div>
   <div class="tl-card">
-    <div class="card-header"><div class="card-title">Son Büyük Depremler M5+</div></div>
+    <div class="ch"><div class="ct">Son M5+ Depremler</div></div>
     <div class="tl" id="big-tl"></div>
   </div>
   <div class="region-card">
-    <div class="card-header"><div class="card-title">Derinlik Dağılımı</div></div>
+    <div class="ch"><div class="ct">Derinlik Dağılımı</div></div>
     <div class="rb-items" id="depth-bars"></div>
   </div>
 </div>
@@ -564,16 +665,25 @@ canvas#seismo-live{width:100%;height:40px;display:block;border-radius:6px;backgr
 
 <script>
 // ── CONFIG ──
-const REFRESH=60;
-let ALERT_MAG=5.5, TR_ONLY=false, NOTIF_ON=false;
+const REFRESH_NORMAL=60, REFRESH_LOW=180;
+let REFRESH=REFRESH_NORMAL, ALERT_MAG=5.5, TR_ONLY=false, NOTIF_ON=false, LOW_POWER=false;
 const USGS='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
 const TR_API='https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=30&maxlatitude=46&minlongitude=20&maxlongitude=50&minmagnitude=1.5&orderby=time&limit=50';
-const TR_CITIES=[{n:'İstanbul',lat:41.01,lon:28.97},{n:'İzmir',lat:38.42,lon:27.14},{n:'Ankara',lat:39.93,lon:32.86},{n:'Antalya',lat:36.90,lon:30.70},{n:'Bursa',lat:40.19,lon:29.06},{n:'Adana',lat:37.00,lon:35.32},{n:'Gaziantep',lat:37.07,lon:37.38}];
+const AFAD_API='https://deprem.afad.gov.tr/apiv2/event/filter?start=START&end=END&minmag=1&orderby=timedesc&limit=20&format=json';
+const TR_CITIES=[{n:'İstanbul',lat:41.01,lon:28.97},{n:'İzmir',lat:38.42,lon:27.14},{n:'Ankara',lat:39.93,lon:32.86},{n:'Antalya',lat:36.90,lon:30.70},{n:'Bursa',lat:40.19,lon:29.06},{n:'Adana',lat:37.00,lon:35.32},{n:'Gaziantep',lat:37.07,lon:37.38},{n:'Erzincan',lat:39.75,lon:39.49},{n:'Van',lat:38.49,lon:43.38}];
 
-// ── STATE ──
-let allQ=[],trQ=[],filterMin=0,seenIds=new Set(),counter=REFRESH,timerInt=null,firstLoad=true,alertQ=[],alertBusy=false;
-let userLat=null,userLon=null,currentQuake=null,alertQuake=null;
-let livePhase=0,liveAnim=null;
+// Province risk data (historical + realtime)
+const PROVINCES=[
+  {n:'İstanbul',lat:41.01,lon:28.97},{n:'İzmir',lat:38.42,lon:27.14},{n:'Kahramanmaraş',lat:37.57,lon:36.94},
+  {n:'Hatay',lat:36.20,lon:36.16},{n:'Erzincan',lat:39.75,lon:39.49},{n:'Bingöl',lat:38.89,lon:40.50},
+  {n:'Elazığ',lat:38.67,lon:39.22},{n:'Muş',lat:38.74,lon:41.49},{n:'Van',lat:38.49,lon:43.38},
+  {n:'Denizli',lat:37.78,lon:29.09},{n:'Manisa',lat:38.61,lon:27.43},{n:'Muğla',lat:37.21,lon:28.36},
+];
+
+// State
+let allQ=[],trQ=[],afadQ=[],filterMin=0,seenIds=new Set(),counter=REFRESH,timerInt=null,firstLoad=true,alertQ=[],alertBusy=false;
+let currentQuake=null,alertQuake=null,liveAnim=null,isOffline=false,afadMode='usgs';
+let ewTimeout=null;
 
 // ── TABS ──
 function switchTab(n,el){
@@ -582,7 +692,7 @@ function switchTab(n,el){
   document.getElementById('page-'+n).classList.add('active');
   el.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  if(n==='global'){renderSeismo();startLiveSeismo();}
+  if(n==='global'&&!LOW_POWER){renderSeismo();startLiveSeismo();}
 }
 
 // ── HELPERS ──
@@ -592,76 +702,85 @@ const fM=m=>m!=null?m.toFixed(1):'?';
 const fD=d=>d!=null?`${d.toFixed(0)} km`:'?';
 function ago(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}dk`;if(s<86400)return`${Math.floor(s/3600)}sa`;return`${Math.floor(s/86400)}g`;}
 function dist(la1,lo1,la2,lo2){const R=6371,dL=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
-function buildTags(p){let h='';if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ UYARISI</span>`;if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;if(p.felt>50)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;return h;}
-function shareText(q){const p=q.properties,m=p.mag||0,c=q.geometry?.coordinates;return `🔴 M${fM(m)} DEPREM\n📍 ${p.place||'Bilinmiyor'}\n⬇ Derinlik: ${fD(c?c[2]:null)}\n🕐 ${new Date(p.time).toLocaleString('tr-TR')}\n📡 USGS: ${p.url||''}\n\nSismikNet ile izle`;}
+function buildTags(p){let h='';if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ</span>`;if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;if(p.felt>50)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;return h;}
+function shareText(q){const p=q.properties,c=q.geometry?.coordinates;return`🔴 M${fM(p.mag)} DEPREM\n📍 ${p.place||'?'}\n⬇ ${fD(c?c[2]:null)}\n🕐 ${new Date(p.time).toLocaleString('tr-TR')}\n🌐 ${p.url||''}\n\nSismikNet ile izle`;}
+function copyText(t){navigator.clipboard?navigator.clipboard.writeText(t):(el=>{el.value=t;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);})(document.createElement('textarea'));}
 
 // ── SEARCH ──
-let searchOpen=false;
-function toggleSearch(){
-  searchOpen=!searchOpen;
-  document.getElementById('search-bar').classList.toggle('show',searchOpen);
-  document.getElementById('page-global').classList.toggle('search-open',searchOpen);
-  if(searchOpen)document.getElementById('search-input').focus();
-  else{document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='';}
-}
+let srOpen=false;
+function toggleSearch(){srOpen=!srOpen;document.getElementById('search-bar').classList.toggle('show',srOpen);document.getElementById('page-global').classList.toggle('sp',srOpen);if(srOpen)document.getElementById('search-input').focus();else{document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='';}}
 function doSearch(q){
   const box=document.getElementById('search-results');
   if(!q||q.length<2){box.innerHTML='';return;}
-  const results=allQ.filter(f=>(f.properties.place||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
-  if(!results.length){box.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);padding:8px">Sonuç bulunamadı</div>`;return;}
-  box.innerHTML=results.map((f,i)=>`<div class="sr-item" data-si="${i}"><div class="sr-mag" style="color:${col(f.properties.mag||0)}">${fM(f.properties.mag)}</div><div class="sr-place">${f.properties.place||'—'}</div><div class="sr-time">${ago(f.properties.time)}</div></div>`).join('');
-  results.forEach((f,i)=>{box.querySelector(`[data-si="${i}"]`).onclick=()=>{toggleSearch();openSheet(f);}});
+  const res=allQ.filter(f=>(f.properties.place||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  if(!res.length){box.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);padding:8px">Sonuç yok</div>`;return;}
+  box.innerHTML=res.map((f,i)=>`<div class="sr-item" data-si="${i}"><div class="sr-mag" style="color:${col(f.properties.mag||0)}">${fM(f.properties.mag)}</div><div class="sr-place">${f.properties.place||'—'}</div><div class="sr-time">${ago(f.properties.time)}</div></div>`).join('');
+  res.forEach((f,i)=>{box.querySelector(`[data-si="${i}"]`).onclick=()=>{toggleSearch();openSheet(f);}});
 }
 
-// ── LOCATION ──
-function requestLocation(){
-  if(!navigator.geolocation){document.getElementById('nearby-content').innerHTML='<div class="nearby-empty">Konum desteklenmiyor</div>';return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    userLat=pos.coords.latitude;userLon=pos.coords.longitude;
-    renderNearby();
-  },err=>{document.getElementById('nearby-content').innerHTML='<div class="nearby-empty">Konum izni reddedildi</div>';});
+// ── LOW POWER ──
+function toggleLowPower(){
+  LOW_POWER=!LOW_POWER;
+  document.body.classList.toggle('low-power',LOW_POWER);
+  document.getElementById('power-btn').classList.toggle('low-on',LOW_POWER);
+  document.getElementById('power-toggle').classList.toggle('on',LOW_POWER);
+  REFRESH=LOW_POWER?REFRESH_LOW:REFRESH_NORMAL;
+  if(LOW_POWER){if(liveAnim){cancelAnimationFrame(liveAnim);liveAnim=null;}}
+  else{startLiveSeismo();}
 }
-function renderNearby(){
-  const box=document.getElementById('nearby-content');
-  if(userLat===null||!allQ.length){
-    box.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between"><div class="nearby-empty">Konum izni gerekiyor</div><button class="gps-btn" onclick="requestLocation()">📡 Konumu Al</button></div>`;
-    return;
-  }
-  const withDist=allQ.map(f=>{const c=f.geometry?.coordinates;if(!c)return null;return{f,d:dist(userLat,userLon,c[1],c[0])};}).filter(Boolean).sort((a,b)=>a.d-b.d);
-  if(!withDist.length){box.innerHTML='<div class="nearby-empty">Yakında deprem yok</div>';return;}
-  const {f,d}=withDist[0];const p=f.properties,m=p.mag||0;
-  box.innerHTML=`<div class="nearby-content" onclick="openSheet(window._nearbyQ)" style="cursor:pointer">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="nearby-mag" style="color:${col(m)}">${fM(m)}</div>
-      <div class="nearby-info">
-        <div class="nearby-place">${p.place||'Bilinmiyor'}</div>
-        <div class="nearby-dist">📍 ${d} km uzakta</div>
-        <div class="nearby-time">${ago(p.time)} önce</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-        <button class="gps-btn" onclick="event.stopPropagation();requestLocation()" style="font-size:9px;padding:3px 7px">↻</button>
-      </div>
-    </div>
-  </div>`;
-  window._nearbyQ=f;
-}
+
+// ── OFFLINE ──
+window.addEventListener('offline',()=>{isOffline=true;document.getElementById('offline-bar').classList.add('show');});
+window.addEventListener('online',()=>{isOffline=false;document.getElementById('offline-bar').classList.remove('show');manualRefresh();});
 
 // ── FETCH ──
 async function fetchData(){
+  if(isOffline)return;
   try{
     const r=await fetch(USGS+'?_t='+Date.now());
     if(!r.ok)throw new Error('HTTP '+r.status);
     const j=await r.json();
+    // Cache
+    try{const c=await caches.open('sismiknet-v6');c.put(USGS,new Response(JSON.stringify(j)));}catch(_){}
     process(j.features);
     fetchTurkey();
     startTimer();
-  }catch(e){showErr(e.message);}
+  }catch(e){
+    // Try cache
+    try{
+      const c=await caches.open('sismiknet-v6');
+      const cr=await c.match(USGS);
+      if(cr){const j=await cr.json();process(j.features);isOffline=true;document.getElementById('offline-bar').classList.add('show');}
+      else showErr(e.message);
+    }catch(_){showErr(e.message);}
+  }
 }
+
 async function fetchTurkey(){
-  try{const r=await fetch(TR_API);if(r.ok){const j=await r.json();if(j.features?.length)trQ=j.features;}}catch(_){}
+  try{const r=await fetch(TR_API);if(r.ok){const j=await r.json();if(j.features?.length){trQ=j.features;try{const c=await caches.open('sismiknet-v6');c.put(TR_API,new Response(JSON.stringify(j)));}catch(_){}}}
+  }catch(_){}
+  if(!trQ.length){
+    try{const c=await caches.open('sismiknet-v6');const cr=await c.match(TR_API);if(cr){const j=await cr.json();trQ=j.features||[];}}catch(_){}
+  }
   if(!trQ.length)trQ=allQ.filter(f=>{const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;});
   trQ.sort((a,b)=>b.properties.time-a.properties.time);
   renderTurkey();
+  fetchAfad();
+}
+
+async function fetchAfad(){
+  try{
+    const now=new Date(),s=new Date(now-7*86400000);
+    const sf=s.toISOString().slice(0,19).replace('T',' '),ef=now.toISOString().slice(0,19).replace('T',' ');
+    const r=await fetch(AFAD_API.replace('START',encodeURIComponent(sf)).replace('END',encodeURIComponent(ef)));
+    if(r.ok){
+      const j=await r.json();
+      if(Array.isArray(j)){
+        afadQ=j.map(e=>({id:'afad_'+e.eventID,src:'AFAD',properties:{mag:parseFloat(e.magnitude)||0,place:e.location||'Türkiye',time:new Date(e.date).getTime(),magType:'ML',depth:parseFloat(e.depth)||10},geometry:{coordinates:[parseFloat(e.longitude),parseFloat(e.latitude),parseFloat(e.depth)||10]}}));
+      }
+    }
+  }catch(_){}
+  renderAfad();
 }
 
 // ── PROCESS ──
@@ -671,17 +790,13 @@ function process(features){
   allQ=features.sort((a,b)=>(b.properties.mag||0)-(a.properties.mag||0));
   seenIds=newIds;
   if(!firstLoad){
-    const alerts=newOnes.filter(f=>{
-      const m=(f.properties.mag||0)>=ALERT_MAG;
-      if(!m)return false;
-      if(TR_ONLY){const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;}
-      return true;
-    }).sort((a,b)=>b.properties.mag-a.properties.mag);
+    const alerts=newOnes.filter(f=>{const m=(f.properties.mag||0)>=ALERT_MAG;if(!m)return false;if(TR_ONLY){const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;}return true;}).sort((a,b)=>b.properties.mag-a.properties.mag);
     alerts.forEach(f=>alertQ.push(f));
     if(!alertBusy&&alertQ.length)showAlert();
   }
-  renderWorldBar();renderActivityScore();renderFeatured();renderMap();renderSeismo();renderMagDist();renderList();renderStats();
-  if(userLat!==null)renderNearby();
+  renderWorldBar();renderEarlyWarning();renderAI();renderFeatured();renderHeatmap();renderMap();
+  if(!LOW_POWER){renderSeismo();}
+  renderMagDist();renderList();renderStats();
   firstLoad=false;
 }
 
@@ -689,37 +804,68 @@ function process(features){
 function renderWorldBar(){
   const t=allQ.length,m4=allQ.filter(f=>(f.properties.mag||0)>=4).length;
   const m5=allQ.filter(f=>(f.properties.mag||0)>=5).length,mx=allQ[0]?.properties.mag||0;
-  document.getElementById('wb-total').textContent=t;
-  document.getElementById('wb-m4').textContent=m4;
-  document.getElementById('wb-m5').textContent=m5;
-  document.getElementById('wb-max').textContent=fM(mx);
+  document.getElementById('wb-total').textContent=t;document.getElementById('wb-m4').textContent=m4;
+  document.getElementById('wb-m5').textContent=m5;document.getElementById('wb-max').textContent=fM(mx);
 }
 
-// ── ACTIVITY SCORE ──
-function renderActivityScore(){
+// ── EARLY WARNING ──
+function renderEarlyWarning(){
   const now=Date.now();
-  const l1=allQ.filter(f=>now-f.properties.time<3600000).length;
-  const l6=allQ.filter(f=>now-f.properties.time<21600000).length;
-  const big=allQ.filter(f=>(f.properties.mag||0)>=5).length;
-  let score=Math.min(100,Math.round(l1*3+l6*.4+big*8));
-  document.getElementById('act-score').textContent=score;
-  const circle=document.getElementById('gauge-circle');
-  circle.style.strokeDashoffset=188-(188*score/100);
-  let lv,desc,c;
-  if(score<15){lv='SAKİN';desc=`Normal aktivite. Son 1s: ${l1} olay.`;c='var(--green)';}
-  else if(score<35){lv='DÜŞÜK';desc=`Son 1 saatte ${l1} deprem.`;c='var(--cyan)';}
-  else if(score<55){lv='ORTA';desc=`Dikkat: ${l6} olay son 6 saatte.`;c='var(--yellow)';}
-  else if(score<75){lv='YÜKSEK';desc=`Uyarı: ${big} adet M5+ deprem!`;c='var(--orange)';}
-  else{lv='KRİTİK';desc=`ACİL: Yoğun sismik aktivite!`;c='var(--red)';}
-  circle.style.stroke=c;
-  document.getElementById('act-score').style.color=c;
-  document.getElementById('act-level').textContent=lv;
-  document.getElementById('act-level').style.color=c;
-  document.getElementById('act-desc').textContent=desc;
-  document.getElementById('act-glow').style.background=`radial-gradient(circle,${c}12,transparent 70%)`;
-  const bars=[];for(let i=11;i>=0;i--){const s=now-(i+1)*3600000,e=now-i*3600000;bars.push(allQ.filter(f=>f.properties.time>=s&&f.properties.time<e).length);}
+  const l1=allQ.filter(f=>now-f.properties.time<3600000);
+  const l6=allQ.filter(f=>now-f.properties.time<21600000);
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5);
+  const score=Math.min(100,Math.round(l1.length*3+l6.length*.4+big.length*8));
+  document.getElementById('ew-score').textContent=score;
+  const circle=document.getElementById('ew-circle');
+  circle.style.strokeDashoffset=176-(176*score/100);
+  let status,color,title;
+  if(score<15){status=`Normal aktivite. Son 1s: ${l1.length} olay.`;color='var(--green)';title='SİSTEM HAZIR';}
+  else if(score<35){status=`Düşük aktivite. ${l6.length} olay/6s.`;color='var(--cyan)';title='İZLEME AKTIF';}
+  else if(score<60){status=`Orta aktivite! ${big.length} adet M5+ mevcut.`;color='var(--yellow)';title='DİKKAT MOD';}
+  else if(score<80){status=`Yüksek aktivite! ${big.length} büyük deprem!`;color='var(--orange)';title='UYARI MOD';}
+  else{status=`KRİTİK! ACİL UYARI — Yoğun aktivite!`;color='var(--red)';title='ACİL UYARI';}
+  circle.style.stroke=color;
+  document.getElementById('ew-score').style.color=color;
+  document.getElementById('ew-title').textContent=title;
+  document.getElementById('ew-title').style.color=score>=80?'var(--red)':'var(--purple)';
+  document.getElementById('ew-status').textContent=status;
+  document.getElementById('ew-card').classList.toggle('ew-active',score>=80);
+  // Bars
+  const bars=[];for(let i=11;i>=0;i--){const s=now-(i+1)*3600000,e2=now-i*3600000;bars.push(allQ.filter(f=>f.properties.time>=s&&f.properties.time<e2).length);}
   const bmax=Math.max(...bars,1);
-  document.getElementById('act-bars').innerHTML=bars.map((b,i)=>`<div class="act-bar" style="height:${Math.max(4,(b/bmax)*100)}%;background:${i===11?c:col(b>5?6:b>2?5:b>0?3:0)};opacity:${i===11?1:.45}"></div>`).join('');
+  document.getElementById('ew-bars').innerHTML=bars.map((b,i)=>`<div class="ew-bar" style="height:${Math.max(4,(b/bmax)*100)}%;background:${i===11?color:col(b>5?6:b>2?5:b>0?3:0)};opacity:${i===11?1:.4}"></div>`).join('');
+  // P wave countdown simulation for recent big quake
+  const recent=allQ.find(f=>(f.properties.mag||0)>=5&&now-f.properties.time<600000);
+  if(recent){
+    const elapsed=Math.floor((now-recent.properties.time)/1000);
+    const sWave=Math.max(0,30-elapsed);
+    if(sWave>0){document.getElementById('ew-countdown').classList.add('show');document.getElementById('ew-countdown').textContent=`S dalgası: ~${sWave}s`;}
+    else{document.getElementById('ew-countdown').classList.remove('show');}
+  }else{document.getElementById('ew-countdown').classList.remove('show');}
+}
+
+// ── AI ANALYSIS ──
+function renderAI(){
+  if(!allQ.length)return;
+  const now=Date.now();
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5);
+  const vbig=allQ.filter(f=>(f.properties.mag||0)>=6);
+  const l1=allQ.filter(f=>now-f.properties.time<3600000);
+  const tsunami=allQ.filter(f=>f.properties.tsunami===1);
+  const mx=allQ[0],mxM=mx?.properties.mag||0;
+  const mxPlace=(mx?.properties.place||'').split(' of ').pop();
+  const trQuakes=allQ.filter(f=>{const c=f.geometry?.coordinates;return c&&c[1]>=36&&c[1]<=42&&c[0]>=26&&c[0]<=44;});
+  let analysis='';
+  if(vbig.length>0){analysis+=`<span class="danger">⚠ YÜKSEK RİSK: ${vbig.length} adet M6+ deprem tespit edildi!</span> Bu büyüklükte depremler ciddi hasar potansiyeli taşır. `;}
+  else if(big.length>0){analysis+=`<span class="warn">📊 ${big.length} adet M5+ deprem aktif.</span> `;}
+  else{analysis+=`<span class="ok">✓ Büyük deprem (M5+) bulunmuyor.</span> `;}
+  analysis+=`Son 24 saatte <strong>${allQ.length}</strong> deprem kaydedildi (saatte ~${(allQ.length/24).toFixed(1)}). `;
+  analysis+=`En büyük olay <strong>M${fM(mxM)}</strong>, ${mxPlace} bölgesinde. `;
+  if(trQuakes.length>0)analysis+=`<span class="warn">🇹🇷 Türkiye yakınında ${trQuakes.length} deprem tespit edildi.</span> `;
+  if(tsunami.length>0)analysis+=`<span class="danger">🌊 ${tsunami.length} adet tsunami uyarısı mevcut!</span> `;
+  if(l1.length>10)analysis+=`<span class="warn">Son 1 saatte yoğun aktivite: ${l1.length} deprem.</span>`;
+  else analysis+=`<span class="ok">Son 1 saatte aktivite normal (${l1.length} deprem).</span>`;
+  document.getElementById('ai-text').innerHTML=analysis;
 }
 
 // ── FEATURED ──
@@ -727,45 +873,60 @@ function renderFeatured(){
   const w=document.getElementById('featured-wrap');
   if(!allQ.length){w.innerHTML='<div class="status-card"><div class="status-msg">Veri yok</div></div>';return;}
   const f=allQ[0],p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
-  const glowCol=col(m);
-  const sz=m>=7?70:m>=6?62:m>=5?54:m>=4?46:40;
-  const badgeCls=m>=6?'r':m>=5?'o':'y';
+  const gc=col(m),sz=m>=7?68:m>=6?60:m>=5?52:m>=4?44:38;
+  const bc=m>=6?'r':m>=5?'o':'y';
   w.innerHTML=`<div class="featured" id="feat-card">
-    <div class="feat-glow" style="background:radial-gradient(circle,${glowCol}15,transparent 70%)"></div>
-    <div class="feat-top"><span class="feat-badge ${badgeCls}">⚡ EN BÜYÜK</span><span class="feat-time">${ago(p.time)} önce</span></div>
-    <div style="font-family:'Orbitron',monospace;font-size:${sz}px;font-weight:900;color:${glowCol};${m>=6?`text-shadow:0 0 36px ${glowCol}44`:''};margin-bottom:4px">${fM(m)}</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px">${p.magType||'Mw'} · ${p.net||'us'}</div>
+    <div class="feat-glow" style="background:radial-gradient(circle,${gc}12,transparent 70%)"></div>
+    <div class="feat-top"><span class="feat-badge ${bc}">⚡ EN BÜYÜK</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${ago(p.time)} önce</span></div>
+    <div style="font-family:'Orbitron',monospace;font-size:${sz}px;font-weight:900;color:${gc};${m>=6?`text-shadow:0 0 30px ${gc}44`:''};margin-bottom:4px">${fM(m)}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:9px">${p.magType||'Mw'} · ${p.net||'us'}</div>
     <div class="feat-place">${p.place||'Bilinmiyor'}</div>
     <div class="feat-pills">
       <span class="pill d">⬇ ${fD(d)}</span>
       ${p.felt?`<span class="pill f">👁 ${p.felt}</span>`:''}
-      ${p.tsunami===1?`<span class="pill t">🌊 TSUNAMİ</span>`:''}
+      ${p.tsunami===1?`<span class="pill t">🌊</span>`:''}
       ${p.cdi?`<span class="pill c">CDI ${p.cdi.toFixed(1)}</span>`:''}
-      ${p.alert?`<span class="pill p">PAGER ${p.alert.toUpperCase()}</span>`:''}
     </div>
-    <div class="feat-prog"><div class="feat-prog-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${glowCol}"></div></div>
+    <div class="feat-prog"><div class="feat-prog-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${gc}"></div></div>
   </div>`;
   document.getElementById('feat-card').onclick=()=>openSheet(f);
 }
 
-// ── WORLD MAP ──
+// ── HEATMAP ──
+function renderHeatmap(){
+  const cv=document.getElementById('heatmap');
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.clientWidth||300,H=200;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.fillStyle='#020508';ctx.fillRect(0,0,W,H);
+  function proj(lat,lon){return[((lon+180)/360)*W,((90-lat)/180)*H];}
+  // Draw heatmap blobs
+  allQ.forEach(f=>{
+    const c=f.geometry?.coordinates;if(!c)return;
+    const m=f.properties.mag||0;if(m<2)return;
+    const[x,y]=proj(c[1],c[0]);
+    const r=Math.max(8,m*6);
+    const intensity=Math.min(1,(m-2)/5);
+    const grd=ctx.createRadialGradient(x,y,0,x,y,r);
+    const mc2=m>=6?`rgba(220,20,60,`:m>=5?`rgba(239,68,68,`:m>=4?`rgba(249,115,22,`:m>=3?`rgba(251,191,36,`:`rgba(34,211,238,`;
+    grd.addColorStop(0,mc2+(intensity*.7)+')');
+    grd.addColorStop(1,mc2+'0)');
+    ctx.fillStyle=grd;ctx.fillRect(x-r,y-r,r*2,r*2);
+  });
+  // Overlay continent outlines faintly
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=.5;
+}
+
+// ── MAP ──
 function renderMap(){
   const svg=document.getElementById('world-map');
   const W=800,H=400;
-  const land=`<rect width="800" height="400" fill="#030608"/><path d="M30,100 Q80,85 130,95 Q160,88 185,105 Q200,120 195,145 Q180,170 155,180 Q120,188 90,175 Q60,165 40,145 Q20,125 30,100Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M195,130 Q240,115 290,108 Q340,100 390,105 Q430,108 460,120 Q480,135 478,158 Q472,180 450,195 Q420,210 380,215 Q340,218 300,210 Q260,200 230,185 Q205,170 198,150Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M290,215 Q320,208 360,212 Q395,215 420,230 Q440,248 435,272 Q425,295 400,308 Q370,318 340,312 Q310,305 290,285 Q272,265 278,242Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M460,95 Q520,75 580,82 Q630,88 660,105 Q680,122 675,148 Q665,175 640,188 Q610,200 575,195 Q540,188 510,170 Q480,152 465,128Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M540,188 Q590,180 640,192 Q680,205 700,235 Q715,262 705,290 Q690,318 660,330 Q625,340 590,328 Q555,315 535,288 Q515,260 522,232Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M65,195 Q115,185 160,200 Q195,215 208,245 Q215,272 200,298 Q180,325 148,338 Q112,348 78,335 Q48,320 35,292 Q22,262 32,232 Q45,208 65,195Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/><path d="M680,175 Q728,168 760,188 Q778,205 775,232 Q768,258 748,272 Q722,284 695,275 Q668,265 655,242 Q642,218 652,198Z" fill="#0a1525" stroke="#111e30" stroke-width="1"/>`;
+  const land=`<rect width="800" height="400" fill="#020508"/><path d="M30,100 Q80,85 130,95 Q160,88 185,105 Q200,120 195,145 Q180,170 155,180 Q120,188 90,175 Q60,165 40,145 Q20,125 30,100Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M195,130 Q240,115 290,108 Q340,100 390,105 Q430,108 460,120 Q480,135 478,158 Q472,180 450,195 Q420,210 380,215 Q340,218 300,210 Q260,200 230,185 Q205,170 198,150Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M290,215 Q320,208 360,212 Q395,215 420,230 Q440,248 435,272 Q425,295 400,308 Q370,318 340,312 Q310,305 290,285 Q272,265 278,242Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M460,95 Q520,75 580,82 Q630,88 660,105 Q680,122 675,148 Q665,175 640,188 Q610,200 575,195 Q540,188 510,170 Q480,152 465,128Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M540,188 Q590,180 640,192 Q680,205 700,235 Q715,262 705,290 Q690,318 660,330 Q625,340 590,328 Q555,315 535,288 Q515,260 522,232Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M65,195 Q115,185 160,200 Q195,215 208,245 Q215,272 200,298 Q180,325 148,338 Q112,348 78,335 Q48,320 35,292 Q22,262 32,232 Q45,208 65,195Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/><path d="M680,175 Q728,168 760,188 Q778,205 775,232 Q768,258 748,272 Q722,284 695,275 Q668,265 655,242 Q642,218 652,198Z" fill="#0a1420" stroke="#0d1a28" stroke-width="1"/>`;
   function proj(lat,lon){return[((lon+180)/360)*W,((90-lat)/180)*H];}
-  const mapQ=allQ.filter(f=>(f.properties.mag||0)>=2.5).slice(0,300);
-  const dots=mapQ.map((f,i)=>{
-    const c=f.geometry?.coordinates;if(!c)return'';
-    const[x,y]=proj(c[1],c[0]);
-    const m=f.properties.mag||0;
-    const r=m>=7?9:m>=6?7:m>=5?5:m>=4?4:3;
-    const clr=col(m);
-    return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${clr}" fill-opacity="${m>=5?.9:.55}" stroke="${clr}" stroke-width="0.5" stroke-opacity=".2" data-mi="${i}" style="cursor:pointer"/>`;
-  }).join('');
-  // User location dot
-  const userDot=userLat?`<circle cx="${proj(userLat,userLon)[0].toFixed(1)}" cy="${proj(userLat,userLon)[1].toFixed(1)}" r="5" fill="none" stroke="#00e5a0" stroke-width="2"/><circle cx="${proj(userLat,userLon)[0].toFixed(1)}" cy="${proj(userLat,userLon)[1].toFixed(1)}" r="2" fill="#00e5a0"/>`:'' ;
-  svg.innerHTML=land+dots+userDot;
+  const mapQ=allQ.filter(f=>(f.properties.mag||0)>=2.5).slice(0,250);
+  const dots=mapQ.map((f,i)=>{const c=f.geometry?.coordinates;if(!c)return'';const[x,y]=proj(c[1],c[0]);const m=f.properties.mag||0;const r=m>=7?9:m>=6?7:m>=5?5:m>=4?4:3;const clr=col(m);return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${clr}" fill-opacity="${m>=5?.9:.5}" data-mi="${i}" style="cursor:pointer"/>`;}).join('');
+  svg.innerHTML=land+dots;
   document.getElementById('map-count').textContent=`${mapQ.length} nokta`;
   mapQ.forEach((f,i)=>{const el=svg.querySelector(`[data-mi="${i}"]`);if(el)el.onclick=()=>openSheet(f);});
 }
@@ -780,12 +941,11 @@ function renderSeismo(){
   const now=Date.now(),dayAgo=now-86400000;
   const sorted=[...allQ].sort((a,b)=>a.properties.time-b.properties.time);
   const maxM=Math.max(...sorted.map(f=>f.properties.mag||0));
-  for(let i=0;i<=24;i+=4){ctx.strokeStyle='#0a1525';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo((i/24)*W,0);ctx.lineTo((i/24)*W,H);ctx.stroke();}
+  for(let i=0;i<=24;i+=4){ctx.strokeStyle='#091420';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo((i/24)*W,0);ctx.lineTo((i/24)*W,H);ctx.stroke();}
   sorted.forEach(f=>{
     const t=f.properties.time,m=f.properties.mag||0;
-    const x=((t-dayAgo)/86400000)*W;
-    const bH=Math.max(2,((m/(maxM+.5))*(H-3)));
-    ctx.strokeStyle=col(m);ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;ctx.globalAlpha=m>=4?1:m>=2?.55:.25;
+    const x=((t-dayAgo)/86400000)*W,bH=Math.max(2,((m/(maxM+.5))*(H-3)));
+    ctx.strokeStyle=col(m);ctx.lineWidth=m>=5?2.5:m>=3?1.5:.7;ctx.globalAlpha=m>=4?1:m>=2?.5:.2;
     ctx.beginPath();ctx.moveTo(x,H);ctx.lineTo(x,H-bH);ctx.stroke();
   });
   ctx.globalAlpha=1;
@@ -793,36 +953,23 @@ function renderSeismo(){
 }
 
 // ── LIVE SEISMO ──
-let liveData=[];
 function startLiveSeismo(){
+  if(LOW_POWER)return;
   if(liveAnim)cancelAnimationFrame(liveAnim);
   const cv=document.getElementById('seismo-live');
   const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
   if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
-  // Generate simulated live waveform based on recent activity
-  const now=Date.now();
-  const recent=allQ.filter(f=>now-f.properties.time<3600000);
-  const baseAmp=recent.length>0?Math.min(1,recent.length/20):0.1;
+  const now=Date.now(),recent=allQ.filter(f=>now-f.properties.time<3600000);
+  const amp=Math.min(1,recent.length/15+.05);
   let t=0;
   function draw(){
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#020406';ctx.fillRect(0,0,W,H);
-    // Grid
-    ctx.strokeStyle='#0a1525';ctx.lineWidth=.5;
-    ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
-    // Waveform
-    ctx.strokeStyle='var(--green)';ctx.lineWidth=1.2;ctx.globalAlpha=.8;
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='#020406';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='#091420';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+    ctx.strokeStyle='#00e5a0';ctx.lineWidth=1;ctx.globalAlpha=.7;
     ctx.beginPath();
-    for(let x=0;x<W;x++){
-      const phase=x*0.05+t;
-      const noise=(Math.random()-.5)*0.3;
-      const wave=Math.sin(phase)*baseAmp+Math.sin(phase*2.3)*baseAmp*.4+noise;
-      const y=H/2-wave*(H/2*.8);
-      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    }
-    ctx.stroke();ctx.globalAlpha=1;
-    t+=0.08;
+    for(let x=0;x<W;x++){const ph=x*.06+t;const n=(Math.random()-.5)*.2;const w=Math.sin(ph)*amp+Math.sin(ph*2.1)*amp*.35+n;const y=H/2-w*(H/2*.78);x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.stroke();ctx.globalAlpha=1;t+=.07;
     liveAnim=requestAnimationFrame(draw);
   }
   draw();
@@ -840,35 +987,25 @@ function renderMagDist(){
 function renderList(){
   const box=document.getElementById('eq-container');
   const filtered=allQ.filter(f=>(f.properties.mag||0)>=filterMin);
-  if(!filtered.length){box.innerHTML=`<div class="status-card"><div class="status-msg">M${filterMin}+ deprem bulunamadı</div></div>`;return;}
+  if(!filtered.length){box.innerHTML=`<div class="status-card"><div class="status-msg">M${filterMin}+ deprem yok</div></div>`;return;}
   const show=filtered.slice(0,60);
   box.innerHTML=`<div class="eq-list">${show.map((f,i)=>{
     const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
     const isNew=!firstLoad&&!seenIds.has(f.id);
     return`<div class="eq-item ${mc(m)}${isNew?' new-item':''}" data-i="${i}">
       ${isNew?'<span class="new-badge">YENİ</span>':''}
-      <div class="eq-mag-box ${mc(m)}">${fM(m)}</div>
-      <div class="eq-info">
-        <div class="eq-place">${p.place||'Bilinmiyor'}</div>
-        <div class="eq-chips">
-          <span class="chip d">⬇${fD(d)}</span>
-          ${p.felt?`<span class="chip">👁${p.felt}</span>`:''}
-          ${p.tsunami===1?`<span class="chip t">🌊</span>`:''}
-          <span class="chip">${p.magType||'Mw'}</span>
-        </div>
-      </div>
-      <div class="eq-right">
-        <span class="eq-time">${ago(p.time)}</span>
-        <span class="share-btn" data-si="${i}">📤</span>
-        ${p.alert==='red'?`<div class="ad ad-r"></div>`:p.alert==='orange'?`<div class="ad ad-o"></div>`:''}
-      </div>
+      <div class="eq-mb ${mc(m)}">${fM(m)}</div>
+      <div class="eq-info"><div class="eq-place">${p.place||'Bilinmiyor'}</div>
+        <div class="eq-chips"><span class="chip d">⬇${fD(d)}</span>${p.felt?`<span class="chip">👁${p.felt}</span>`:''}${p.tsunami===1?`<span class="chip" style="color:var(--cyan)">🌊</span>`:''}
+        <span class="chip">${p.magType||'Mw'}</span></div></div>
+      <div class="eq-right"><span class="eq-time">${ago(p.time)}</span>
+        <span class="sb" data-si="${i}">📤</span>${p.alert==='red'?`<div class="ad ad-r"></div>`:''}</div>
     </div>`;
   }).join('')}</div>`;
   show.forEach((f,i)=>{
     const el=box.querySelector(`[data-i="${i}"]`);
-    el.onclick=(e)=>{if(!e.target.classList.contains('share-btn'))openSheet(f);};
-    const sb=el.querySelector('.share-btn');
-    if(sb)sb.onclick=(e)=>{e.stopPropagation();navigator.share?navigator.share({title:`M${fM(f.properties.mag)} Deprem`,text:shareText(f)}):copyText(shareText(f));};
+    el.onclick=e=>{if(!e.target.classList.contains('sb'))openSheet(f);};
+    const sb=el.querySelector('.sb');if(sb)sb.onclick=e=>{e.stopPropagation();shareEq(f);};
   });
 }
 
@@ -883,53 +1020,111 @@ function renderTurkey(){
   document.getElementById('tr-max').textContent=fM(mx);
   document.getElementById('tr-badge').textContent=`${trQ.length} olay`;
   if(today.length>0)document.getElementById('tr-tbadge').classList.add('show');
-  const strip=document.getElementById('tr-risk-strip');
   const cols=['#00e5a0','#22d3ee','#fbbf24','#f97316','#ef4444','#dc143c'];
   const bands=[0,2,3,4,5,6];
-  strip.innerHTML=bands.map((b,i)=>{const cnt=trQ.filter(f=>{const m=f.properties.mag||0;return m>=b&&m<(bands[i+1]||99);}).length;return`<div class="risk-seg" style="background:${cols[i]};flex:${Math.max(.5,cnt)}"></div>`;}).join('');
-  
-  // PAGER data from biggest TR quake
-  const bigTR=trQ.find(f=>f.properties.alert);
-  if(bigTR){
-    document.getElementById('pager-card').style.display='block';
-    const a=bigTR.properties.alert;
-    document.getElementById('pager-g').textContent=a==='green'?'●':'○';
-    document.getElementById('pager-y').textContent=a==='yellow'?'●':'○';
-    document.getElementById('pager-o').textContent=a==='orange'?'●':'○';
-    document.getElementById('pager-r').textContent=a==='red'?'●':'○';
+  document.getElementById('tr-risk-strip').innerHTML=bands.map((b,i)=>{const cnt=trQ.filter(f=>{const m=f.properties.mag||0;return m>=b&&m<(bands[i+1]||99);}).length;return`<div class="risk-seg" style="background:${cols[i]};flex:${Math.max(.5,cnt)}"></div>`;}).join('');
+
+  // AFTERSHOCK PREDICTION (Omori's Law)
+  const bigQ=trQ.filter(f=>(f.properties.mag||0)>=4);
+  if(bigQ.length>0){
+    const main=bigQ[0],mM=main.properties.mag||0;
+    document.getElementById('as-main-info').textContent=`Ana şok: M${fM(mM)} · ${main.properties.place||'TR'} · ${ago(main.properties.time)} önce`;
+    const periods=[{l:'1 Saat',h:1},{l:'6 Saat',h:6},{l:'24 Saat',h:24},{l:'7 Gün',h:168}];
+    const K=Math.pow(10,mM-1.9),p=1.1,c=0.1;
+    document.getElementById('omori-rows').innerHTML=periods.map(per=>{
+      const n=Math.round(K/(Math.pow(per.h+c,p)));
+      const maxMag=Math.max(1,(mM-1.2)).toFixed(1);
+      return`<tr><td>${per.l}</td><td class="omori-cnt" style="color:var(--orange)">${n}</td><td>M${maxMag}</td></tr>`;
+    }).join('');
+    const vals=periods.map(per=>Math.round(K/(Math.pow(per.h+c,p))));
+    const vmax=Math.max(...vals,1);
+    document.getElementById('omori-chart').innerHTML=vals.map((v,i)=>`<div style="flex:1;height:${Math.max(4,(v/vmax)*100)}%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--orange),#8B4513);opacity:.8"></div>`).join('');
   }
+
+  // PROVINCE RISK
+  renderProvinceRisk();
 
   const list=document.getElementById('turkey-list');
   if(!trQ.length){list.innerHTML='<div class="status-card"><div class="status-msg">Veri bulunamadı</div></div>';return;}
   const show=trQ.slice(0,15);
-  list.innerHTML=show.map((f,i)=>{
-    const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
-    return`<div class="tr-item" data-ti="${i}" style="border-left-color:${col(m)}">
-      <div class="tr-mag" style="color:${col(m)}">${fM(m)}</div>
-      <div class="tr-info"><div class="tr-place">${p.place||'Bilinmiyor'}</div><div class="tr-meta">⬇ ${fD(d)} · ${p.magType||'mb'}</div></div>
-      <div class="tr-right"><div class="tr-time">${ago(p.time)}</div><span style="font-size:11px;cursor:pointer;opacity:.5" onclick="event.stopPropagation();shareEq(window._trQ[${i}])">📤</span></div>
+  list.innerHTML=show.map((f,i)=>{const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;return`<div class="tr-item" data-ti="${i}" style="border-left-color:${col(m)}"><div class="tr-mag" style="color:${col(m)}">${fM(m)}</div><div class="tr-info"><div class="tr-place">${p.place||'Bilinmiyor'}</div><div class="tr-meta">⬇ ${fD(d)} · ${p.magType||'mb'}</div></div><div class="tr-time">${ago(p.time)}</div></div>`;}).join('');
+  show.forEach((f,i)=>{list.querySelector(`[data-ti="${i}"]`).onclick=()=>openSheet(f);});
+}
+
+// ── PROVINCE RISK ──
+function renderProvinceRisk(){
+  const grid=document.getElementById('prov-grid');
+  const scores=PROVINCES.map(prov=>{
+    const nearby=trQ.filter(f=>{const c=f.geometry?.coordinates;if(!c)return false;return dist(prov.lat,prov.lon,c[1],c[0])<200;});
+    const score=nearby.reduce((s,f)=>{const m=f.properties.mag||0;return s+Math.pow(10,m-1.5);},0);
+    return{...prov,score,count:nearby.length,maxM:nearby[0]?.properties.mag||0};
+  }).sort((a,b)=>b.score-a.score);
+  const maxScore=Math.max(...scores.map(s=>s.score),1);
+  grid.innerHTML=scores.map(p=>{
+    const pct=p.score/maxScore;
+    const bg=pct>.7?'#ef444420':pct>.4?'#f9731618':pct>.2?'#fbbf2415':pct>.05?'#22d3ee12':'#00e5a010';
+    const border=pct>.7?'#ef444435':pct>.4?'#f9731630':pct>.2?'#fbbf2428':pct>.05?'#22d3ee25':'#00e5a020';
+    const riskCol=pct>.7?'var(--red)':pct>.4?'var(--orange)':pct>.2?'var(--yellow)':pct>.05?'var(--cyan)':'var(--green)';
+    const riskLbl=pct>.7?'ÇOK Y.':pct>.4?'YÜKSEK':pct>.2?'ORTA':pct>.05?'DÜŞÜK':'NORMAL';
+    return`<div class="prov-item" style="background:${bg};border-color:${border}" onclick="showProvDetail('${p.n}',${p.count},${p.maxM})">
+      <div class="prov-name">${p.n}</div>
+      <div class="prov-risk" style="color:${riskCol}">${p.count}</div>
+      <div class="prov-level" style="color:${riskCol}">${riskLbl}</div>
     </div>`;
   }).join('');
-  window._trQ=show;
-  show.forEach((f,i)=>{list.querySelector(`[data-ti="${i}"]`).onclick=()=>openSheet(f);});
+}
+function showProvDetail(name,cnt,mx){alert(`${name}\n${cnt} deprem yakınında\nMaks: M${fM(mx)}`);}
+
+// ── AFAD COMPARISON ──
+function switchAfad(mode,el){
+  afadMode=mode;
+  document.querySelectorAll('.afad-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderAfad();
+}
+function renderAfad(){
+  const box=document.getElementById('afad-list');
+  let items=[];
+  if(afadMode==='usgs'){items=trQ.slice(0,10).map(f=>({...f,src:'USGS'}));}
+  else if(afadMode==='afad'){items=afadQ.slice(0,10);}
+  else{
+    const combined=[...trQ.slice(0,10).map(f=>({...f,src:'USGS'})),...afadQ.slice(0,10)];
+    combined.sort((a,b)=>b.properties.time-a.properties.time);
+    items=combined.slice(0,15);
+  }
+  if(!items.length){
+    box.innerHTML=`<div class="afad-empty">${afadMode==='afad'?'AFAD verisi alınamadı.\nCORS kısıtlaması nedeniyle\ndoğrudan erişim mümkün olmayabilir.':'Veri bulunamadı.'}</div>`;
+    return;
+  }
+  box.innerHTML=items.map((f,i)=>{
+    const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
+    const src=f.src||'USGS';
+    return`<div class="afad-item" data-ai="${i}">
+      <span class="afad-src ${src.toLowerCase()}">${src}</span>
+      <div class="afad-mag" style="color:${col(m)}">${fM(m)}</div>
+      <div class="afad-place">${p.place||'Bilinmiyor'}</div>
+      <div class="afad-time">${ago(p.time)}</div>
+    </div>`;
+  }).join('');
+  items.forEach((f,i)=>{const el=box.querySelector(`[data-ai="${i}"]`);if(el)el.onclick=()=>openSheet(f);});
 }
 
 // ── STATS ──
 function renderStats(){
   if(!allQ.length)return;
   const now=Date.now(),t=allQ.length,mx=allQ[0]?.properties.mag||0;
-  const mxLoc=(allQ[0]?.properties.place||'').split(' of ').pop().substring(0,18);
+  const mxLoc=(allQ[0]?.properties.place||'').split(' of ').pop().substring(0,16);
   document.getElementById('st-total').textContent=t;
-  document.getElementById('st-rate').textContent=`saatte ~${(t/24).toFixed(1)} olay`;
+  document.getElementById('st-rate').textContent=`~${(t/24).toFixed(1)}/saat`;
   document.getElementById('st-max').textContent=fM(mx);
   document.getElementById('st-max-loc').textContent=mxLoc;
   const big=allQ.filter(f=>(f.properties.mag||0)>=5),vbig=allQ.filter(f=>(f.properties.mag||0)>=6);
   const l1=allQ.filter(f=>now-f.properties.time<3600000).length;
-  let rpt=`Son 24 saatte küresel olarak <strong>${t}</strong> deprem kaydedildi. `;
-  if(vbig.length)rpt+=`<span class="danger">⚠ ${vbig.length} adet M6+ büyük deprem!</span> `;
-  else if(big.length)rpt+=`<span class="warn">${big.length} adet M5+ deprem tespit edildi.</span> `;
-  else rpt+='Büyük deprem (M5+) yok. ';
-  rpt+=`En büyük olay <strong>M${fM(mx)}</strong>, ${mxLoc}. Son 1 saatte <strong>${l1}</strong> deprem.`;
+  let rpt=`Son 24s: <strong>${t}</strong> deprem. `;
+  if(vbig.length)rpt+=`<span class="danger">⚠ ${vbig.length} adet M6+!</span> `;
+  else if(big.length)rpt+=`<span class="warn">${big.length} adet M5+.</span> `;
+  else rpt+=`<span style="color:var(--green)">M5+ yok.</span> `;
+  rpt+=`En büyük M${fM(mx)}, ${mxLoc}. Son 1s: <strong>${l1}</strong> deprem.`;
   document.getElementById('report-text').innerHTML=rpt;
   const regions=[
     {n:'Pasifik',fn:f=>{const c=f.geometry?.coordinates;return c&&((c[0]>140||c[0]<-100)&&Math.abs(c[1])<70);}},
@@ -942,7 +1137,7 @@ function renderStats(){
   const rc=regions.map(r=>allQ.filter(r.fn).length),rm=Math.max(...rc,1);
   const rcols=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#374060'];
   document.getElementById('region-bars').innerHTML=regions.map((r,i)=>`<div class="rb-item"><div class="rb-name">${r.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(rc[i]/rm)*100}%;background:${rcols[i]}"></div></div><div class="rb-cnt">${rc[i]}</div></div>`).join('');
-  document.getElementById('big-tl').innerHTML=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6).map(f=>`<div class="tl-item"><div class="tl-dot" style="background:${col(f.properties.mag||0)}"></div><div class="tl-body"><div class="tl-title">M${fM(f.properties.mag)} — ${(f.properties.place||'').split(' of ').pop()}</div><div class="tl-meta">${ago(f.properties.time)} önce · ${f.properties.magType||'Mw'} · ${fD(f.geometry?.coordinates?.[2])}</div></div></div>`).join('');
+  document.getElementById('big-tl').innerHTML=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6).map(f=>`<div class="tl-item"><div class="tl-dot" style="background:${col(f.properties.mag||0)}"></div><div class="tl-body"><div class="tl-title">M${fM(f.properties.mag)} — ${(f.properties.place||'').split(' of ').pop()}</div><div class="tl-meta">${ago(f.properties.time)} önce · ${fD(f.geometry?.coordinates?.[2])}</div></div></div>`).join('');
   const db=[{n:'Sığ <70km',mn:0,mx:70,c:'#ef4444'},{n:'Orta 70-300',mn:70,mx:300,c:'#f97316'},{n:'Derin >300',mn:300,mx:9999,c:'#60a5fa'}];
   const dc=db.map(b=>allQ.filter(f=>{const d=f.geometry?.coordinates?.[2]||0;return d>=b.mn&&d<b.mx;}).length);
   const dm=Math.max(...dc,1);
@@ -974,38 +1169,19 @@ function openSheet(f){
 }
 function closeSheet(){document.getElementById('detail-sheet').classList.remove('show');document.body.style.overflow='';}
 function closeSheetOut(e){if(e.target===document.getElementById('detail-sheet'))closeSheet();}
-function shareCurrentQuake(){if(!currentQuake)return;shareEq(currentQuake);}
-function shareEq(f){if(!f)return;const txt=shareText(f);if(navigator.share){navigator.share({title:`M${fM(f.properties.mag)} Deprem`,text:txt});}else{copyText(txt);}}
-function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t);}else{const el=document.createElement('textarea');el.value=t;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);}}
+function shareCurrentQuake(){if(currentQuake)shareEq(currentQuake);}
+function shareEq(f){const txt=shareText(f);navigator.share?navigator.share({title:`M${fM(f.properties.mag)} Deprem`,text:txt}):copyText(txt);}
+function copyText(t){navigator.clipboard?navigator.clipboard.writeText(t):(el=>{el.value=t;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);})(document.createElement('textarea'));}
 
 // ── NOTIFICATIONS ──
-function toggleNotif(){
-  if(NOTIF_ON){NOTIF_ON=false;document.getElementById('notif-btn').classList.remove('notif-on');document.getElementById('notif-toggle').classList.remove('on');}
-  else{Notification&&Notification.requestPermission().then(p=>{if(p==='granted'){NOTIF_ON=true;document.getElementById('notif-btn').classList.add('notif-on');document.getElementById('notif-toggle').classList.add('on');}});}
-}
-function toggleNotifFromSettings(){if(!NOTIF_ON)toggleNotif();else{NOTIF_ON=false;document.getElementById('notif-btn').classList.remove('notif-on');document.getElementById('notif-toggle').classList.remove('on');}}
+function toggleNotif(){if(NOTIF_ON){NOTIF_ON=false;document.getElementById('notif-btn').classList.remove('notif-on');document.getElementById('notif-toggle').classList.remove('on');}else{Notification&&Notification.requestPermission().then(p=>{if(p==='granted'){NOTIF_ON=true;document.getElementById('notif-btn').classList.add('notif-on');document.getElementById('notif-toggle').classList.add('on');}});}}
+function toggleNotifS(){toggleNotif();}
 function toggleTrOnly(){TR_ONLY=!TR_ONLY;document.getElementById('tr-only-toggle').classList.toggle('on',TR_ONLY);}
 function updateMagThresh(v){ALERT_MAG=parseFloat(v);document.getElementById('mag-thresh-val').textContent=`M${parseFloat(v).toFixed(1)}`;}
-function sendNotif(f){
-  if(!NOTIF_ON||Notification?.permission!=='granted')return;
-  new Notification(`🚨 M${fM(f.properties.mag)} Deprem`,{body:f.properties.place||'Bilinmiyor',icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌍</text></svg>'});
-}
+function sendNotif(f){if(!NOTIF_ON||Notification?.permission!=='granted')return;new Notification(`🚨 M${fM(f.properties.mag)} Deprem`,{body:f.properties.place||'?'});}
 
 // ── ALERT ──
-function showAlert(){
-  alertBusy=true;
-  const f=alertQ.shift();alertQuake=f;
-  const p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;
-  document.getElementById('al-mag').textContent=fM(p.mag);
-  document.getElementById('al-place').textContent=p.place||'Bilinmiyor';
-  document.getElementById('al-meta').textContent=`Derinlik: ${fD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;
-  document.getElementById('al-tags').innerHTML=buildTags(p);
-  document.getElementById('alert-overlay').classList.add('show');
-  document.body.style.animation='none';
-  requestAnimationFrame(()=>{document.body.style.animation='screenShake .6s ease';});
-  if('vibrate'in navigator)navigator.vibrate([300,100,300,100,500]);
-  sendNotif(f);
-}
+function showAlert(){alertBusy=true;const f=alertQ.shift();alertQuake=f;const p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;document.getElementById('al-mag').textContent=fM(p.mag);document.getElementById('al-place').textContent=p.place||'?';document.getElementById('al-meta').textContent=`Derinlik: ${fD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;document.getElementById('al-tags').innerHTML=buildTags(p);document.getElementById('alert-overlay').classList.add('show');if(!LOW_POWER){document.body.style.animation='none';requestAnimationFrame(()=>{document.body.style.animation='screenShake .6s ease';});}if('vibrate'in navigator)navigator.vibrate([300,100,300,100,500]);sendNotif(f);}
 function closeAlert(){document.getElementById('alert-overlay').classList.remove('show');setTimeout(()=>{if(alertQ.length)showAlert();else alertBusy=false;},800);}
 function shareAlert(){if(alertQuake)shareEq(alertQuake);closeAlert();}
 
@@ -1018,9 +1194,9 @@ function updateTimer(){document.getElementById('timer').textContent=counter+'s';
 function manualRefresh(){const b=document.getElementById('rbtn');b.classList.add('spin');if(timerInt){clearInterval(timerInt);timerInt=null;}fetchData().finally(()=>b.classList.remove('spin'));}
 function showErr(msg){document.getElementById('featured-wrap').innerHTML=`<div class="status-card"><div class="status-msg">⚠ ${msg}</div><button class="retry-btn" onclick="manualRefresh()">Tekrar Dene</button></div>`;}
 
-window.addEventListener('resize',()=>{if(allQ.length){renderSeismo();renderMap();}});
+window.addEventListener('resize',()=>{if(allQ.length&&!LOW_POWER){renderSeismo();renderMap();renderHeatmap();}});
 fetchData();
-startLiveSeismo();
+if(!LOW_POWER)startLiveSeismo();
 </script>
 </body>
 </html>
