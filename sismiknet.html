@@ -510,22 +510,15 @@ async function fetchTurkey(){
     }
   }catch(_){}
 
-  // Hâlâ boşsa Boğaziçi Kandilli AFAD proxy dene
+  // Hâlâ boşsa USGS'den place'e göre Türkiye ara
   if(trQ.length===0){
     try{
-      const r=await fetch('https://deprem.afad.gov.tr/apiv2/event/filter?start='+
-        new Date(Date.now()-7*86400000).toISOString().slice(0,19).replace('T',' ')+'&end='+
-        new Date().toISOString().slice(0,19).replace('T',' ')+'&minmag=1&orderby=timedesc&limit=30&format=json');
-      if(r.ok){
-        const j=await r.json();
-        if(Array.isArray(j)){
-          trQ=j.map(e=>({
-            id:'afad_'+e.eventID,
-            properties:{mag:parseFloat(e.magnitude),place:e.location,time:new Date(e.date).getTime(),magType:'ML',depth:parseFloat(e.depth)},
-            geometry:{coordinates:[parseFloat(e.longitude),parseFloat(e.latitude),parseFloat(e.depth)]}
-          }));
-        }
-      }
+      const now=new Date();
+      const s=new Date(now-7*86400000).toISOString().split('.')[0];
+      const e=now.toISOString().split('.')[0];
+      const url='https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime='+s+'&endtime='+e+'&minlatitude=30&maxlatitude=46&minlongitude=20&maxlongitude=50&minmagnitude=1.0&orderby=time&limit=100';
+      const r=await fetch(url+'&_t='+Date.now());
+      if(r.ok){const j=await r.json();if(j.features&&j.features.length)trQ=j.features;}
     }catch(_){}
   }
   renderTurkey();
