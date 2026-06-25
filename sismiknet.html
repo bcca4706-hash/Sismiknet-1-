@@ -18,269 +18,309 @@ if("serviceWorker"in navigator){const sw=`self.addEventListener("install",e=>sel
 </script>
 <style>
 :root{
-  --bg:#060810;--surface:#0b0e1a;--card:#0f1422;--card2:#121828;
-  --border:#1a2038;--border2:#242d48;
+  --bg:#040608;--surface:#080b14;--card:#0c1018;--card2:#0f1420;
+  --border:#151e30;--border2:#1e2840;
   --green:#00e5a0;--yellow:#fbbf24;--orange:#f97316;
   --red:#ef4444;--crimson:#dc143c;--blue:#60a5fa;
   --cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;
-  --text:#d1daf0;--muted:#4a5580;--muted2:#2a3050;
-  --tab-h:64px;
+  --text:#c8d4f0;--muted:#3a4a70;--muted2:#1e2840;
+  --tab-h:60px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:var(--tab-h);}
 
-/* GRID BG */
+/* ANIMATED GRID BG */
 body::before{
   content:'';position:fixed;inset:0;
-  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
-  background-size:40px 40px;opacity:.3;pointer-events:none;z-index:0;
+  background-image:linear-gradient(#0d1a2a18 1px,transparent 1px),linear-gradient(90deg,#0d1a2a18 1px,transparent 1px);
+  background-size:32px 32px;pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,#00e5a008 0%,transparent 60%);
+  pointer-events:none;z-index:0;
 }
 
 /* HEADER */
 header{
   position:sticky;top:0;z-index:100;
-  background:#06081095;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  background:#04060afa;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
-  height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
 }
-.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:16px;letter-spacing:3px;color:var(--green);text-shadow:0 0 20px #00e5a055;}
-.logo em{color:var(--text);font-style:normal;font-weight:400;}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:16px;letter-spacing:3px;color:var(--green);text-shadow:0 0 30px #00e5a040;}
+.logo em{color:#4a6090;font-style:normal;font-weight:400;}
 .hright{display:flex;align-items:center;gap:8px;}
-.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a010;border:1px solid #00e5a030;padding:4px 10px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.2s ease infinite;}
+.live-pill{display:flex;align-items:center;gap:5px;background:#00e5a008;border:1px solid #00e5a025;padding:4px 10px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s ease infinite;}
 #timer{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);min-width:28px;text-align:right;}
-.rbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
-.rbtn:hover{border-color:var(--green);color:var(--green);}
-.rbtn.spin{animation:spin .6s linear infinite;}
+.rbtn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;}
+.rbtn:hover,.rbtn:active{border-color:var(--green);color:var(--green);}
+.rbtn.spin{animation:spin .5s linear infinite;}
+
+/* NOTIFY BTN */
+.notif-btn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;}
+.notif-btn.on{border-color:#fbbf2440;color:var(--yellow);}
 
 /* TAB BAR */
 .tab-bar{
   position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:#08091aee;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:#04060af0;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid var(--border);
   height:var(--tab-h);display:flex;align-items:center;
 }
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:8px 0;transition:all .2s;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 0;transition:all .2s;}
 .tab-icon{font-size:20px;transition:transform .2s;}
-.tab-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);transition:color .2s;}
+.tab-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);transition:color .2s;text-transform:uppercase;}
 .tab.active .tab-label{color:var(--green);}
 .tab.active .tab-icon{transform:translateY(-2px);}
+.tab-badge{position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1px solid var(--bg);font-size:0;}
 
 /* PAGES */
-.page{display:none;position:relative;z-index:1;padding:14px 14px 20px;max-width:480px;margin:0 auto;flex-direction:column;gap:14px;}
+.page{display:none;position:relative;z-index:1;padding:12px 12px 16px;max-width:480px;margin:0 auto;flex-direction:column;gap:12px;}
 .page.active{display:flex;}
 
-/* ── GLOBAL PAGE ── */
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;}
-.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
-.stat-card.green::after{background:var(--green);}
-.stat-card.orange::after{background:var(--orange);}
-.stat-card.red::after{background:var(--red);}
-.stat-card.blue::after{background:var(--blue);}
-.stat-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;line-height:1;}
-.stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
-
-/* Filter */
-.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0;}
-.filter-row::-webkit-scrollbar{display:none;}
-.fbtn{flex-shrink:0;padding:7px 14px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;}
-.fbtn.active{background:#00e5a018;border-color:var(--green);color:var(--green);}
-
-/* Featured */
-.featured{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;position:relative;overflow:hidden;cursor:pointer;}
-.featured::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;pointer-events:none;}
-.featured.c4::before{background:radial-gradient(circle,#ef444420 0%,transparent 70%);}
-.featured.c5::before{background:radial-gradient(circle,#dc143c30 0%,transparent 70%);}
-.featured.c3::before{background:radial-gradient(circle,#f9731620 0%,transparent 70%);}
-.featured.c2::before{background:radial-gradient(circle,#fbbf2420 0%,transparent 70%);}
-.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.feat-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-transform:uppercase;}
-.feat-badge.red{background:#ef444415;border:1px solid #ef444440;color:var(--red);}
-.feat-badge.orange{background:#f9731615;border:1px solid #f9731640;color:var(--orange);}
-.feat-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.feat-mag{font-family:'Orbitron',monospace;font-weight:900;line-height:1;margin-bottom:4px;}
-.feat-mag.c5{font-size:72px;color:#ff2255;text-shadow:0 0 40px #dc143c66;}
-.feat-mag.c4{font-size:68px;color:var(--red);text-shadow:0 0 30px #ef444455;}
-.feat-mag.c3{font-size:64px;color:var(--orange);}
-.feat-mag.c2{font-size:60px;color:var(--yellow);}
-.feat-mag.c1{font-size:56px;color:var(--cyan);}
-.feat-mag.c0{font-size:56px;color:var(--green);}
-.feat-type{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
-.feat-place{font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px;}
-.feat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;letter-spacing:.5px;}
-.pill.depth{background:#60a5fa15;border:1px solid #60a5fa30;color:var(--blue);}
-.pill.felt{background:#a78bfa15;border:1px solid #a78bfa30;color:var(--purple);}
-.pill.tsunami{background:#22d3ee15;border:1px solid #22d3ee30;color:var(--cyan);}
-.pill.cdi{background:#fbbf2415;border:1px solid #fbbf2430;color:var(--yellow);}
-.feat-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px;}
-.feat-bar-fill{height:100%;border-radius:99px;transition:width .8s ease;}
-
-/* Seismo */
-.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+.card-sm{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px;}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
 .card-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:#040608;}
 
-/* Mag dist */
-.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
-.mag-bars{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:12px;}
-.mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
-.mbar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height .8s ease;}
-.mbar-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:center;}
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 14px 14px;}
+.stat-card.g::after{background:linear-gradient(90deg,transparent,var(--green),transparent);}
+.stat-card.b::after{background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.stat-card.o::after{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+.stat-card.r::after{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.stat-val{font-family:'Orbitron',monospace;font-size:19px;font-weight:700;line-height:1;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;}
+
+/* ACTIVITY SCORE */
+.activity-card{background:linear-gradient(135deg,var(--card),#0a1020);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;}
+.act-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;pointer-events:none;}
+.act-row{display:flex;align-items:center;gap:14px;}
+.act-gauge{position:relative;width:80px;height:80px;flex-shrink:0;}
+.act-gauge svg{width:80px;height:80px;}
+.act-gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.act-num{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;line-height:1;}
+.act-lbl2{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;}
+.act-info{flex:1;}
+.act-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;margin-bottom:6px;}
+.act-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.act-bars{display:flex;gap:3px;margin-top:8px;align-items:flex-end;height:28px;}
+.act-bar{flex:1;border-radius:2px;min-height:2px;transition:height .4s ease;}
+
+/* FILTER */
+.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:1px 0;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:6px 13px;background:var(--card);border:1px solid var(--border2);color:var(--muted);border-radius:99px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.fbtn.active{background:#00e5a012;border-color:#00e5a050;color:var(--green);}
+
+/* FEATURED */
+.featured{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.featured:active{border-color:var(--border2);}
+.feat-glow{position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;pointer-events:none;transition:background .5s;}
+.feat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.feat-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-transform:uppercase;}
+.feat-badge.red{background:#ef444412;border:1px solid #ef444435;color:var(--red);}
+.feat-badge.orange{background:#f9731612;border:1px solid #f9731635;color:var(--orange);}
+.feat-badge.yellow{background:#fbbf2412;border:1px solid #fbbf2435;color:var(--yellow);}
+.feat-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.feat-mag{font-family:'Orbitron',monospace;font-weight:900;line-height:1;margin-bottom:4px;transition:color .5s,text-shadow .5s;}
+.feat-type{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;}
+.feat-place{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px;}
+.feat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;letter-spacing:.5px;}
+.pill.d{background:#60a5fa10;border:1px solid #60a5fa25;color:var(--blue);}
+.pill.f{background:#a78bfa10;border:1px solid #a78bfa25;color:var(--purple);}
+.pill.t{background:#22d3ee10;border:1px solid #22d3ee25;color:var(--cyan);}
+.pill.c{background:#fbbf2410;border:1px solid #fbbf2425;color:var(--yellow);}
+.feat-progress{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+.feat-progress-fill{height:100%;border-radius:99px;transition:width 1s ease,background .5s;}
+
+/* MAP */
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative;}
+.map-card svg{display:block;width:100%;height:auto;}
+.map-title{position:absolute;top:10px;left:12px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.map-count{position:absolute;top:10px;right:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.eq-dot{cursor:pointer;transition:r .2s;}
+.eq-dot:hover{opacity:.8;}
+.eq-dot.pulse{animation:dotPulse 2s ease infinite;}
+
+/* SEISMO */
+.seismo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;}
+canvas#seismo{width:100%;height:76px;display:block;border-radius:6px;background:#020406;}
+
+/* MAG DIST */
+.magdist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;}
+.mag-bars{display:flex;align-items:flex-end;gap:5px;height:64px;margin-top:10px;}
+.mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end;}
+.mbar{width:100%;border-radius:3px 3px 0 0;min-height:2px;transition:height .8s cubic-bezier(.34,1.56,.64,1);}
+.mbar-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;}
 .mbar-cnt{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);text-align:center;}
 
-/* EQ List */
-.eq-list{display:flex;flex-direction:column;gap:8px;}
-.eq-item{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;
-  transition:all .15s;position:relative;overflow:hidden;
-}
-.eq-item:hover,.eq-item:active{background:var(--card2);border-color:var(--border2);}
+/* EQ LIST */
+.eq-list{display:flex;flex-direction:column;gap:7px;}
+.eq-item{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.eq-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.eq-item.m5::before{background:var(--crimson);box-shadow:0 0 8px var(--crimson);}
+.eq-item.m4::before{background:var(--red);}
+.eq-item.m3::before{background:var(--orange);}
+.eq-item.m2::before{background:var(--yellow);}
+.eq-item.m1::before{background:var(--cyan);}
+.eq-item.m0::before{background:var(--green);}
+.eq-item:active{background:var(--card2);}
 .eq-item.new-item{animation:slideIn .4s ease both;}
-.eq-mag-box{
-  width:50px;height:50px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  font-family:'Orbitron',monospace;font-size:15px;font-weight:700;
-}
-.eq-mag-box.m0{background:#00e5a015;color:var(--green);border:1px solid #00e5a030;}
-.eq-mag-box.m1{background:#22d3ee15;color:var(--cyan);border:1px solid #22d3ee30;}
-.eq-mag-box.m2{background:#fbbf2415;color:var(--yellow);border:1px solid #fbbf2430;}
-.eq-mag-box.m3{background:#f9731615;color:var(--orange);border:1px solid #f9731630;}
-.eq-mag-box.m4{background:#ef444420;color:var(--red);border:1px solid #ef444450;}
-.eq-mag-box.m5{background:#dc143c25;color:#ff2255;border:1px solid #dc143c60;box-shadow:0 0 14px #dc143c25;}
+.eq-mag-box{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:14px;font-weight:700;}
+.eq-mag-box.m0{background:#00e5a010;color:var(--green);border:1px solid #00e5a025;}
+.eq-mag-box.m1{background:#22d3ee10;color:var(--cyan);border:1px solid #22d3ee25;}
+.eq-mag-box.m2{background:#fbbf2410;color:var(--yellow);border:1px solid #fbbf2425;}
+.eq-mag-box.m3{background:#f9731610;color:var(--orange);border:1px solid #f9731625;}
+.eq-mag-box.m4{background:#ef444415;color:var(--red);border:1px solid #ef444435;}
+.eq-mag-box.m5{background:#dc143c20;color:#ff2255;border:1px solid #dc143c50;box-shadow:0 0 12px #dc143c20;}
 .eq-info{flex:1;min-width:0;}
-.eq-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;}
-.eq-chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.chip{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 7px;border-radius:4px;}
-.chip.deep{color:var(--blue);border-color:#60a5fa30;}
-.eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.eq-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.alert-dot{width:8px;height:8px;border-radius:50%;}
-.ad-red{background:var(--red);box-shadow:0 0 6px var(--red);}
-.ad-orange{background:var(--orange);}
-.ad-yellow{background:var(--yellow);}
-.new-badge{position:absolute;top:8px;right:8px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);background:#00e5a015;border:1px solid #00e5a030;padding:1px 5px;border-radius:4px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
+.eq-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.eq-chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.chip{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 6px;border-radius:4px;}
+.chip.d{color:var(--blue);border-color:#60a5fa20;}
+.chip.t{color:var(--cyan);}
+.eq-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.eq-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.ad{width:7px;height:7px;border-radius:50%;}
+.ad-r{background:var(--red);box-shadow:0 0 5px var(--red);}
+.ad-o{background:var(--orange);}
+.new-badge{position:absolute;top:7px;right:7px;font-family:'DM Mono',monospace;font-size:8px;color:var(--green);background:#00e5a012;border:1px solid #00e5a030;padding:1px 5px;border-radius:4px;letter-spacing:1px;animation:fadeNew 5s ease forwards;}
 
 /* ── TURKEY PAGE ── */
-.turkey-hero{
-  background:linear-gradient(135deg,#0f0d1e,#1a0f2e);
-  border:1px solid #2a1a45;border-radius:20px;padding:20px;
-}
-.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.th-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:2px;color:var(--purple);}
-.th-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:#2a1a4520;border:1px solid #2a1a45;padding:3px 9px;border-radius:6px;}
-.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
-.th-stat{background:#1a1030;border:1px solid #2a1a40;border-radius:10px;padding:10px;text-align:center;}
+.turkey-hero{background:linear-gradient(135deg,#0c0a1e,#120d28);border:1px solid #1e1535;border-radius:18px;padding:16px;}
+.th-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.th-title{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;color:var(--purple);}
+.th-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:#1e153520;border:1px solid #1e1535;padding:3px 9px;border-radius:6px;}
+.th-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.th-stat{background:#16102a;border:1px solid #201540;border-radius:11px;padding:10px;text-align:center;}
 .th-stat-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--purple);}
 .th-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase;}
-.turkey-list{display:flex;flex-direction:column;gap:8px;}
-.tr-item{
-  background:#130e22;border:1px solid #2a1a40;border-radius:12px;
-  padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;
-  transition:border-color .15s;
-}
-.tr-item:hover{border-color:#3a2a55;}
-.tr-mag{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;min-width:40px;text-align:center;}
+
+/* Turkey risk bar */
+.risk-strip{display:flex;height:6px;border-radius:99px;overflow:hidden;margin-top:10px;gap:2px;}
+.risk-seg{flex:1;border-radius:3px;}
+
+.turkey-list{display:flex;flex-direction:column;gap:7px;}
+.tr-item{background:#0e0a1e;border:1px solid #1a1035;border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden;}
+.tr-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.tr-item:active{background:#120d26;}
+.tr-mag{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;min-width:38px;text-align:center;}
 .tr-info{flex:1;min-width:0;}
-.tr-place{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.tr-place{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
 .tr-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
 .tr-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;}
 
 /* ── STATS PAGE ── */
-.stats-page-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;}
-.big-stat{text-align:center;padding:20px 0;}
-.big-stat-num{font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--green);line-height:1;}
-.big-stat-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:2px;text-transform:uppercase;}
-.trend-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
-.trend-up{color:var(--red);font-size:13px;}
-.trend-down{color:var(--green);font-size:13px;}
-.trend-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.activity-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;}
-.ag-cell{aspect-ratio:1;border-radius:4px;background:var(--border);}
-.timeline{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.tl-item{display:flex;gap:12px;align-items:flex-start;}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
-.tl-content{flex:1;}
+.report-card{background:linear-gradient(135deg,var(--card),#080e18);border:1px solid var(--border);border-radius:16px;padding:16px;}
+.report-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.report-text{font-size:13px;line-height:1.7;color:var(--text);}
+.report-text strong{color:var(--green);}
+.report-text .warn{color:var(--orange);}
+.report-text .danger{color:var(--red);}
+
+.big-num-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.big-num-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;}
+.big-num{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;line-height:1;}
+.big-num-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase;}
+.big-num-sub{font-family:'DM Mono',monospace;font-size:10px;margin-top:3px;}
+
+.region-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+.region-bars{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.rb-item{display:flex;align-items:center;gap:10px;}
+.rb-name{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:72px;flex-shrink:0;}
+.rb-wrap{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.rb-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+.rb-cnt{font-family:'DM Mono',monospace;font-size:10px;color:var(--text);min-width:24px;text-align:right;}
+
+.timeline-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+.tl{display:flex;flex-direction:column;gap:0;margin-top:10px;}
+.tl-item{display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;position:relative;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:'';position:absolute;left:4px;top:18px;bottom:0;width:1px;background:var(--border);}
+.tl-item:last-child::before{display:none;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--bg);}
+.tl-body{flex:1;}
 .tl-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .tl-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-.tl-line{width:1px;background:var(--border);height:20px;margin-left:4px;}
-.risk-bars{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.risk-item{display:flex;align-items:center;gap:10px;}
-.risk-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:70px;flex-shrink:0;}
-.risk-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
-.risk-bar-fill{height:100%;border-radius:99px;}
-.risk-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text);min-width:24px;text-align:right;}
 
-/* ── ALERT OVERLAY ── */
-#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#00000099;backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding-top:60px;}
+.depth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;}
+
+/* ALERT */
+#alert-overlay{display:none;position:fixed;inset:0;z-index:999;background:#00000099;backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding-top:60px;}
 #alert-overlay.show{display:flex;}
-.alert-box{
-  width:calc(100% - 28px);max-width:440px;
-  background:linear-gradient(135deg,#1a0810,#200515);
-  border:2px solid var(--red);border-radius:20px;padding:22px;
-  animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;
-  box-shadow:0 0 80px #ef444430,0 24px 48px #00000070;
-}
+.alert-box{width:calc(100% - 24px);max-width:440px;background:linear-gradient(135deg,#1a0510,#220818);border:2px solid var(--red);border-radius:22px;padding:22px;animation:alertPop .3s cubic-bezier(.17,.67,.35,1.4) both;box-shadow:0 0 100px #ef444425,0 30px 60px #00000080;}
 .al-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:11px;color:var(--red);letter-spacing:2px;animation:flashText .6s infinite alternate;}
-.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
-.al-mag{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;color:var(--red);text-shadow:0 0 40px #ef444466;line-height:1;}
-.al-unit{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-left:6px;}
-.al-place{font-size:15px;font-weight:600;color:var(--text);margin:10px 0 4px;line-height:1.4;}
+.al-title{font-family:'Orbitron',monospace;font-weight:900;font-size:11px;color:var(--red);letter-spacing:2px;animation:flashText .5s infinite alternate;}
+.al-close{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
+.al-mag-row{display:flex;align-items:baseline;gap:6px;margin-bottom:10px;}
+.al-mag{font-family:'Orbitron',monospace;font-size:68px;font-weight:900;color:var(--red);text-shadow:0 0 50px #ef444455;line-height:1;}
+.al-unit{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);}
+.al-place{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.4;}
 .al-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px;}
 .al-tags{display:flex;gap:8px;flex-wrap:wrap;}
 .atag{padding:4px 10px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;}
 .atag.tsunami{background:#1e3a5f;border:1px solid #3b82f6;color:var(--blue);}
 .atag.pager-red{background:#3b0a0a;border:1px solid var(--red);color:var(--red);}
 .atag.felt{background:#1e1e3b;border:1px solid var(--purple);color:var(--purple);}
+/* Shockwave rings */
+.al-rings{position:absolute;top:32px;right:32px;width:80px;height:80px;pointer-events:none;}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef444430;animation:ringExpand 2s ease infinite;}
+.ring:nth-child(2){animation-delay:.6s;}
+.ring:nth-child(3){animation-delay:1.2s;}
 
-/* ── DETAIL SHEET ── */
+/* DETAIL SHEET */
 #detail-sheet{display:none;position:fixed;inset:0;z-index:200;background:#00000099;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
 #detail-sheet.show{display:flex;}
-.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:16px 18px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:85vh;overflow-y:auto;}
-.sheet-handle{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 20px;}
-.sh-mag{font-family:'Orbitron',monospace;font-size:52px;font-weight:900;line-height:1;margin-bottom:6px;}
-.sh-place{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text);line-height:1.4;}
-.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.sg-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
-.sg-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
-.sg-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
-.sh-intensity{margin-bottom:14px;}
-.sh-int-bar{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--orange),var(--red));margin:8px 0;position:relative;}
-.sh-int-marker{position:absolute;top:-4px;width:18px;height:18px;border-radius:50%;background:white;border:3px solid var(--bg);transform:translateX(-50%);}
-.sh-usgs-link{display:block;text-align:center;padding:13px;background:#60a5fa12;border:1px solid #60a5fa30;border-radius:12px;color:var(--blue);font-family:'DM Mono',monospace;font-size:12px;text-decoration:none;letter-spacing:.5px;margin-bottom:8px;}
-.sh-close{width:100%;padding:13px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:12px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;}
+.sheet-inner{width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:14px 16px 44px;animation:slideUp .3s cubic-bezier(.17,.67,.35,1.1) both;max-height:86vh;overflow-y:auto;}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 18px;}
+.sh-mag{font-family:'Orbitron',monospace;font-size:50px;font-weight:900;line-height:1;margin-bottom:5px;}
+.sh-place{font-size:16px;font-weight:600;margin-bottom:14px;color:var(--text);line-height:1.4;}
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
+.sg{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 11px;}
+.sg-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.sg-v{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text);}
+/* Cities distance */
+.sh-cities{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;}
+.sh-cities-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.city-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.city-row:last-child{border:none;}
+.city-name{font-size:12px;color:var(--text);}
+.city-dist{font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);}
+.sh-link{display:block;text-align:center;padding:12px;background:#60a5fa10;border:1px solid #60a5fa25;border-radius:11px;color:var(--blue);font-family:'DM Mono',monospace;font-size:12px;text-decoration:none;letter-spacing:.5px;margin-bottom:8px;}
+.sh-close{width:100%;padding:13px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:11px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;}
 
 /* STATUS */
 .status-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;}
-.spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
-.status-msg{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
-.retry-btn{margin-top:14px;padding:9px 20px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;}
+.spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+.status-msg{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.retry-btn{margin-top:12px;padding:8px 18px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;}
 
-/* SOURCE */
-.source-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center;line-height:1.7;}
-.source-note a{color:var(--blue);text-decoration:none;}
-
-/* SECTION TITLE */
 .sec-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.source-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center;line-height:1.7;}
+.source-note a{color:#2a4070;text-decoration:none;}
 
 /* ANIMATIONS */
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes alertPop{from{opacity:0;transform:scale(.92) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
-@keyframes flashText{from{opacity:1}to{opacity:.5}}
+@keyframes alertPop{from{opacity:0;transform:scale(.9) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes flashText{from{opacity:1}to{opacity:.4}}
 @keyframes fadeNew{0%,60%{opacity:1}100%{opacity:0}}
-@keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes dotPulse{0%,100%{opacity:1;r:attr(r)}50%{opacity:.5}}
+@keyframes ringExpand{0%{transform:scale(.3);opacity:.8}100%{transform:scale(2.5);opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 </style>
 </head>
 <body>
@@ -289,6 +329,7 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
   <div class="logo">SİSMİK<em>NET</em></div>
   <div class="hright">
     <span id="timer">—</span>
+    <button class="notif-btn" id="notif-btn" onclick="toggleNotif()" title="Bildirimler">🔔</button>
     <button class="rbtn" id="rbtn" onclick="manualRefresh()">↻</button>
     <div class="live-pill"><span class="live-dot"></span>CANLI</div>
   </div>
@@ -296,12 +337,13 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
 
 <!-- ALERT -->
 <div id="alert-overlay">
-  <div class="alert-box">
+  <div class="alert-box" style="position:relative">
+    <div class="al-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
     <div class="al-header">
       <div class="al-title">⚠ BÜYÜK DEPREM</div>
       <button class="al-close" onclick="closeAlert()">KAPAT</button>
     </div>
-    <div style="display:flex;align-items:baseline">
+    <div class="al-mag-row">
       <div class="al-mag" id="al-mag">—</div>
       <span class="al-unit">Mw</span>
     </div>
@@ -318,19 +360,47 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
     <div class="sh-mag" id="sh-mag">—</div>
     <div class="sh-place" id="sh-place">—</div>
     <div class="sh-grid" id="sh-grid"></div>
-    <a class="sh-usgs-link" id="sh-link" href="#" target="_blank" rel="noopener">🔗 USGS Olay Sayfası</a>
+    <div class="sh-cities" id="sh-cities" style="display:none">
+      <div class="sh-cities-title">Türk Şehirlerine Mesafe</div>
+      <div id="sh-cities-list"></div>
+    </div>
+    <a class="sh-link" id="sh-link" href="#" target="_blank" rel="noopener">🔗 USGS Olay Sayfası</a>
     <button class="sh-close" onclick="closeSheet()">Kapat</button>
   </div>
 </div>
 
-<!-- ═══ PAGE: GLOBAL ═══ -->
+<!-- PAGE: GLOBAL -->
 <div class="page active" id="page-global">
 
   <div class="stats-row">
-    <div class="stat-card green"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">Son 24s</div></div>
-    <div class="stat-card blue"><div class="stat-val" id="wb-m4" style="color:var(--blue)">—</div><div class="stat-lbl">M4+</div></div>
-    <div class="stat-card orange"><div class="stat-val" id="wb-m5" style="color:var(--orange)">—</div><div class="stat-lbl">M5+</div></div>
-    <div class="stat-card red"><div class="stat-val" id="wb-max" style="color:var(--red)">—</div><div class="stat-lbl">Maks</div></div>
+    <div class="stat-card g"><div class="stat-val" id="wb-total" style="color:var(--green)">—</div><div class="stat-lbl">24s</div></div>
+    <div class="stat-card b"><div class="stat-val" id="wb-m4" style="color:var(--blue)">—</div><div class="stat-lbl">M4+</div></div>
+    <div class="stat-card o"><div class="stat-val" id="wb-m5" style="color:var(--orange)">—</div><div class="stat-lbl">M5+</div></div>
+    <div class="stat-card r"><div class="stat-val" id="wb-max" style="color:var(--red)">—</div><div class="stat-lbl">Maks</div></div>
+  </div>
+
+  <!-- ACTIVITY SCORE -->
+  <div class="activity-card">
+    <div class="act-glow" id="act-glow"></div>
+    <div class="act-row">
+      <div class="act-gauge">
+        <svg viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#1a2035" stroke-width="6"/>
+          <circle cx="40" cy="40" r="32" fill="none" stroke-width="6" stroke-linecap="round"
+            stroke-dasharray="201" stroke-dashoffset="201"
+            id="gauge-circle" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease,stroke .5s;"/>
+        </svg>
+        <div class="act-gauge-val">
+          <div class="act-num" id="act-score">—</div>
+          <div class="act-lbl2">SKOR</div>
+        </div>
+      </div>
+      <div class="act-info">
+        <div class="act-title" id="act-level" style="color:var(--green)">YÜKLENİYOR</div>
+        <div class="act-desc" id="act-desc">Sismik aktivite analiz ediliyor…</div>
+        <div class="act-bars" id="act-bars"></div>
+      </div>
+    </div>
   </div>
 
   <div class="filter-row">
@@ -347,18 +417,23 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
     <div class="status-card"><div class="spinner"></div><div class="status-msg">Yükleniyor…</div></div>
   </div>
 
+  <!-- WORLD MAP -->
+  <div class="map-card" id="map-card">
+    <div class="map-title">KÜRESEL AKTİVİTE HARİTASI</div>
+    <div class="map-count" id="map-count">—</div>
+    <svg id="world-map" viewBox="0 0 800 400" style="background:#040810;"></svg>
+  </div>
+
   <div class="seismo-card">
     <div class="card-header">
-      <div class="card-title">Zaman Serisi</div>
+      <div class="card-title">Büyüklük Zaman Serisi</div>
       <div class="card-sub" id="seismo-count">—</div>
     </div>
     <canvas id="seismo"></canvas>
   </div>
 
   <div class="magdist-card">
-    <div class="card-header">
-      <div class="card-title">Büyüklük Dağılımı</div>
-    </div>
+    <div class="card-header"><div class="card-title">Büyüklük Dağılımı</div></div>
     <div class="mag-bars" id="mag-bars"></div>
   </div>
 
@@ -367,14 +442,14 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
     <div class="status-card"><div class="spinner"></div><div class="status-msg">Bağlanılıyor…</div></div>
   </div>
 
-  <div class="source-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS</a> · 60s güncelleme · M5.5+ uyarı</div>
+  <div class="source-note">Kaynak: <a href="https://earthquake.usgs.gov" target="_blank">USGS Earthquake Hazards Program</a> · 60s güncelleme</div>
 </div>
 
-<!-- ═══ PAGE: TURKEY ═══ -->
+<!-- PAGE: TURKEY -->
 <div class="page" id="page-turkey">
   <div class="turkey-hero">
     <div class="th-header">
-      <div class="th-title">🇹🇷 TÜRKİYE</div>
+      <div class="th-title">🇹🇷 TÜRKİYE & ÇEVRE</div>
       <div class="th-badge" id="tr-badge">yükleniyor</div>
     </div>
     <div class="th-stats">
@@ -382,6 +457,7 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
       <div class="th-stat"><div class="th-stat-val" id="tr-m3">—</div><div class="th-stat-lbl">M3+</div></div>
       <div class="th-stat"><div class="th-stat-val" id="tr-max">—</div><div class="th-stat-lbl">Maks</div></div>
     </div>
+    <div class="risk-strip" id="tr-risk-strip"></div>
   </div>
   <div class="sec-title">Türkiye Depremleri</div>
   <div class="turkey-list" id="turkey-list">
@@ -389,31 +465,40 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
   </div>
 </div>
 
-<!-- ═══ PAGE: STATS ═══ -->
+<!-- PAGE: STATS -->
 <div class="page" id="page-stats">
 
-  <div class="stats-page-card">
-    <div class="card-header"><div class="card-title">Son 24 Saat Özeti</div></div>
-    <div class="big-stat">
-      <div class="big-stat-num" id="st-total">—</div>
-      <div class="big-stat-lbl">Toplam Deprem</div>
-      <div class="trend-row" id="st-trend"></div>
+  <div class="report-card">
+    <div class="report-title">📊 Otomatik Analiz Raporu</div>
+    <div class="report-text" id="report-text">Veriler analiz ediliyor…</div>
+  </div>
+
+  <div class="big-num-row">
+    <div class="big-num-card">
+      <div class="big-num" id="st-total" style="color:var(--green)">—</div>
+      <div class="big-num-lbl">Toplam 24s</div>
+      <div class="big-num-sub" id="st-rate" style="color:var(--muted)">—</div>
+    </div>
+    <div class="big-num-card">
+      <div class="big-num" id="st-max" style="color:var(--red)">—</div>
+      <div class="big-num-lbl">Maks Büyüklük</div>
+      <div class="big-num-sub" id="st-max-loc" style="color:var(--muted)">—</div>
     </div>
   </div>
 
-  <div class="stats-page-card">
+  <div class="region-card">
     <div class="card-header"><div class="card-title">Bölgesel Dağılım</div></div>
-    <div class="risk-bars" id="region-bars"></div>
+    <div class="region-bars" id="region-bars"></div>
   </div>
 
-  <div class="stats-page-card">
-    <div class="card-header"><div class="card-title">Son Büyük Depremler (M5+)</div></div>
-    <div class="timeline" id="big-timeline"></div>
+  <div class="timeline-card">
+    <div class="card-header"><div class="card-title">Son Büyük Depremler M5+</div></div>
+    <div class="tl" id="big-tl"></div>
   </div>
 
-  <div class="stats-page-card">
-    <div class="card-header"><div class="card-title">Derinlik Analizi</div></div>
-    <div class="risk-bars" id="depth-bars"></div>
+  <div class="depth-card">
+    <div class="card-header"><div class="card-title">Derinlik Dağılımı</div></div>
+    <div class="region-bars" id="depth-bars"></div>
   </div>
 
 </div>
@@ -422,53 +507,67 @@ canvas#seismo{width:100%;height:80px;display:block;border-radius:8px;background:
 <nav class="tab-bar">
   <div class="tab active" onclick="switchTab('global',this)">
     <div class="tab-icon">🌍</div>
-    <div class="tab-label">KÜRESEL</div>
+    <div class="tab-label">Küresel</div>
   </div>
-  <div class="tab" onclick="switchTab('turkey',this)">
-    <div class="tab-icon">🇹🇷</div>
-    <div class="tab-label">TÜRKİYE</div>
+  <div class="tab" onclick="switchTab('turkey',this)" id="tab-turkey">
+    <div class="tab-icon" style="position:relative">🇹🇷<span class="tab-badge" id="tr-badge-dot" style="display:none"></span></div>
+    <div class="tab-label">Türkiye</div>
   </div>
   <div class="tab" onclick="switchTab('stats',this)">
     <div class="tab-icon">📊</div>
-    <div class="tab-label">İSTATİSTİK</div>
+    <div class="tab-label">İstatistik</div>
   </div>
 </nav>
 
 <script>
 // ── CONFIG ──
-const REFRESH = 60;
-const ALERT_MAG = 5.5;
-const USGS = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
-const TR_URL = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=START&endtime=END&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45&minmagnitude=1.5&orderby=time&limit=30';
+const REFRESH=60, ALERT_MAG=5.5;
+const USGS='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+const TR_API='https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=30&maxlatitude=46&minlongitude=20&maxlongitude=50&minmagnitude=1.5&orderby=time&limit=50';
+
+// Turkish cities for distance calc
+const TR_CITIES=[
+  {n:'İstanbul',lat:41.01,lon:28.97},
+  {n:'İzmir',lat:38.42,lon:27.14},
+  {n:'Ankara',lat:39.93,lon:32.86},
+  {n:'Antalya',lat:36.90,lon:30.70},
+  {n:'Bursa',lat:40.19,lon:29.06},
+];
 
 // ── STATE ──
-let allQ=[], trQ=[], filterMin=0, seenIds=new Set(), counter=REFRESH, timerInt=null, firstLoad=true, alertQ=[], alertBusy=false;
+let allQ=[],trQ=[],filterMin=0,seenIds=new Set(),counter=REFRESH,timerInt=null,firstLoad=true,alertQ=[],alertBusy=false,notifOn=false;
 
 // ── TABS ──
-function switchTab(name, el) {
+function switchTab(n,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('page-'+n).classList.add('active');
   el.classList.add('active');
-  window.scrollTo(0,0);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n==='global')renderSeismo();
 }
 
 // ── HELPERS ──
-const mc = m => m<2?'m0':m<3?'m1':m<4?'m2':m<5?'m3':m<6?'m4':'m5';
-const fc = m => m<2?'c0':m<3?'c1':m<4?'c2':m<5?'c3':m<6?'c4':'c5';
-const col = m => m<2?'#00e5a0':m<3?'#22d3ee':m<4?'#fbbf24':m<5?'#f97316':m<6?'#ef4444':'#dc143c';
-const fmtM = m => m!=null?m.toFixed(1):'?';
-const fmtD = d => d!=null?`${d.toFixed(0)} km`:'?';
+const mc=m=>m<2?'m0':m<3?'m1':m<4?'m2':m<5?'m3':m<6?'m4':'m5';
+const fc=m=>m<2?'c0':m<3?'c1':m<4?'c2':m<5?'c3':m<6?'c4':'c5';
+const col=m=>m<2?'#00e5a0':m<3?'#22d3ee':m<4?'#fbbf24':m<5?'#f97316':m<6?'#ef4444':'#dc143c';
+const fM=m=>m!=null?m.toFixed(1):'?';
+const fD=d=>d!=null?`${d.toFixed(0)} km`:'?';
 function ago(ts){
   const s=Math.floor((Date.now()-ts)/1000);
   if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}dk`;
   if(s<86400)return`${Math.floor(s/3600)}sa`;return`${Math.floor(s/86400)}g`;
 }
-function tags(p){
+function dist(lat1,lon1,lat2,lon2){
+  const R=6371,dL=(lat2-lat1)*Math.PI/180,dLo=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLo/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+function buildTags(p){
   let h='';
   if(p.tsunami===1)h+=`<span class="atag tsunami">🌊 TSUNAMİ</span>`;
   if(p.alert==='red')h+=`<span class="atag pager-red">PAGER KIRMIZI</span>`;
-  if(p.felt>100)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;
+  if(p.felt>50)h+=`<span class="atag felt">👁 ${p.felt} hissetti</span>`;
   return h;
 }
 
@@ -485,60 +584,72 @@ async function fetchData(){
 }
 
 async function fetchTurkey(){
-  // Direkt USGS FDSNWS - geniş bölge, starttime/endtime yok (son 30 gün default)
   try{
-    const url='https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=30&maxlatitude=46&minlongitude=20&maxlongitude=50&minmagnitude=1.5&orderby=time&limit=50';
-    const r=await fetch(url);
-    if(r.ok){
-      const j=await r.json();
-      if(j.features&&j.features.length){
-        trQ=j.features;
-      }
-    }
+    const r=await fetch(TR_API);
+    if(r.ok){const j=await r.json();if(j.features&&j.features.length){trQ=j.features;}}
   }catch(_){}
-
-  // Boşsa global'dan filtrele
   if(!trQ.length){
-    trQ=allQ.filter(f=>{
-      const c=f.geometry&&f.geometry.coordinates;
-      if(!c)return false;
-      return c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;
-    });
+    trQ=allQ.filter(f=>{const c=f.geometry?.coordinates;return c&&c[1]>=30&&c[1]<=46&&c[0]>=20&&c[0]<=50;});
   }
-
   trQ.sort((a,b)=>b.properties.time-a.properties.time);
   renderTurkey();
 }
 
 // ── PROCESS ──
 function process(features){
-  const newOnes=[];
-  const newIds=new Set();
-  features.forEach(f=>{
-    newIds.add(f.id);
-    if(!firstLoad&&!seenIds.has(f.id))newOnes.push(f);
-  });
+  const newOnes=[];const newIds=new Set();
+  features.forEach(f=>{newIds.add(f.id);if(!firstLoad&&!seenIds.has(f.id))newOnes.push(f);});
   allQ=features.sort((a,b)=>(b.properties.mag||0)-(a.properties.mag||0));
   seenIds=newIds;
   if(!firstLoad){
-    newOnes.filter(f=>(f.properties.mag||0)>=ALERT_MAG)
-      .sort((a,b)=>b.properties.mag-a.properties.mag)
-      .forEach(f=>alertQ.push(f));
+    newOnes.filter(f=>(f.properties.mag||0)>=ALERT_MAG).sort((a,b)=>b.properties.mag-a.properties.mag).forEach(f=>alertQ.push(f));
     if(!alertBusy&&alertQ.length)showAlert();
   }
-  renderWorldBar();renderFeatured();renderSeismo();renderMagDist();renderList();renderStats();
+  renderWorldBar();renderActivityScore();renderFeatured();renderMap();renderSeismo();renderMagDist();renderList();renderStats();
   firstLoad=false;
 }
 
 // ── WORLD BAR ──
 function renderWorldBar(){
   const t=allQ.length,m4=allQ.filter(f=>(f.properties.mag||0)>=4).length;
-  const m5=allQ.filter(f=>(f.properties.mag||0)>=5).length;
-  const mx=allQ[0]?.properties.mag||0;
+  const m5=allQ.filter(f=>(f.properties.mag||0)>=5).length,mx=allQ[0]?.properties.mag||0;
   document.getElementById('wb-total').textContent=t;
   document.getElementById('wb-m4').textContent=m4;
   document.getElementById('wb-m5').textContent=m5;
-  document.getElementById('wb-max').textContent=fmtM(mx);
+  document.getElementById('wb-max').textContent=fM(mx);
+}
+
+// ── ACTIVITY SCORE ──
+function renderActivityScore(){
+  const now=Date.now();
+  const last1h=allQ.filter(f=>now-f.properties.time<3600000);
+  const last6h=allQ.filter(f=>now-f.properties.time<21600000);
+  const bigOnes=allQ.filter(f=>(f.properties.mag||0)>=5).length;
+  let score=Math.min(100,Math.round(last1h.length*3+last6h.length*.5+bigOnes*10));
+  document.getElementById('act-score').textContent=score;
+  const circle=document.getElementById('gauge-circle');
+  const offset=201-(201*score/100);
+  circle.style.strokeDashoffset=offset;
+  let level,desc,c;
+  if(score<20){level='SAKİN';desc='Sismik aktivite normal seviyede.';c='var(--green)';}
+  else if(score<40){level='DÜŞÜK';desc=`Son 1 saatte ${last1h.length} deprem kaydedildi.`;c='var(--cyan)';}
+  else if(score<60){level='ORTA';desc=`Dikkat: Son 6 saatte ${last6h.length} olay.`;c='var(--yellow)';}
+  else if(score<80){level='YÜKSEK';desc=`Uyarı: ${bigOnes} adet M5+ deprem mevcut!`;c='var(--orange)';}
+  else{level='KRİTİK';desc=`ACİL: Yoğun sismik aktivite tespit edildi!`;c='var(--red)';}
+  circle.style.stroke=c;
+  document.getElementById('act-score').style.color=c;
+  document.getElementById('act-level').textContent=level;
+  document.getElementById('act-level').style.color=c;
+  document.getElementById('act-desc').textContent=desc;
+  document.getElementById('act-glow').style.background=`radial-gradient(circle,${c}15 0%,transparent 70%)`;
+  // Hourly bars (last 12 hours)
+  const bars=[];
+  for(let i=11;i>=0;i--){
+    const s=now-(i+1)*3600000,e=now-i*3600000;
+    bars.push(allQ.filter(f=>f.properties.time>=s&&f.properties.time<e).length);
+  }
+  const bmax=Math.max(...bars,1);
+  document.getElementById('act-bars').innerHTML=bars.map((b,i)=>`<div class="act-bar" style="height:${Math.max(4,(b/bmax)*100)}%;background:${i===11?c:col(b>5?6:b>2?5:b>0?3:0)};opacity:${i===11?1:.5}"></div>`).join('');
 }
 
 // ── FEATURED ──
@@ -547,31 +658,82 @@ function renderFeatured(){
   if(!allQ.length){w.innerHTML='<div class="status-card"><div class="status-msg">Veri yok</div></div>';return;}
   const f=allQ[0],p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
   const cls=fc(m);
+  const badgeCls=m>=6?'red':m>=5?'orange':'yellow';
+  const glowCol=col(m);
+  let sz=m>=7?72:m>=6?64:m>=5?56:m>=4?48:42;
   w.innerHTML=`
-  <div class="featured ${cls}" onclick="openSheet(${JSON.stringify(f).replace(/"/g,'&quot;')})">
+  <div class="featured" id="feat-card">
+    <div class="feat-glow" style="background:radial-gradient(circle,${glowCol}18 0%,transparent 70%)"></div>
     <div class="feat-top">
-      <span class="feat-badge ${m>=5?'red':'orange'}">⚡ EN BÜYÜK</span>
+      <span class="feat-badge ${badgeCls}">⚡ EN BÜYÜK</span>
       <span class="feat-time">${ago(p.time)} önce</span>
     </div>
-    <div class="feat-mag ${cls}">${fmtM(m)}</div>
+    <div class="feat-mag" style="font-size:${sz}px;color:${glowCol};${m>=6?'text-shadow:0 0 40px '+glowCol+'55':''}">${fM(m)}</div>
     <div class="feat-type">${p.magType||'Mw'} · ${p.net||'us'}</div>
     <div class="feat-place">${p.place||'Bilinmiyor'}</div>
     <div class="feat-pills">
-      <span class="pill depth">⬇ ${fmtD(d)}</span>
-      ${p.felt?`<span class="pill felt">👁 ${p.felt}</span>`:''}
-      ${p.tsunami===1?`<span class="pill tsunami">🌊 TSUNAMİ</span>`:''}
-      ${p.cdi?`<span class="pill cdi">CDI ${p.cdi.toFixed(1)}</span>`:''}
+      <span class="pill d">⬇ ${fD(d)}</span>
+      ${p.felt?`<span class="pill f">👁 ${p.felt}</span>`:''}
+      ${p.tsunami===1?`<span class="pill t">🌊 TSUNAMİ</span>`:''}
+      ${p.cdi?`<span class="pill c">CDI ${p.cdi.toFixed(1)}</span>`:''}
+      ${p.mmi?`<span class="pill c">MMI ${p.mmi.toFixed(1)}</span>`:''}
     </div>
-    <div class="feat-bar"><div class="feat-bar-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${col(m)}"></div></div>
+    <div class="feat-progress"><div class="feat-progress-fill" style="width:${Math.min(100,(m/9)*100)}%;background:${glowCol}"></div></div>
   </div>`;
-  // re-attach click
-  w.querySelector('.featured').onclick=()=>openSheet(f);
+  document.getElementById('feat-card').onclick=()=>openSheet(f);
+}
+
+// ── WORLD MAP (SVG) ──
+function renderMap(){
+  const svg=document.getElementById('world-map');
+  const W=800,H=400;
+  // Simple world outline paths (Mercator-like)
+  const continents=`<path d="M80,120 L160,100 L200,110 L220,140 L200,180 L160,200 L120,190 L80,160 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M220,80 L350,60 L420,80 L450,120 L440,160 L400,180 L350,170 L300,150 L250,130 L220,100 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M350,170 L420,160 L460,180 L470,220 L440,260 L400,270 L360,250 L340,210 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M450,100 L550,80 L620,100 L650,140 L640,180 L600,200 L550,190 L500,160 L460,130 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M550,190 L630,180 L680,200 L700,240 L680,290 L640,320 L580,310 L540,270 L530,230 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M100,220 L180,210 L220,240 L230,290 L200,340 L150,360 L100,340 L80,290 L90,250 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>
+<path d="M620,200 L700,190 L750,220 L760,260 L740,290 L700,300 L660,280 L630,250 Z" fill="#0d1a2a" stroke="#1a2840" stroke-width="1"/>`;
+  
+  // Project lat/lon to SVG coords (simple equirectangular)
+  function proj(lat,lon){
+    const x=((lon+180)/360)*W;
+    const y=((90-lat)/180)*H;
+    return[x,y];
+  }
+
+  // Only show M2.5+ on map
+  const mapQ=allQ.filter(f=>(f.properties.mag||0)>=2.5).slice(0,200);
+  
+  const dots=mapQ.map((f,i)=>{
+    const c=f.geometry?.coordinates;
+    if(!c)return'';
+    const[x,y]=proj(c[1],c[0]);
+    const m=f.properties.mag||0;
+    const r=Math.max(2,m>=7?8:m>=6?6:m>=5?5:m>=4?4:3);
+    const color=col(m);
+    const pulse=m>=5?'class="eq-dot pulse"':'class="eq-dot"';
+    return`<circle ${pulse} cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${color}" fill-opacity="${m>=5?'.9':'.6'}" stroke="${color}" stroke-width="0.5" stroke-opacity=".3" data-i="${i}"/>`;
+  }).join('');
+
+  svg.innerHTML=`${continents}${dots}
+<text x="400" y="395" font-family="monospace" font-size="9" fill="#1a2840" text-anchor="middle">USGS · ${mapQ.length} OLAY GÖSTERİLİYOR</text>`;
+  
+  document.getElementById('map-count').textContent=`${mapQ.length} nokta`;
+
+  // Click events on dots
+  svg.querySelectorAll('.eq-dot').forEach(dot=>{
+    const i=parseInt(dot.getAttribute('data-i'));
+    dot.onclick=()=>openSheet(mapQ[i]);
+  });
 }
 
 // ── SEISMO ──
 function renderSeismo(){
   const cv=document.getElementById('seismo');
   const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  if(W===0)return;
   cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
   if(!allQ.length)return;
@@ -579,16 +741,22 @@ function renderSeismo(){
   const now=Date.now(),dayAgo=now-86400000;
   const sorted=[...allQ].sort((a,b)=>a.properties.time-b.properties.time);
   const maxM=Math.max(...sorted.map(f=>f.properties.mag||0));
-  // grid
-  ctx.strokeStyle='#1a203820';ctx.lineWidth=.5;
-  for(let i=0;i<=4;i++){const y=(H/4)*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // Hour markers
+  ctx.strokeStyle='#0d1a2a';ctx.lineWidth=1;
+  for(let i=0;i<=24;i+=4){
+    const x=(i/24)*W;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+  }
   sorted.forEach(f=>{
     const t=f.properties.time,m=f.properties.mag||0;
     const x=((t-dayAgo)/86400000)*W;
-    const bH=Math.max(2,((m/(maxM+.5))*(H-6)));
-    ctx.strokeStyle=col(m);ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;
-    ctx.globalAlpha=m>=4?1:.5;
+    const bH=Math.max(2,((m/(maxM+.5))*(H-4)));
+    const c=col(m);
+    ctx.strokeStyle=c;ctx.lineWidth=m>=5?2.5:m>=3?1.5:.8;
+    ctx.globalAlpha=m>=4?1:m>=2?.6:.3;
     ctx.beginPath();ctx.moveTo(x,H);ctx.lineTo(x,H-bH);ctx.stroke();
+    if(m>=6){
+      ctx.globalAlpha=.15;ctx.fillStyle=c;ctx.fillRect(x-3,H-bH,6,bH);
+    }
   });
   ctx.globalAlpha=1;
   document.getElementById('seismo-count').textContent=`${sorted.length} olay`;
@@ -596,19 +764,10 @@ function renderSeismo(){
 
 // ── MAG DIST ──
 function renderMagDist(){
-  const bands=[
-    {l:'<2',min:0,max:2,c:'#00e5a0'},{l:'2-3',min:2,max:3,c:'#22d3ee'},
-    {l:'3-4',min:3,max:4,c:'#fbbf24'},{l:'4-5',min:4,max:5,c:'#f97316'},
-    {l:'5-6',min:5,max:6,c:'#ef4444'},{l:'6+',min:6,max:99,c:'#dc143c'},
-  ];
-  const counts=bands.map(b=>allQ.filter(f=>{const m=f.properties.mag||0;return m>=b.min&&m<b.max;}).length);
+  const bands=[{l:'<2',mn:0,mx:2,c:'#00e5a0'},{l:'2-3',mn:2,mx:3,c:'#22d3ee'},{l:'3-4',mn:3,mx:4,c:'#fbbf24'},{l:'4-5',mn:4,mx:5,c:'#f97316'},{l:'5-6',mn:5,mx:6,c:'#ef4444'},{l:'6+',mn:6,mx:99,c:'#dc143c'}];
+  const counts=bands.map(b=>allQ.filter(f=>{const m=f.properties.mag||0;return m>=b.mn&&m<b.mx;}).length);
   const mx=Math.max(...counts,1);
-  document.getElementById('mag-bars').innerHTML=bands.map((b,i)=>`
-    <div class="mbar-wrap">
-      <div class="mbar-cnt">${counts[i]}</div>
-      <div class="mbar" style="height:${(counts[i]/mx)*100}%;background:${b.c};opacity:.85"></div>
-      <div class="mbar-lbl">${b.l}</div>
-    </div>`).join('');
+  document.getElementById('mag-bars').innerHTML=bands.map((b,i)=>`<div class="mbar-wrap"><div class="mbar-cnt">${counts[i]}</div><div class="mbar" style="height:${(counts[i]/mx)*100}%;background:${b.c}88"></div><div class="mbar-lbl">${b.l}</div></div>`).join('');
 }
 
 // ── EQ LIST ──
@@ -620,21 +779,21 @@ function renderList(){
   box.innerHTML=`<div class="eq-list">${show.map((f,i)=>{
     const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
     const isNew=!firstLoad&&!seenIds.has(f.id);
-    return`<div class="eq-item${isNew?' new-item':''}" data-i="${i}">
+    return`<div class="eq-item ${mc(m)}${isNew?' new-item':''}" data-i="${i}">
       ${isNew?'<span class="new-badge">YENİ</span>':''}
-      <div class="eq-mag-box ${mc(m)}">${fmtM(m)}</div>
+      <div class="eq-mag-box ${mc(m)}">${fM(m)}</div>
       <div class="eq-info">
         <div class="eq-place">${p.place||'Bilinmiyor'}</div>
         <div class="eq-chips">
-          <span class="chip deep">⬇${fmtD(d)}</span>
+          <span class="chip d">⬇${fD(d)}</span>
           ${p.felt?`<span class="chip">👁${p.felt}</span>`:''}
-          ${p.tsunami===1?`<span class="chip">🌊</span>`:''}
+          ${p.tsunami===1?`<span class="chip t">🌊</span>`:''}
           <span class="chip">${p.magType||'Mw'}</span>
         </div>
       </div>
       <div class="eq-right">
         <span class="eq-time">${ago(p.time)}</span>
-        ${p.alert==='red'?`<div class="alert-dot ad-red"></div>`:p.alert==='orange'?`<div class="alert-dot ad-orange"></div>`:''}
+        ${p.alert==='red'?`<div class="ad ad-r"></div>`:p.alert==='orange'?`<div class="ad ad-o"></div>`:''}
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -649,72 +808,96 @@ function renderTurkey(){
   const mx=trQ[0]?.properties.mag||0;
   document.getElementById('tr-total').textContent=today.length;
   document.getElementById('tr-m3').textContent=m3;
-  document.getElementById('tr-max').textContent=fmtM(mx);
-  document.getElementById('tr-badge').textContent=`${trQ.length} olay / 7 gün`;
+  document.getElementById('tr-max').textContent=fM(mx);
+  document.getElementById('tr-badge').textContent=`${trQ.length} olay`;
+  if(today.length>0)document.getElementById('tr-badge-dot').style.display='block';
+
+  // Risk strip
+  const strip=document.getElementById('tr-risk-strip');
+  const cols=['#00e5a0','#22d3ee','#fbbf24','#f97316','#ef4444','#dc143c'];
+  const bands=[0,2,3,4,5,6];
+  strip.innerHTML=bands.map((b,i)=>{
+    const cnt=trQ.filter(f=>(f.properties.mag||0)>=b&&(f.properties.mag||0)<(bands[i+1]||99)).length;
+    return`<div class="risk-seg" style="background:${cols[i]};flex:${Math.max(.5,cnt)}" title="${cnt} adet"></div>`;
+  }).join('');
+
   const list=document.getElementById('turkey-list');
   if(!trQ.length){list.innerHTML='<div class="status-card"><div class="status-msg">Veri bulunamadı</div></div>';return;}
-  const show=trQ.slice(0,12);
+  const show=trQ.slice(0,15);
   list.innerHTML=show.map((f,i)=>{
     const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates,d=c?c[2]:null;
-    return`<div class="tr-item" data-ti="${i}">
-      <div class="tr-mag" style="color:${col(m)}">${fmtM(m)}</div>
+    return`<div class="tr-item ${mc(m)}" data-ti="${i}" style="--bc:${col(m)}">
+      <div class="tr-mag" style="color:${col(m)}">${fM(m)}</div>
       <div class="tr-info">
         <div class="tr-place">${p.place||'Bilinmiyor'}</div>
-        <div class="tr-meta">⬇ ${fmtD(d)} · ${p.magType||'Mw'}</div>
+        <div class="tr-meta">⬇ ${fD(d)} · ${p.magType||'mb'}</div>
       </div>
       <div class="tr-time">${ago(p.time)}</div>
     </div>`;
   }).join('');
-  show.forEach((f,i)=>{list.querySelector(`[data-ti="${i}"]`).onclick=()=>openSheet(f);});
+  show.forEach((f,i)=>{
+    const el=list.querySelector(`[data-ti="${i}"]`);
+    el.style.borderLeftColor=col(f.properties.mag||0);
+    el.querySelector('.tr-item')?.style||0;
+    el.onclick=()=>openSheet(f);
+  });
+  // Fix left border color via style
+  list.querySelectorAll('.tr-item').forEach((el,i)=>{
+    if(show[i])el.style.setProperty('--bc',col(show[i].properties.mag||0));
+  });
 }
 
-// ── STATS PAGE ──
+// ── STATS ──
 function renderStats(){
   if(!allQ.length)return;
-  document.getElementById('st-total').textContent=allQ.length;
+  const now=Date.now();
+  const total=allQ.length;
+  const rate=(total/24).toFixed(1);
+  const mx=allQ[0]?.properties.mag||0;
+  const mxLoc=(allQ[0]?.properties.place||'').split(' of ').pop().substring(0,20);
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-rate').textContent=`saatte ~${rate} olay`;
+  document.getElementById('st-max').textContent=fM(mx);
+  document.getElementById('st-max-loc').textContent=mxLoc;
+
+  // Auto report
+  const big=allQ.filter(f=>(f.properties.mag||0)>=5);
+  const vbig=allQ.filter(f=>(f.properties.mag||0)>=6);
+  const last1h=allQ.filter(f=>now-f.properties.time<3600000);
+  let rpt=`Son 24 saatte küresel olarak <strong>${total}</strong> deprem kaydedildi. `;
+  if(vbig.length>0)rpt+=`<span class="danger">⚠ ${vbig.length} adet M6+ büyük deprem meydana geldi!</span> `;
+  else if(big.length>0)rpt+=`<span class="warn">${big.length} adet M5+ deprem tespit edildi.</span> `;
+  else rpt+=`Büyük deprem (M5+) kaydedilmedi. `;
+  rpt+=`En büyük olay <strong>M${fM(mx)}</strong> büyüklüğünde, ${mxLoc} bölgesinde gerçekleşti. `;
+  rpt+=`Son 1 saatte <strong>${last1h.length}</strong> deprem oluştu.`;
+  document.getElementById('report-text').innerHTML=rpt;
 
   // Regions
   const regions=[
-    {n:'Pasifik',fn:f=>{const c=f.geometry?.coordinates;return c&&(c[0]<-100||c[0]>140)&&Math.abs(c[1])<60;}},
-    {n:'Asya',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=60&&c[0]<=150&&c[1]>=10&&c[1]<=60;}},
-    {n:'Amerika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-120&&c[0]<=-60;}},
+    {n:'Pasifik Halkası',fn:f=>{const c=f.geometry?.coordinates;return c&&((c[0]>140||c[0]<-100)&&Math.abs(c[1])<70);}},
+    {n:'Asya',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=60&&c[0]<=145&&c[1]>=10&&c[1]<=60;}},
+    {n:'Amerika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-120&&c[0]<=-50&&Math.abs(c[1])<60;}},
     {n:'Avrupa/TR',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=20&&c[0]<=50&&c[1]>=35&&c[1]<=50;}},
-    {n:'Afrika',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-20&&c[0]<=55&&c[1]>=-35&&c[1]<=37;}},
-    {n:'Diğer',fn:f=>true},
+    {n:'Afrika/Ortadoğu',fn:f=>{const c=f.geometry?.coordinates;return c&&c[0]>=-20&&c[0]<=60&&c[1]>=-35&&c[1]<=37;}},
+    {n:'Okyanus',fn:f=>true},
   ];
-  const rCounts=regions.map(r=>allQ.filter(r.fn).length);
-  const rMax=Math.max(...rCounts,1);
-  const rColors=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#4a5580'];
-  document.getElementById('region-bars').innerHTML=regions.map((r,i)=>`
-    <div class="risk-item">
-      <div class="risk-label">${r.n}</div>
-      <div class="risk-bar-wrap"><div class="risk-bar-fill" style="width:${(rCounts[i]/rMax)*100}%;background:${rColors[i]}"></div></div>
-      <div class="risk-count">${rCounts[i]}</div>
-    </div>`).join('');
+  const rc=regions.map(r=>allQ.filter(r.fn).length);
+  const rm=Math.max(...rc,1);
+  const rcols=['#00e5a0','#60a5fa','#f97316','#a78bfa','#fbbf24','#4a5580'];
+  document.getElementById('region-bars').innerHTML=regions.map((r,i)=>`<div class="rb-item"><div class="rb-name">${r.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(rc[i]/rm)*100}%;background:${rcols[i]}"></div></div><div class="rb-cnt">${rc[i]}</div></div>`).join('');
 
-  // Big timeline M5+
-  const big=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6);
-  document.getElementById('big-timeline').innerHTML=big.map((f,i)=>{
+  // Big TL
+  const bigQ=allQ.filter(f=>(f.properties.mag||0)>=5).slice(0,6);
+  document.getElementById('big-tl').innerHTML=bigQ.map((f,i)=>{
     const p=f.properties,m=p.mag||0;
-    return`<div class="tl-item">
-      <div class="tl-dot" style="background:${col(m)}"></div>
-      <div class="tl-content">
-        <div class="tl-title">M${fmtM(m)} — ${(p.place||'').split(' of ').pop()}</div>
-        <div class="tl-meta">${ago(p.time)} önce · ${p.magType||'Mw'}</div>
-      </div>
-    </div>${i<big.length-1?'<div class="tl-line"></div>':''}`;
+    return`<div class="tl-item"><div class="tl-dot" style="background:${col(m)}"></div><div class="tl-body"><div class="tl-title">M${fM(m)} — ${(p.place||'').split(' of ').pop()}</div><div class="tl-meta">${ago(p.time)} önce · ${p.magType||'Mw'} · ${fD(f.geometry?.coordinates?.[2])}</div></div></div>`;
   }).join('');
 
   // Depth
-  const dBands=[{n:'Sığ (<70km)',min:0,max:70,c:'#ef4444'},{n:'Orta (70-300)',min:70,max:300,c:'#f97316'},{n:'Derin (>300)',min:300,max:9999,c:'#60a5fa'}];
-  const dCounts=dBands.map(b=>allQ.filter(f=>{const c=f.geometry?.coordinates,d=c?c[2]:0;return d>=b.min&&d<b.max;}).length);
-  const dMax=Math.max(...dCounts,1);
-  document.getElementById('depth-bars').innerHTML=dBands.map((b,i)=>`
-    <div class="risk-item">
-      <div class="risk-label" style="font-size:9px">${b.n}</div>
-      <div class="risk-bar-wrap"><div class="risk-bar-fill" style="width:${(dCounts[i]/dMax)*100}%;background:${b.c}"></div></div>
-      <div class="risk-count">${dCounts[i]}</div>
-    </div>`).join('');
+  const db=[{n:'Sığ <70km',mn:0,mx:70,c:'#ef4444'},{n:'Orta 70-300km',mn:70,mx:300,c:'#f97316'},{n:'Derin >300km',mn:300,mx:9999,c:'#60a5fa'}];
+  const dc=db.map(b=>allQ.filter(f=>{const d=f.geometry?.coordinates?.[2]||0;return d>=b.mn&&d<b.mx;}).length);
+  const dm=Math.max(...dc,1);
+  document.getElementById('depth-bars').innerHTML=db.map((b,i)=>`<div class="rb-item"><div class="rb-name" style="font-size:9px">${b.n}</div><div class="rb-wrap"><div class="rb-fill" style="width:${(dc[i]/dm)*100}%;background:${b.c}"></div></div><div class="rb-cnt">${dc[i]}</div></div>`).join('');
 }
 
 // ── DETAIL SHEET ──
@@ -722,11 +905,11 @@ function openSheet(f){
   const p=f.properties,m=p.mag||0,c=f.geometry?.coordinates;
   const lon=c?c[0]:null,lat=c?c[1]:null,d=c?c[2]:null;
   const sh=document.getElementById('sh-mag');
-  sh.textContent=fmtM(m);sh.style.color=col(m);
+  sh.textContent=fM(m);sh.style.color=col(m);
   document.getElementById('sh-place').textContent=p.place||'Bilinmiyor';
   document.getElementById('sh-grid').innerHTML=[
-    {l:'Büyüklük',v:`${fmtM(m)} ${p.magType||'Mw'}`},
-    {l:'Derinlik',v:fmtD(d)},
+    {l:'Büyüklük',v:`${fM(m)} ${p.magType||'Mw'}`},
+    {l:'Derinlik',v:fD(d)},
     {l:'Enlem',v:lat!=null?lat.toFixed(4)+'°':'—'},
     {l:'Boylam',v:lon!=null?lon.toFixed(4)+'°':'—'},
     {l:'Zaman',v:p.time?new Date(p.time).toLocaleString('tr-TR'):'—'},
@@ -735,7 +918,20 @@ function openSheet(f){
     {l:'Hisseden',v:p.felt||'—'},
     {l:'Tsunami',v:p.tsunami===1?'⚠ Evet':'Hayır'},
     {l:'PAGER',v:p.alert?p.alert.toUpperCase():'—'},
-  ].map(i=>`<div class="sg-item"><div class="sg-label">${i.l}</div><div class="sg-val">${i.v}</div></div>`).join('');
+  ].map(i=>`<div class="sg"><div class="sg-l">${i.l}</div><div class="sg-v">${i.v}</div></div>`).join('');
+
+  // City distances (if near Turkey)
+  if(lat&&lon&&lat>=25&&lat<=50&&lon>=20&&lon<=55){
+    const cityList=TR_CITIES.map(city=>{
+      const km=dist(lat,lon,city.lat,city.lon);
+      return{n:city.n,km};
+    }).sort((a,b)=>a.km-b.km);
+    document.getElementById('sh-cities').style.display='block';
+    document.getElementById('sh-cities-list').innerHTML=cityList.map(c=>`<div class="city-row"><span class="city-name">${c.n}</span><span class="city-dist">${c.km} km</span></div>`).join('');
+  }else{
+    document.getElementById('sh-cities').style.display='none';
+  }
+
   document.getElementById('sh-link').href=p.url||'#';
   document.getElementById('detail-sheet').classList.add('show');
   document.body.style.overflow='hidden';
@@ -743,18 +939,33 @@ function openSheet(f){
 function closeSheet(){document.getElementById('detail-sheet').classList.remove('show');document.body.style.overflow='';}
 function closeSheetOut(e){if(e.target===document.getElementById('detail-sheet'))closeSheet();}
 
+// ── NOTIFICATIONS ──
+function toggleNotif(){
+  if(notifOn){notifOn=false;document.getElementById('notif-btn').classList.remove('on');return;}
+  if('Notification'in window){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){notifOn=true;document.getElementById('notif-btn').classList.add('on');}
+    });
+  }
+}
+function sendNotif(f){
+  if(!notifOn||!('Notification'in window)||Notification.permission!=='granted')return;
+  new Notification(`🚨 M${fM(f.properties.mag)} Deprem`,{body:f.properties.place||'Bilinmiyor',icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌍</text></svg>'});
+}
+
 // ── ALERT ──
 function showAlert(){
   alertBusy=true;
   const f=alertQ.shift(),p=f.properties,c=f.geometry?.coordinates,d=c?c[2]:null;
-  document.getElementById('al-mag').textContent=fmtM(p.mag);
+  document.getElementById('al-mag').textContent=fM(p.mag);
   document.getElementById('al-place').textContent=p.place||'Bilinmiyor';
-  document.getElementById('al-meta').textContent=`Derinlik: ${fmtD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;
-  document.getElementById('al-tags').innerHTML=tags(p);
+  document.getElementById('al-meta').textContent=`Derinlik: ${fD(d)} · ${new Date(p.time).toLocaleString('tr-TR')}`;
+  document.getElementById('al-tags').innerHTML=buildTags(p);
   document.getElementById('alert-overlay').classList.add('show');
   document.body.style.animation='none';
-  requestAnimationFrame(()=>{document.body.style.animation='screenShake .5s ease';});
-  if('vibrate'in navigator)navigator.vibrate([200,100,200,100,400]);
+  requestAnimationFrame(()=>{document.body.style.animation='screenShake .6s ease';});
+  if('vibrate'in navigator)navigator.vibrate([300,100,300,100,500]);
+  sendNotif(f);
 }
 function closeAlert(){
   document.getElementById('alert-overlay').classList.remove('show');
@@ -775,18 +986,16 @@ function startTimer(){
   timerInt=setInterval(()=>{counter--;updateTimer();if(counter<=0){clearInterval(timerInt);timerInt=null;fetchData();}},1000);
 }
 function updateTimer(){document.getElementById('timer').textContent=counter+'s';}
-
 function manualRefresh(){
   const b=document.getElementById('rbtn');b.classList.add('spin');
   if(timerInt){clearInterval(timerInt);timerInt=null;}
   fetchData().finally(()=>b.classList.remove('spin'));
 }
-
 function showErr(msg){
   document.getElementById('featured-wrap').innerHTML=`<div class="status-card"><div class="status-msg">⚠ ${msg}</div><button class="retry-btn" onclick="manualRefresh()">Tekrar Dene</button></div>`;
 }
 
-window.addEventListener('resize',()=>{if(allQ.length)renderSeismo();});
+window.addEventListener('resize',()=>{if(allQ.length){renderSeismo();renderMap();}});
 fetchData();
 </script>
 </body>
